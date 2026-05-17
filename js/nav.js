@@ -71,6 +71,25 @@ function initNav() {
     const navWrapper = document.createElement('div');
     navWrapper.className = 'nav-wrapper';
     navWrapper.appendChild(logo);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+
+    const hamburger = document.createElement('button');
+    hamburger.className = 'hamburger-btn';
+    hamburger.innerHTML = '☰';
+    hamburger.setAttribute('aria-label', 'Toggle Menu');
+    
+    const toggleMenu = () => {
+        linksContainer.classList.toggle('show');
+        overlay.classList.toggle('show');
+    };
+
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+    navWrapper.appendChild(hamburger);
+
     navWrapper.appendChild(linksContainer);
 
     navContainer.appendChild(navWrapper);

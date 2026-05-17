@@ -1,4 +1,5 @@
 /* base.css - Shared Styles for WebNotes */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
     --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -20,7 +21,7 @@ html {
 body {
     background: var(--bg);
     color: var(--txt);
-    font-family: 'Lora', serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.09rem;
     line-height: 1.88;
     transition: background var(--transition);
@@ -33,7 +34,7 @@ p {
 }
 
 h3 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1.55rem;
     font-weight: 700;
     margin-top: 3.4rem;
@@ -43,7 +44,7 @@ h3 {
 }
 
 h4 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1.3rem;
     font-weight: 700;
     margin-top: 2.8rem;
@@ -98,7 +99,7 @@ h4 {
 }
 
 .nav-logo {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-weight: 800;
     font-size: 1.1rem;
     color: var(--txt);
@@ -167,7 +168,7 @@ h4 {
 }
 
 .hero h1 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: clamp(1.8rem, 5vw, 3rem);
     font-weight: 800;
     line-height: 1.1;
@@ -317,7 +318,7 @@ html[data-theme="light"] section:hover {
 }
 
 .sh h2 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1.35rem;
     font-weight: 700;
 }
@@ -408,7 +409,7 @@ code {
 }
 
 .tip-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: .85rem;
     font-weight: 700;
     color: var(--orange);
@@ -445,7 +446,7 @@ code {
 }
 
 .card-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 10px;
@@ -469,7 +470,7 @@ code {
 .stbl th {
     background: var(--surf2);
     color: var(--green);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     padding: 9px 12px;
     text-align: left;
     border: 1px solid var(--border);
@@ -508,7 +509,7 @@ code {
 
 .quiz h3 {
     color: var(--purple);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 12px;
@@ -882,7 +883,7 @@ code {
 }
 
 .quiz h3 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 1.4rem;
     color: var(--green);
     margin-bottom: 20px;
@@ -1157,4 +1158,94 @@ html[data-theme="light"] .tree-text {
 }
 html[data-theme="light"] .tree-text.root-t {
     fill: #b45309;
+}
+
+/* Sidebar and Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1001;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+.hamburger-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--txt);
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 1003;
+}
+
+@media (max-width: 768px) {
+    #site-nav {
+        padding: 10px 20px;
+        height: auto;
+    }
+    .nav-wrapper {
+        flex-wrap: wrap;
+    }
+    .hamburger-btn {
+        display: block;
+    }
+    .nav-links {
+        position: fixed;
+        top: 0; right: -280px;
+        width: 260px;
+        height: 100vh;
+        background: var(--surf);
+        border-left: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 80px 20px 20px;
+        gap: 15px;
+        z-index: 1002;
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+    }
+    .nav-links.show {
+        right: 0;
+    }
+    .nav-links .nav-link {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 1.05rem;
+    }
+    .theme-toggle {
+        margin-left: 0;
+        margin-top: auto;
+        align-self: flex-start;
+    }
+    .hero {
+        padding: 120px 20px 40px;
+    }
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    .wrap {
+        padding: 24px 20px;
+    }
+    section {
+        padding: 1.5rem;
+    }
+    .sh h2 {
+        font-size: 1.2rem;
+    }
+    .cb {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
+    .toc {
+        padding: 10px 20px;
+    }
 }
