@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 3 · Δέντρα, Γράφοι & Αναζήτηση</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--pdim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'t(L,V,R)';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1rem,3vw,2.2rem);
+  color:rgba(188,140,255,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10;padding:16px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.55;margin:12px 0}
+.cb code{display:block;white-space:pre}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.nm{color:var(--purple)}
+.cm{color:var(--dim);font-style:italic}
+.str{color:var(--green)}
+.op{color:var(--orange)}
+
+/* Notes / warnings / tips / mnemonics — exam-prep boxes */
+.note,.warn,.tip-box,.mnemo,.exam{
+  border-left:4px solid;padding:14px 18px;margin:18px 0;border-radius:6px;
+  background:var(--surf);position:relative;
+}
+.note{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.07),transparent 60%)}
+.warn{border-color:var(--red);background:linear-gradient(90deg,rgba(248,81,73,.07),transparent 60%)}
+.tip-box{border-color:var(--green);background:linear-gradient(90deg,rgba(63,185,80,.07),transparent 60%)}
+.mnemo{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.07),transparent 60%)}
+.exam{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.08),transparent 60%)}
+.note .hd,.warn .hd,.tip-box .hd,.mnemo .hd,.exam .hd{
+  font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;
+}
+.note .hd{color:var(--blue)}
+.warn .hd{color:var(--red)}
+.tip-box .hd{color:var(--green)}
+.mnemo .hd{color:var(--yellow)}
+.exam .hd{color:var(--purple)}
+.note p:last-child,.warn p:last-child,.tip-box p:last-child,.mnemo p:last-child,.exam p:last-child{margin-bottom:0}
+
+/* Line-by-line code commentary table */
+.line-by-line{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  font-family:'JetBrains Mono',monospace;font-size:0.83rem;
+}
+.line-by-line .lcode{
+  background:#060a10;padding:8px 12px;border-bottom:1px solid var(--border);
+  white-space:pre;color:var(--txt);
+}
+.line-by-line .lexpl{
+  background:var(--surf);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:0.9rem;color:var(--muted);
+}
+.line-by-line>div:nth-last-child(-n+2){border-bottom:none}
+
+/* Sort visualization */
+.sort-row{
+  display:flex;gap:6px;align-items:center;margin:8px 0;
+  font-family:'JetBrains Mono',monospace;font-size:0.9rem;flex-wrap:wrap;
+}
+.sort-cell{
+  min-width:28px;height:32px;padding:0 6px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--surf2);border:1px solid var(--border);border-radius:4px;color:var(--txt);
+}
+.sort-cell.pivot{border-color:var(--yellow);color:var(--yellow);font-weight:700;background:var(--ydim)}
+.sort-cell.small{border-color:var(--green);color:var(--green);background:var(--gdim)}
+.sort-cell.big{border-color:var(--red);color:var(--red);background:var(--rdim)}
+.sort-cell.done{border-color:var(--cyan);color:var(--cyan);background:var(--cdim)}
+.sort-cell.swap{border-color:var(--orange);color:var(--orange);background:var(--odim);box-shadow:0 0 10px rgba(240,136,62,.4)}
+.sort-arrow{color:var(--dim);font-size:1.1rem;padding:0 4px}
+.sort-label{color:var(--muted);font-size:0.8rem;min-width:80px}
+
+/* Tree visualization */
+.tree-vis{
+  padding:20px;background:var(--surf);border-radius:10px;border:1px solid var(--border);
+  margin:14px 0;overflow-x:auto;display:flex;justify-content:center;
+}
+.tree-vis svg{max-width:100%}
+.tree-node-c{fill:var(--surf2);stroke:var(--purple);stroke-width:2}
+.tree-node-c.root-c{stroke:var(--yellow)}
+.tree-node-c.nil-c{stroke:var(--dim);stroke-dasharray:3,3;fill:transparent}
+.tree-edge-l{stroke:var(--dim);stroke-width:1.5;fill:none}
+.tree-text{fill:var(--txt);font-family:'JetBrains Mono',monospace;font-size:13px;text-anchor:middle;dominant-baseline:central;font-weight:600}
+.tree-text.root-t{fill:var(--yellow)}
+.tree-text.nil-t{fill:var(--dim);font-size:10px}
+
+/* State diagram (M&C, water jugs etc.) */
+.state-diag{
+  display:flex;gap:10px;align-items:center;padding:14px;
+  background:var(--surf);border-radius:8px;margin:12px 0;overflow-x:auto;
+}
+.state-box{
+  min-width:80px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;
+  background:var(--surf2);font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+  text-align:center;
+}
+.state-box.start{border-color:var(--green);color:var(--green)}
+.state-box.goal{border-color:var(--yellow);color:var(--yellow)}
+.state-arrow{color:var(--purple);font-size:1.5rem;font-weight:700}
+.state-action{font-size:0.7rem;color:var(--muted);text-align:center;display:block}
+
+/* Comparison side-by-side */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+@media (max-width:720px){.compare-grid{grid-template-columns:1fr}}
+.compare-cell{padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--surf)}
+.compare-cell.bad{border-color:var(--red);background:linear-gradient(180deg,rgba(248,81,73,.06),transparent)}
+.compare-cell.good{border-color:var(--green);background:linear-gradient(180deg,rgba(63,185,80,.06),transparent)}
+.compare-cell .ctag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.compare-cell.bad .ctag{background:var(--rdim);color:var(--red)}
+.compare-cell.good .ctag{background:var(--gdim);color:var(--green)}
+
+/* Summary table */
+.summary-tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem}
+.summary-tbl th,.summary-tbl td{padding:10px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}
+.summary-tbl th{background:var(--surf);color:var(--purple);font-weight:600}
+.summary-tbl tr:nth-child(even) td{background:var(--surf)}
+.summary-tbl code{background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:0.85em}
+
+/* Complexity badge */
+.cplx{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:700}
+.cplx-good{background:var(--gdim);color:var(--green);border:1px solid var(--green)}
+.cplx-mid{background:var(--ydim);color:var(--yellow);border:1px solid var(--yellow)}
+.cplx-bad{background:var(--rdim);color:var(--red);border:1px solid var(--red)}
+
+/* Zebra clue list */
+.zebra-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:6px 16px;margin:14px 0}
+.zebra-clue{display:flex;gap:10px;padding:6px 10px;background:var(--surf);border-left:3px solid var(--cyan);border-radius:3px;font-size:0.88rem}
+.zebra-clue .znum{color:var(--cyan);font-weight:700;font-family:'JetBrains Mono',monospace;min-width:24px}
+
+/* Queens board */
+.queens-board{display:inline-block;border:2px solid var(--border);margin:10px 0}
+.queens-row{display:flex}
+.queens-cell{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.queens-cell.light{background:#1c2230}
+.queens-cell.dark{background:#0d1117}
+.queens-cell.queen{color:var(--yellow)}
+.queens-cell.attack{background:rgba(248,81,73,.2)}
+
+/* Steps list */
+.steps{counter-reset:step;list-style:none;padding-left:0;margin:14px 0}
+.steps li{counter-increment:step;position:relative;padding:8px 0 8px 44px;margin-bottom:4px;border-left:1px solid var(--border);margin-left:16px}
+.steps li::before{
+  content:counter(step);position:absolute;left:-16px;top:8px;
+  width:32px;height:32px;border-radius:50%;background:var(--pdim);
+  color:var(--purple);font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--purple);font-family:'JetBrains Mono',monospace;
+}
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 3</div>
+  <h1>Δέντρα, Γράφοι & <em>State-Space Search</em></h1>
+  <p>Από την ταξινόμηση λιστών μέχρι την επίλυση γρίφων με αναζήτηση. Όλα όσα χρειάζεσαι για να περάσεις τις εξετάσεις και την Εργασία 1.</p>
+  <div class="chips">
+    <span class="chip">Sorting</span>
+    <span class="chip">BST</span>
+    <span class="chip">Graphs</span>
+    <span class="chip">State Space</span>
+    <span class="chip">CSPs</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#sorting">1. Ταξινόμηση Λιστών</a>
+  <a href="#bintree">2. Δυαδικά Δέντρα</a>
+  <a href="#bst">3. Δυαδικά Λεξικά (BST)</a>
+  <a href="#graphs">4. Γράφοι</a>
+  <a href="#stree">5. Δέντρα Επικάλυψης</a>
+  <a href="#statespace">6. Αναζήτηση Καταστάσεων</a>
+  <a href="#csp">7. Γρίφοι & CSPs</a>
+  <a href="#summary">📋 Σύνοψη</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Στο κεφάλαιο αυτό περνάμε από τις <strong>γραμμικές δομές</strong> (λίστες) σε <strong>μη γραμμικές</strong>: δέντρα και γράφους. Παράλληλα, εισάγουμε το κορυφαίο εργαλείο επίλυσης προβλημάτων στην Τεχνητή Νοημοσύνη — την <strong>αναζήτηση σε χώρο καταστάσεων</strong>.</p>
+  <p>Η Prolog είναι ιδανική για αυτά τα προβλήματα γιατί έχει <strong>ενσωματωμένη οπισθοδρόμηση</strong>: δεν χρειάζεται να γράψεις τη μηχανή αναζήτησης, αρκεί να περιγράψεις δηλωτικά το πρόβλημα. Αρκετά συχνά, ο κώδικας έχει 10 γραμμές αλλά λύνει προβλήματα που σε άλλες γλώσσες θα ήθελαν 100+.</p>
+
+  <div class="exam">
+    <div class="hd">📚 Τι θα χρειαστείς για τις εξετάσεις</div>
+    <ul style="margin:0">
+      <li>Όλους τους αλγορίθμους ταξινόμησης σε Prolog (κυρίως <code>quicksort</code>)</li>
+      <li>Το πλήρες σύνολο πράξεων BST (<code>addleaf</code>, <code>del</code>, <code>addroot</code>)</li>
+      <li>Εύρεση μονοπατιού σε γράφο (απλό + Hamiltonian + με κόστος)</li>
+      <li>Γενικό σχήμα DFS αναζήτησης καταστάσεων (κρίσιμο για Εργ. 1)</li>
+      <li>Στρατηγική <strong>constrain-and-generate</strong> για γρίφους (Ζέβρα, N-βασίλισσες)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  SECTION 1 · ΤΑΞΙΝΟΜΗΣΗ                       ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="sorting">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">📊</div>
+    <h2>1. Ταξινόμηση Λιστών</h2>
+  </div>
+
+  <p>Η ταξινόμηση είναι το <em>"Hello World"</em> κάθε δομής δεδομένων. Στην Prolog θα δούμε τρεις κλασικές μεθόδους που χρησιμοποιούν διαφορετικές αναδρομικές στρατηγικές, και θα συγκρίνουμε την αποδοτικότητά τους.</p>
+
+  <div class="note">
+    <div class="hd">📝 Προαπαιτούμενο: το κατηγόρημα <code>gt/2</code></div>
+    <p>Όλοι οι αλγόριθμοι θεωρούν ότι έχουμε ορίσει μια σχέση διάταξης. Για αριθμούς:</p>
+    <div class="cb"><code><span class="fn">gt</span>(X, Y) <span class="kw">:-</span> X <span class="op">&gt;</span> Y.</code></div>
+    <p>Με αυτό τον τρόπο μπορούμε εύκολα να γενικεύσουμε τους αλγορίθμους για ταξινόμηση συμβολοσειρών, ζευγών, ή οποιουδήποτε τύπου, αρκεί να ορίσουμε το αντίστοιχο <code>gt</code>.</p>
+  </div>
+
+  <!-- ─────────────── 1.1 BUBBLESORT ─────────────── -->
+  <h3>1.1 Μέθοδος Φυσαλίδας (Bubblesort)</h3>
+
+  <p><strong>Ιδέα:</strong> Βρες δύο διαδοχικά στοιχεία σε λάθος διάταξη, αντιμετάθεσέ τα, και επανέλαβε μέχρι να μην υπάρχει τέτοιο ζευγάρι.</p>
+
+  <div class="cb"><code><span class="fn">bubblesort</span>(List, Sorted) <span class="kw">:-</span>
+    <span class="fn">swap</span>(List, List1),     <span class="cm">% βρες ζευγάρι για ανταλλαγή</span>
+    <span class="kw">!</span>,                       <span class="cm">% αν βρήκες, δέσμευσε</span>
+    <span class="fn">bubblesort</span>(List1, Sorted). <span class="cm">% και ξαναπροσπάθησε</span>
+<span class="fn">bubblesort</span>(Sorted, Sorted).  <span class="cm">% αν δεν υπάρχει swap, τελείωσε</span>
+
+<span class="fn">swap</span>([X, Y<span class="op">|</span>Rest], [Y, X<span class="op">|</span>Rest]) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Y).               <span class="cm">% αντιμετάθεσε αν X > Y</span>
+<span class="fn">swap</span>([Z<span class="op">|</span>Rest], [Z<span class="op">|</span>Rest1]) <span class="kw">:-</span>
+    <span class="fn">swap</span>(Rest, Rest1).      <span class="cm">% αλλιώς ψάξε στην ουρά</span></code></div>
+
+  <div class="line-by-line">
+    <div class="lcode">bubblesort(List, Sorted) :-</div>
+    <div class="lexpl">Πρώτη πρόταση: η αναδρομική περίπτωση.</div>
+    <div class="lcode">    swap(List, List1),</div>
+    <div class="lexpl">Καλούμε το <code>swap</code> να βρει το <em>πρώτο</em> ζευγάρι παράταξης που είναι σε λάθος σειρά. Επιστρέφει νέα λίστα <code>List1</code> με την ανταλλαγή πραγματοποιημένη.</div>
+    <div class="lcode">    !,</div>
+    <div class="lexpl">Πράσινο cut: αν το <code>swap</code> πέτυχε, δεν θέλουμε να επιστρέψει η Prolog εδώ και να δοκιμάσει τη δεύτερη πρόταση. <strong>Χωρίς το cut, η Prolog θα επέτρεπε λάθος συμπεριφορά κατά την οπισθοδρόμηση.</strong></div>
+    <div class="lcode">    bubblesort(List1, Sorted).</div>
+    <div class="lexpl">Αναδρομική κλήση στη νέα λίστα.</div>
+    <div class="lcode">bubblesort(Sorted, Sorted).</div>
+    <div class="lexpl">Βασική περίπτωση: αν δεν βρέθηκε ζευγάρι (το <code>swap</code> απέτυχε), τότε η λίστα είναι ήδη ταξινομημένη.</div>
+  </div>
+
+  <p>Το <code>swap/2</code> πετυχαίνει αν υπάρχει <em>τουλάχιστον ένα</em> ζεύγος σε λάθος διάταξη, και επιστρέφει τη λίστα με αυτό το ζεύγος ανταλλαγμένο:</p>
+
+  <div class="sort-row">
+    <span class="sort-label">Αρχικά:</span>
+    <span class="sort-cell">5</span><span class="sort-cell">3</span><span class="sort-cell">8</span><span class="sort-cell">1</span><span class="sort-cell">4</span>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">Πέρασμα 1:</span>
+    <span class="sort-cell swap">3</span><span class="sort-cell swap">5</span><span class="sort-cell">8</span><span class="sort-cell">1</span><span class="sort-cell">4</span>
+    <span class="sort-arrow">→</span>
+    <span style="color:var(--muted);font-size:0.85rem">βρήκαμε 5>3, swap</span>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">Πέρασμα 2:</span>
+    <span class="sort-cell">3</span><span class="sort-cell">5</span><span class="sort-cell swap">1</span><span class="sort-cell swap">8</span><span class="sort-cell">4</span>
+    <span class="sort-arrow">→</span>
+    <span style="color:var(--muted);font-size:0.85rem">8>1, swap</span>
+  </div>
+  <div class="sort-row">
+    <span class="sort-label">...συνεχίζει</span>
+    <span class="sort-arrow">→</span>
+    <span class="sort-cell done">1</span><span class="sort-cell done">3</span><span class="sort-cell done">4</span><span class="sort-cell done">5</span><span class="sort-cell done">8</span>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πολυπλοκότητα</div>
+    <p>Στη χειρότερη περίπτωση: <span class="cplx cplx-bad">O(n²)</span>. Για μεγάλες λίστες είναι <strong>πολύ αργό</strong>. Χρησιμοποιείται κυρίως διδακτικά.</p>
+  </div>
+
+  <!-- ─────────────── 1.2 INSERTSORT ─────────────── -->
+  <h3>1.2 Μέθοδος Εισαγωγής (Insertsort)</h3>
+
+  <p><strong>Ιδέα:</strong> Ταξινόμησε την ουρά της λίστας, και μετά εισήγαγε την κεφαλή στην κατάλληλη θέση.</p>
+
+  <div class="cb"><code><span class="fn">insertsort</span>([], []).
+<span class="fn">insertsort</span>([X<span class="op">|</span>Tail], Sorted) <span class="kw">:-</span>
+    <span class="fn">insertsort</span>(Tail, SortedTail),  <span class="cm">% αναδρομικά ταξινόμησε την ουρά</span>
+    <span class="fn">insert</span>(X, SortedTail, Sorted).  <span class="cm">% και εισήγαγε την κεφαλή</span>
+
+<span class="fn">insert</span>(X, [Y<span class="op">|</span>Sorted], [Y<span class="op">|</span>Sorted1]) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Y),                    <span class="cm">% αν X > Y, X πάει αργότερα</span>
+    <span class="kw">!</span>,
+    <span class="fn">insert</span>(X, Sorted, Sorted1).
+<span class="fn">insert</span>(X, Sorted, [X<span class="op">|</span>Sorted]).   <span class="cm">% αλλιώς X πάει μπροστά</span></code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πώς διαβάζεται το <code>insert/3</code></div>
+    <p><code>insert(X, ΕισέρχεταιΣτη, ΠαράγεταιΗ)</code>. Το X "ταξιδεύει" κατά μήκος της ταξινομημένης λίστας μέχρι να βρει στοιχείο όχι μικρότερο από αυτό — τότε σταματάει και τοποθετείται εκεί.</p>
+  </div>
+
+  <p>Πάλι <span class="cplx cplx-bad">O(n²)</span> στη χειρότερη — αν η λίστα είναι εντελώς ανάποδα ταξινομημένη.</p>
+
+  <!-- ─────────────── 1.3 QUICKSORT ─────────────── -->
+  <h3>1.3 Γρήγορη Μέθοδος (Quicksort)</h3>
+
+  <p><strong>Ιδέα (Divide &amp; Conquer):</strong> Διάλεξε ένα στοιχείο "οδηγό" (pivot — εδώ απλώς η κεφαλή της λίστας). Χώρισε τα υπόλοιπα σε δύο λίστες: μικρότερα και μεγαλύτερα. Ταξινόμησε τις δύο λίστες αναδρομικά. Συνένωσε τις με τον οδηγό στη μέση.</p>
+
+  <div class="cb"><code><span class="fn">quicksort</span>([], []).
+<span class="fn">quicksort</span>([X<span class="op">|</span>Tail], Sorted) <span class="kw">:-</span>
+    <span class="fn">split</span>(X, Tail, Small, Big),     <span class="cm">% χώρισε γύρω από το X</span>
+    <span class="fn">quicksort</span>(Small, SortedSmall),  <span class="cm">% ταξινόμησε το μικρό μέρος</span>
+    <span class="fn">quicksort</span>(Big, SortedBig),      <span class="cm">% ταξινόμησε το μεγάλο μέρος</span>
+    <span class="fn">append</span>(SortedSmall, [X<span class="op">|</span>SortedBig], Sorted). <span class="cm">% ενώσε</span>
+
+<span class="fn">split</span>(_, [], [], []).
+<span class="fn">split</span>(X, [Y<span class="op">|</span>Tail], [Y<span class="op">|</span>Small], Big) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Y), <span class="kw">!</span>,                   <span class="cm">% Y < X → small</span>
+    <span class="fn">split</span>(X, Tail, Small, Big).
+<span class="fn">split</span>(X, [Y<span class="op">|</span>Tail], Small, [Y<span class="op">|</span>Big]) <span class="kw">:-</span>
+    <span class="fn">split</span>(X, Tail, Small, Big).      <span class="cm">% αλλιώς → big</span></code></div>
+
+  <p>Οπτικά για τη λίστα <code>[5,3,7,8,1,4,7,6]</code>:</p>
+
+  <div class="sort-row" style="justify-content:center">
+    <span class="sort-cell pivot">5</span><span class="sort-cell">3</span><span class="sort-cell">7</span><span class="sort-cell">8</span><span class="sort-cell">1</span><span class="sort-cell">4</span><span class="sort-cell">7</span><span class="sort-cell">6</span>
+    <span class="sort-label" style="margin-left:14px">οδηγός: 5</span>
+  </div>
+  <div class="sort-row" style="justify-content:center;color:var(--dim);font-family:monospace">↓ split</div>
+  <div class="sort-row" style="justify-content:center;gap:30px">
+    <span><span style="color:var(--green);font-size:0.8rem">&lt; 5</span><br><span class="sort-cell small">3</span><span class="sort-cell small">1</span><span class="sort-cell small">4</span></span>
+    <span class="sort-cell pivot">5</span>
+    <span><span style="color:var(--red);font-size:0.8rem">≥ 5</span><br><span class="sort-cell big">7</span><span class="sort-cell big">8</span><span class="sort-cell big">7</span><span class="sort-cell big">6</span></span>
+  </div>
+  <div class="sort-row" style="justify-content:center;color:var(--dim);font-family:monospace">↓ recurse on each</div>
+  <div class="sort-row" style="justify-content:center;gap:30px">
+    <span><span class="sort-cell done">1</span><span class="sort-cell done">3</span><span class="sort-cell done">4</span></span>
+    <span class="sort-cell pivot">5</span>
+    <span><span class="sort-cell done">6</span><span class="sort-cell done">7</span><span class="sort-cell done">7</span><span class="sort-cell done">8</span></span>
+  </div>
+  <div class="sort-row" style="justify-content:center;color:var(--dim);font-family:monospace">↓ append με 5 στη μέση</div>
+  <div class="sort-row" style="justify-content:center">
+    <span class="sort-cell done">1</span><span class="sort-cell done">3</span><span class="sort-cell done">4</span><span class="sort-cell done">5</span><span class="sort-cell done">6</span><span class="sort-cell done">7</span><span class="sort-cell done">7</span><span class="sort-cell done">8</span>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πολυπλοκότητα Quicksort</div>
+    <p>Μέση περίπτωση: <span class="cplx cplx-good">O(n log n)</span> — πολύ καλύτερη από bubble/insert. Χειρότερη περίπτωση: <span class="cplx cplx-bad">O(n²)</span> (συμβαίνει αν η λίστα είναι ήδη ταξινομημένη και ο οδηγός πέφτει στο ένα άκρο).</p>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Το <code>append</code> κοστίζει</div>
+    <p>Σε κάθε βήμα της quicksort καλούμε <code>append</code>, που είναι <span class="cplx cplx-mid">O(k)</span>. Με <strong>λίστες διαφορών</strong> (Κεφάλαιο 2) μπορούμε να το κάνουμε <span class="cplx cplx-good">O(1)</span>, οδηγώντας σε πιο αποδοτική <code>quicksort2</code>.</p>
+  </div>
+
+  <!-- ─────────────── 1.4 MERGE ─────────────── -->
+  <h3>1.4 Συγχώνευση Ταξινομημένων Λιστών (Merge)</h3>
+
+  <p>Δίνονται δύο <em>ήδη ταξινομημένες</em> λίστες, παράγουμε μια ταξινομημένη συνένωση:</p>
+
+  <div class="cb"><code><span class="fn">merge</span>([], List, List) <span class="kw">:-</span> <span class="kw">!</span>.
+<span class="fn">merge</span>(List, [], List) <span class="kw">:-</span> <span class="kw">!</span>.
+<span class="fn">merge</span>([X<span class="op">|</span>Rest1], [Y<span class="op">|</span>Rest2], [X<span class="op">|</span>Rest3]) <span class="kw">:-</span>
+    X <span class="op">&lt;</span> Y, <span class="kw">!</span>,
+    <span class="fn">merge</span>(Rest1, [Y<span class="op">|</span>Rest2], Rest3).
+<span class="fn">merge</span>(List1, [Y<span class="op">|</span>Rest2], [Y<span class="op">|</span>Rest3]) <span class="kw">:-</span>
+    <span class="fn">merge</span>(List1, Rest2, Rest3).</code></div>
+
+  <p><strong>Ερώτηση:</strong></p>
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">merge</span>([2,4,7], [1,3,4,8], X).
+X = [1, 2, 3, 4, 4, 7, 8]</code></div>
+
+  <p>Με βάση τη συγχώνευση μπορούμε να φτιάξουμε τη <strong>mergesort</strong>: χώρισε στα δύο, ταξινόμησε καθένα, συγχώνευσε. Άσκηση εξετάσεων!</p>
+
+  <!-- ─────────────── 1.5 ΣΥΓΚΡΙΣΗ ─────────────── -->
+  <h3>1.5 Συνοπτική Σύγκριση</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Αλγόριθμος</th><th>Μέση</th><th>Χειρότερη</th><th>Στρατηγική</th><th>Πότε χρήσιμη</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>bubblesort</strong></td><td><span class="cplx cplx-bad">O(n²)</span></td><td><span class="cplx cplx-bad">O(n²)</span></td><td>Επανειλημμένα swap</td><td>Διδακτικά</td></tr>
+      <tr><td><strong>insertsort</strong></td><td><span class="cplx cplx-bad">O(n²)</span></td><td><span class="cplx cplx-bad">O(n²)</span></td><td>Ταξινόμησε ουρά, εισήγαγε κεφαλή</td><td>Μικρές λίστες</td></tr>
+      <tr><td><strong>quicksort</strong></td><td><span class="cplx cplx-good">O(n log n)</span></td><td><span class="cplx cplx-bad">O(n²)</span></td><td>Διαίρει και βασίλευε</td><td>Γενικά</td></tr>
+      <tr><td><strong>mergesort</strong></td><td><span class="cplx cplx-good">O(n log n)</span></td><td><span class="cplx cplx-good">O(n log n)</span></td><td>Διχοτόμηση + merge</td><td>Όταν θες εγγυημένο O(n log n)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="sorting"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  SECTION 2 · ΔΥΑΔΙΚΑ ΔΕΝΤΡΑ                  ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="bintree">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🌳</div>
+    <h2>2. Δυαδικά Δέντρα (Binary Trees)</h2>
+  </div>
+
+  <p>Ένα δυαδικό δέντρο είναι μια <strong>αναδρομική δομή</strong>: είτε είναι κενό, είτε αποτελείται από μια ρίζα και δύο υποδέντρα (αριστερό και δεξί).</p>
+
+  <h3>2.1 Αναπαράσταση στην Prolog</h3>
+
+  <p>Χρησιμοποιούμε δύο σύμβολα:</p>
+  <ul>
+    <li><code>nil</code> για το κενό δέντρο</li>
+    <li><code>t(Left, Root, Right)</code> για μη κενό δέντρο με ρίζα <code>Root</code> και υποδέντρα <code>Left</code>, <code>Right</code></li>
+  </ul>
+
+  <p><strong>Παράδειγμα:</strong></p>
+  <div class="cb"><code>T = <span class="fn">t</span>(<span class="fn">t</span>(nil, b, nil), a, <span class="fn">t</span>(<span class="fn">t</span>(nil, d, nil), c, nil))</code></div>
+
+  <div class="tree-vis">
+    <svg width="320" height="200" viewBox="0 0 320 200">
+      <!-- edges -->
+      <line class="tree-edge-l" x1="160" y1="40" x2="80" y2="100"/>
+      <line class="tree-edge-l" x1="160" y1="40" x2="240" y2="100"/>
+      <line class="tree-edge-l" x1="240" y1="100" x2="200" y2="160"/>
+      <!-- nodes -->
+      <circle class="tree-node-c root-c" cx="160" cy="40" r="20"/>
+      <text class="tree-text root-t" x="160" y="40">a</text>
+      <circle class="tree-node-c" cx="80" cy="100" r="20"/>
+      <text class="tree-text" x="80" y="100">b</text>
+      <circle class="tree-node-c" cx="240" cy="100" r="20"/>
+      <text class="tree-text" x="240" y="100">c</text>
+      <circle class="tree-node-c" cx="200" cy="160" r="20"/>
+      <text class="tree-text" x="200" y="160">d</text>
+    </svg>
+  </div>
+
+  <div class="note">
+    <div class="hd">📝 Γιατί χρειαζόμαστε δύο σύμβολα;</div>
+    <p>Για να μπορεί το <strong>pattern matching</strong> να ξεχωρίσει "κενό" από "μη κενό". Η Prolog ενοποιεί το <code>t(L, X, R)</code> μόνο με μη κενό δέντρο, ενώ το <code>nil</code> μόνο με κενό. Αυτό μας επιτρέπει να γράφουμε καθαρές αναδρομές με δύο περιπτώσεις βάσης.</p>
+  </div>
+
+  <h3>2.2 Στοιχείο μέλος δέντρου: <code>in/2</code></h3>
+
+  <p>Αν δεν υπάρχει διάταξη, πρέπει να ψάξουμε <em>όλους</em> τους κόμβους:</p>
+
+  <div class="cb"><code><span class="fn">in</span>(X, <span class="fn">t</span>(_, X, _)).            <span class="cm">% (α) είναι η ρίζα</span>
+<span class="fn">in</span>(X, <span class="fn">t</span>(L, _, _)) <span class="kw">:-</span>          <span class="cm">% (β) ή είναι στο αριστερό</span>
+    <span class="fn">in</span>(X, L).
+<span class="fn">in</span>(X, <span class="fn">t</span>(_, _, R)) <span class="kw">:-</span>          <span class="cm">% (γ) ή είναι στο δεξί</span>
+    <span class="fn">in</span>(X, R).</code></div>
+
+  <p>Με αυτό μπορούμε να ψάξουμε ένα στοιχείο <em>ή</em> να αριθμήσουμε όλα τα στοιχεία (μη ντετερμινιστικά):</p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">in</span>(X, <span class="fn">t</span>(<span class="fn">t</span>(nil, b, nil), a, <span class="fn">t</span>(<span class="fn">t</span>(nil, d, nil), c, nil))).
+X = a <span class="kw">-&gt;</span> ;
+X = b <span class="kw">-&gt;</span> ;
+X = c <span class="kw">-&gt;</span> ;
+X = d <span class="kw">-&gt;</span> ;
+no</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πολυπλοκότητα</div>
+    <p>Στη χειρότερη περίπτωση <span class="cplx cplx-bad">O(n)</span> γιατί ψάχνουμε όλο το δέντρο. Αν θέλουμε <span class="cplx cplx-good">O(log n)</span>, χρειαζόμαστε <strong>δυαδικά λεξικά (BST)</strong> — επόμενη ενότητα.</p>
+  </div>
+
+  <h3>2.3 Συνηθισμένες Ασκήσεις</h3>
+
+  <div class="exam">
+    <div class="hd">📚 Άσκηση 1: <code>binarytree/1</code></div>
+    <p>Ορίστε κατηγόρημα που πετυχαίνει αν το όρισμά του είναι έγκυρο δυαδικό δέντρο:</p>
+    <div class="cb"><code><span class="fn">binarytree</span>(nil).
+<span class="fn">binarytree</span>(<span class="fn">t</span>(L, _, R)) <span class="kw">:-</span>
+    <span class="fn">binarytree</span>(L),
+    <span class="fn">binarytree</span>(R).</code></div>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Άσκηση 2: <code>height/2</code> (ύψος δέντρου)</div>
+    <div class="cb"><code><span class="fn">height</span>(nil, 0).
+<span class="fn">height</span>(<span class="fn">t</span>(L, _, R), H) <span class="kw">:-</span>
+    <span class="fn">height</span>(L, HL),
+    <span class="fn">height</span>(R, HR),
+    <span class="fn">max</span>(HL, HR, HM),
+    H <span class="kw">is</span> HM <span class="op">+</span> <span class="nm">1</span>.
+
+<span class="fn">max</span>(A, B, A) <span class="kw">:-</span> A <span class="op">&gt;=</span> B, <span class="kw">!</span>.
+<span class="fn">max</span>(_, B, B).</code></div>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Άσκηση 3: <code>linearize/2</code> (συλλογή στοιχείων σε λίστα)</div>
+    <div class="cb"><code><span class="fn">linearize</span>(nil, []).
+<span class="fn">linearize</span>(<span class="fn">t</span>(L, X, R), List) <span class="kw">:-</span>
+    <span class="fn">linearize</span>(L, LL),
+    <span class="fn">linearize</span>(R, RL),
+    <span class="fn">append</span>(LL, [X<span class="op">|</span>RL], List).</code></div>
+    <p>Παράγει την <strong>ενδοδιατεταγμένη (in-order)</strong> διέλευση. Αν αλλάξεις τη σειρά των <code>append</code>, παίρνεις pre-order ή post-order.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="trees"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 3 · BST (ΔΥΑΔΙΚΟ ΛΕΞΙΚΟ)               ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="bst">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🔍</div>
+    <h2>3. Δυαδικά Λεξικά (BST)</h2>
+  </div>
+
+  <p>Ένα <strong>Δυαδικό Λεξικό (Binary Dictionary)</strong> ή <strong>Δέντρο Αναζήτησης (BST)</strong> είναι δυαδικό δέντρο με μια επιπλέον ιδιότητα διάταξης.</p>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Η Ιδιότητα BST (αρχή της διάταξης)</div>
+    <p>Για κάθε κόμβο <code>t(Left, Root, Right)</code>:</p>
+    <ul style="margin:6px 0">
+      <li>Όλα τα στοιχεία του <code>Left</code> είναι <strong>μικρότερα</strong> του <code>Root</code></li>
+      <li>Όλα τα στοιχεία του <code>Right</code> είναι <strong>μεγαλύτερα</strong> του <code>Root</code></li>
+      <li>Τα υποδέντρα <code>Left</code> και <code>Right</code> είναι κι αυτά BSTs</li>
+    </ul>
+  </div>
+
+  <div class="tree-vis">
+    <svg width="360" height="220" viewBox="0 0 360 220">
+      <line class="tree-edge-l" x1="180" y1="30" x2="100" y2="90"/>
+      <line class="tree-edge-l" x1="180" y1="30" x2="260" y2="90"/>
+      <line class="tree-edge-l" x1="100" y1="90" x2="50" y2="150"/>
+      <line class="tree-edge-l" x1="100" y1="90" x2="150" y2="150"/>
+      <line class="tree-edge-l" x1="260" y1="90" x2="220" y2="150"/>
+      <line class="tree-edge-l" x1="260" y1="90" x2="310" y2="150"/>
+      <line class="tree-edge-l" x1="220" y1="150" x2="240" y2="200"/>
+      <circle class="tree-node-c root-c" cx="180" cy="30" r="18"/><text class="tree-text root-t" x="180" y="30">5</text>
+      <circle class="tree-node-c" cx="100" cy="90" r="18"/><text class="tree-text" x="100" y="90">3</text>
+      <circle class="tree-node-c" cx="260" cy="90" r="18"/><text class="tree-text" x="260" y="90">8</text>
+      <circle class="tree-node-c" cx="50" cy="150" r="16"/><text class="tree-text" x="50" y="150">1</text>
+      <circle class="tree-node-c" cx="150" cy="150" r="16"/><text class="tree-text" x="150" y="150">4</text>
+      <circle class="tree-node-c" cx="220" cy="150" r="16"/><text class="tree-text" x="220" y="150">6</text>
+      <circle class="tree-node-c" cx="310" cy="150" r="16"/><text class="tree-text" x="310" y="150">9</text>
+      <circle class="tree-node-c" cx="240" cy="200" r="14"/><text class="tree-text" x="240" y="200">7</text>
+    </svg>
+  </div>
+
+  <p>Πρόσεξε ότι κάθε στοιχείο στο δεξί υποδέντρο του 5 είναι &gt; 5, και κάθε στοιχείο στο αριστερό &lt; 5. Το ίδιο ισχύει για κάθε κόμβο!</p>
+
+  <h3>3.1 Αναζήτηση: <code>in/2</code></h3>
+
+  <p>Αυτή τη φορά εκμεταλλευόμαστε τη διάταξη για να ψάχνουμε <strong>μόνο ένα υποδέντρο</strong>:</p>
+
+  <div class="cb"><code><span class="fn">in</span>(X, <span class="fn">t</span>(_, X, _)).
+<span class="fn">in</span>(X, <span class="fn">t</span>(Left, Root, _)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(Root, X),           <span class="cm">% Root > X → αριστερά</span>
+    <span class="fn">in</span>(X, Left).
+<span class="fn">in</span>(X, <span class="fn">t</span>(_, Root, Right)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Root),           <span class="cm">% X > Root → δεξιά</span>
+    <span class="fn">in</span>(X, Right).</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί είναι O(log n);</div>
+    <p>Σε κάθε βήμα <em>αποκλείουμε το μισό δέντρο</em>. Σε <em>ισορροπημένο</em> BST με n στοιχεία, η αναζήτηση χρειάζεται log₂(n) βήματα. <strong>Προσοχή:</strong> σε ένα δέντρο που είναι "καμωμένο σαν λίστα" (όλα στο ένα πλάι), η αναζήτηση γίνεται πάλι O(n).</p>
+  </div>
+
+  <h3>3.2 Εισαγωγή σε Φύλλο: <code>addleaf/3</code></h3>
+
+  <p>Η απλούστερη μέθοδος εισαγωγής. Κατεβαίνουμε στο δέντρο σύμφωνα με τη διάταξη μέχρι να βρούμε ένα <code>nil</code>, και αντικαθιστούμε το <code>nil</code> με το νέο φύλλο.</p>
+
+  <div class="cb"><code><span class="fn">addleaf</span>(nil, X, <span class="fn">t</span>(nil, X, nil)).      <span class="cm">% στο κενό, φύτεψε φύλλο</span>
+<span class="fn">addleaf</span>(<span class="fn">t</span>(L, X, R), X, <span class="fn">t</span>(L, X, R)).    <span class="cm">% ήδη υπάρχει — μην το ξανά-εισάγεις</span>
+<span class="fn">addleaf</span>(<span class="fn">t</span>(L, Root, R), X, <span class="fn">t</span>(L1, Root, R)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(Root, X),
+    <span class="fn">addleaf</span>(L, X, L1).                <span class="cm">% πήγαινε αριστερά</span>
+<span class="fn">addleaf</span>(<span class="fn">t</span>(L, Root, R), X, <span class="fn">t</span>(L, Root, R1)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Root),
+    <span class="fn">addleaf</span>(R, X, R1).                <span class="cm">% πήγαινε δεξιά</span></code></div>
+
+  <p><strong>Παράδειγμα διαδοχικών εισαγωγών:</strong></p>
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">addleaf</span>(<span class="fn">t</span>(<span class="fn">t</span>(nil,3,nil), 5, <span class="fn">t</span>(nil,8,nil)), 6, D2),
+   <span class="fn">addleaf</span>(D2, 7, D3),
+   <span class="fn">addleaf</span>(D3, 4, D4).</code></div>
+
+  <p>Αυτό παράγει διαδοχικά τα δέντρα D1, D2, D3, D4:</p>
+
+  <div class="compare-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="compare-cell">
+      <strong>D1</strong> (αρχικό)
+      <svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:6px auto">
+        <line class="tree-edge-l" x1="60" y1="20" x2="30" y2="60"/>
+        <line class="tree-edge-l" x1="60" y1="20" x2="90" y2="60"/>
+        <circle class="tree-node-c" cx="60" cy="20" r="14"/><text class="tree-text" x="60" y="20">5</text>
+        <circle class="tree-node-c" cx="30" cy="60" r="14"/><text class="tree-text" x="30" y="60">3</text>
+        <circle class="tree-node-c" cx="90" cy="60" r="14"/><text class="tree-text" x="90" y="60">8</text>
+      </svg>
+    </div>
+    <div class="compare-cell">
+      <strong>D2</strong> (+6)
+      <svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:6px auto">
+        <line class="tree-edge-l" x1="60" y1="20" x2="30" y2="60"/>
+        <line class="tree-edge-l" x1="60" y1="20" x2="90" y2="60"/>
+        <line class="tree-edge-l" x1="90" y1="60" x2="70" y2="100"/>
+        <circle class="tree-node-c" cx="60" cy="20" r="14"/><text class="tree-text" x="60" y="20">5</text>
+        <circle class="tree-node-c" cx="30" cy="60" r="14"/><text class="tree-text" x="30" y="60">3</text>
+        <circle class="tree-node-c" cx="90" cy="60" r="14"/><text class="tree-text" x="90" y="60">8</text>
+        <circle class="tree-node-c" cx="70" cy="100" r="14" style="stroke:var(--green)"/><text class="tree-text" x="70" y="100" style="fill:var(--green)">6</text>
+      </svg>
+    </div>
+    <div class="compare-cell">
+      <strong>D3</strong> (+7)
+      <svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:6px auto">
+        <line class="tree-edge-l" x1="60" y1="15" x2="30" y2="50"/>
+        <line class="tree-edge-l" x1="60" y1="15" x2="90" y2="50"/>
+        <line class="tree-edge-l" x1="90" y1="50" x2="70" y2="80"/>
+        <line class="tree-edge-l" x1="70" y1="80" x2="85" y2="108"/>
+        <circle class="tree-node-c" cx="60" cy="15" r="12"/><text class="tree-text" x="60" y="15">5</text>
+        <circle class="tree-node-c" cx="30" cy="50" r="12"/><text class="tree-text" x="30" y="50">3</text>
+        <circle class="tree-node-c" cx="90" cy="50" r="12"/><text class="tree-text" x="90" y="50">8</text>
+        <circle class="tree-node-c" cx="70" cy="80" r="12"/><text class="tree-text" x="70" y="80">6</text>
+        <circle class="tree-node-c" cx="85" cy="108" r="11" style="stroke:var(--green)"/><text class="tree-text" x="85" y="108" style="fill:var(--green)">7</text>
+      </svg>
+    </div>
+    <div class="compare-cell">
+      <strong>D4</strong> (+4)
+      <svg width="120" height="120" viewBox="0 0 120 120" style="display:block;margin:6px auto">
+        <line class="tree-edge-l" x1="60" y1="15" x2="30" y2="50"/>
+        <line class="tree-edge-l" x1="60" y1="15" x2="90" y2="50"/>
+        <line class="tree-edge-l" x1="30" y1="50" x2="45" y2="80"/>
+        <line class="tree-edge-l" x1="90" y1="50" x2="70" y2="80"/>
+        <line class="tree-edge-l" x1="70" y1="80" x2="85" y2="108"/>
+        <circle class="tree-node-c" cx="60" cy="15" r="12"/><text class="tree-text" x="60" y="15">5</text>
+        <circle class="tree-node-c" cx="30" cy="50" r="12"/><text class="tree-text" x="30" y="50">3</text>
+        <circle class="tree-node-c" cx="90" cy="50" r="12"/><text class="tree-text" x="90" y="50">8</text>
+        <circle class="tree-node-c" cx="45" cy="80" r="11" style="stroke:var(--green)"/><text class="tree-text" x="45" y="80" style="fill:var(--green)">4</text>
+        <circle class="tree-node-c" cx="70" cy="80" r="12"/><text class="tree-text" x="70" y="80">6</text>
+        <circle class="tree-node-c" cx="85" cy="108" r="11"/><text class="tree-text" x="85" y="108">7</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>3.3 Διαγραφή Κόμβου: <code>del/3</code> και <code>delmin/3</code></h3>
+
+  <p>Η διαγραφή είναι πιο δύσκολη γιατί έχουμε <strong>τρεις περιπτώσεις</strong>:</p>
+
+  <ol class="steps">
+    <li><strong>Ο κόμβος προς διαγραφή δεν έχει αριστερό παιδί</strong> → ο δεξιός γίνεται αντικαταστάτης</li>
+    <li><strong>Δεν έχει δεξί παιδί</strong> → ο αριστερός γίνεται αντικαταστάτης</li>
+    <li><strong>Έχει και τα δύο παιδιά</strong> → αντικατέστησέ τον με το <em>ελάχιστο</em> του δεξιού υποδέντρου (αυτό διατηρεί την ιδιότητα BST)</li>
+  </ol>
+
+  <div class="cb"><code><span class="cm">% Περίπτωση 1: ρίζα = X, δεν έχει αριστερό</span>
+<span class="fn">del</span>(<span class="fn">t</span>(nil, X, Right), X, Right).
+
+<span class="cm">% Περίπτωση 2: ρίζα = X, δεν έχει δεξί</span>
+<span class="fn">del</span>(<span class="fn">t</span>(Left, X, nil), X, Left).
+
+<span class="cm">% Περίπτωση 3: ρίζα = X, έχει και τα δύο παιδιά</span>
+<span class="fn">del</span>(<span class="fn">t</span>(Left, X, Right), X, <span class="fn">t</span>(Left, Y, Right1)) <span class="kw">:-</span>
+    <span class="fn">delmin</span>(Right, Y, Right1).   <span class="cm">% πάρε min από δεξιά</span>
+
+<span class="cm">% Περιπτώσεις 4-5: ρίζα ≠ X — κατέβα αριστερά ή δεξιά</span>
+<span class="fn">del</span>(<span class="fn">t</span>(Left, Root, Right), X, <span class="fn">t</span>(Left1, Root, Right)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(Root, X),
+    <span class="fn">del</span>(Left, X, Left1).
+<span class="fn">del</span>(<span class="fn">t</span>(Left, Root, Right), X, <span class="fn">t</span>(Left, Root, Right1)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Root),
+    <span class="fn">del</span>(Right, X, Right1).
+
+<span class="cm">% delmin: βρες & αφαίρεσε το ελάχιστο στοιχείο</span>
+<span class="fn">delmin</span>(<span class="fn">t</span>(nil, Y, Right), Y, Right).
+<span class="fn">delmin</span>(<span class="fn">t</span>(Left, Root, Right), Y, <span class="fn">t</span>(Left1, Root, Right)) <span class="kw">:-</span>
+    <span class="fn">delmin</span>(Left, Y, Left1).      <span class="cm">% πάντα αριστερά μέχρι nil</span></code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί ελάχιστο δεξιού (ή μέγιστο αριστερού);</div>
+    <p>Είναι ο μοναδικός τρόπος να επιλέξεις αντικαταστάτη που να διατηρεί τη διάταξη BST. Το ελάχιστο του δεξιού είναι το <em>αμέσως μεγαλύτερο</em> στοιχείο από αυτό που αφαιρούμε, και έτσι όλα τα στοιχεία στα αριστερά παραμένουν μικρότερα και όλα στα δεξιά (εκτός αυτού) παραμένουν μεγαλύτερα.</p>
+  </div>
+
+  <h3>3.4 Εισαγωγή στη Ρίζα: <code>addroot/3</code></h3>
+
+  <p>Πιο σύνθετη μέθοδος: εισάγει το νέο στοιχείο ως <strong>νέα ρίζα</strong>, αναδιοργανώνοντας το δέντρο. Αυτό είναι χρήσιμο σε περιπτώσεις όπου τα νέα στοιχεία είναι πιθανότερο να ζητηθούν σύντομα (τοπικότητα).</p>
+
+  <div class="cb"><code><span class="fn">addroot</span>(nil, X, <span class="fn">t</span>(nil, X, nil)).
+<span class="fn">addroot</span>(<span class="fn">t</span>(L, Y, R), X, <span class="fn">t</span>(L1, X, <span class="fn">t</span>(L2, Y, R))) <span class="kw">:-</span>
+    <span class="fn">gt</span>(Y, X),
+    <span class="fn">addroot</span>(L, X, <span class="fn">t</span>(L1, X, L2)).
+<span class="fn">addroot</span>(<span class="fn">t</span>(L, Y, R), X, <span class="fn">t</span>(<span class="fn">t</span>(L, Y, R1), X, R2)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Y),
+    <span class="fn">addroot</span>(R, X, <span class="fn">t</span>(R1, X, R2)).</code></div>
+
+  <h3>3.5 Μη-ντετερμινιστική Εισαγωγή: <code>add/3</code></h3>
+
+  <p>Το <code>add/3</code> δεν δεσμεύεται από πού θα μπει το στοιχείο. Συνδυάζει <code>addroot</code> και αναδρομική κατάβαση:</p>
+
+  <div class="cb"><code><span class="fn">add</span>(Tree, X, NewTree) <span class="kw">:-</span>
+    <span class="fn">addroot</span>(Tree, X, NewTree).
+<span class="fn">add</span>(<span class="fn">t</span>(L, Y, R), X, <span class="fn">t</span>(L1, Y, R)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(Y, X),
+    <span class="fn">add</span>(L, X, L1).
+<span class="fn">add</span>(<span class="fn">t</span>(L, Y, R), X, <span class="fn">t</span>(L, Y, R1)) <span class="kw">:-</span>
+    <span class="fn">gt</span>(X, Y),
+    <span class="fn">add</span>(R, X, R1).</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Μη ντετερμινιστικό!</div>
+    <p>Με backtracking, το <code>add</code> μπορεί να επιστρέψει <em>πολλά διαφορετικά</em> δέντρα, όλα τα οποία ικανοποιούν την ιδιότητα BST. Χρήσιμο για άσκηση κατανόησης πολλαπλών λύσεων!</p>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="dictionaries"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                    SECTION 4 · ΓΡΑΦΟΙ                         ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="graphs">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🕸️</div>
+    <h2>4. Γράφοι (Graphs)</h2>
+  </div>
+
+  <p>Ένας γράφος αποτελείται από <strong>κορυφές (vertices/nodes)</strong> και <strong>ακμές (edges)</strong> που τις συνδέουν. Είναι θεμελιώδης δομή για χάρτες, δίκτυα, μηχανισμούς και πολλά CSPs.</p>
+
+  <h3>4.1 Τρόποι Αναπαράστασης</h3>
+
+  <p>Υπάρχουν 3 κύριες αναπαραστάσεις στην Prolog. Ας δούμε τον γράφο με κορυφές {a,b,c,d} και ακμές a-b, b-c, b-d, c-d:</p>
+
+  <div class="compare-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="compare-cell">
+      <strong>1. Σύνολο Γεγονότων</strong>
+      <div class="cb" style="font-size:0.78rem"><code><span class="fn">connected</span>(a, b).
+<span class="fn">connected</span>(b, c).
+<span class="fn">connected</span>(b, d).
+<span class="fn">connected</span>(c, d).</code></div>
+      <p style="font-size:0.82rem;color:var(--muted)">✓ Φυσικό για στατικούς γράφους<br>✗ Δύσκολο να μεταβιβαστεί</p>
+    </div>
+    <div class="compare-cell">
+      <strong>2. Δομή <code>graph/2</code></strong>
+      <div class="cb" style="font-size:0.78rem"><code>G1 = <span class="fn">graph</span>(
+  [a,b,c,d],
+  [<span class="fn">e</span>(a,b), <span class="fn">e</span>(b,d),
+   <span class="fn">e</span>(b,c), <span class="fn">e</span>(c,d)])</code></div>
+      <p style="font-size:0.82rem;color:var(--muted)">✓ Διευκολύνει μεταβίβαση<br>✓ Επιτρέπει συλλογή κόμβων</p>
+    </div>
+    <div class="compare-cell">
+      <strong>3. Λίστες Γειτνίασης</strong>
+      <div class="cb" style="font-size:0.78rem"><code>G1 = [
+  a-&gt;[b],
+  b-&gt;[a,c,d],
+  c-&gt;[b,d],
+  d-&gt;[b,c]
+]</code></div>
+      <p style="font-size:0.82rem;color:var(--muted)">✓ Γρήγορη πρόσβαση γειτόνων</p>
+    </div>
+  </div>
+
+  <p>Για <strong>κατευθυνόμενο γράφο με κόστος</strong> στις ακμές:</p>
+  <div class="cb"><code>G2 = <span class="fn">graph</span>([s, t, u, v],
+            [<span class="fn">e</span>(s, t, 3), <span class="fn">e</span>(t, v, 1), <span class="fn">e</span>(t, u, 5),
+             <span class="fn">e</span>(u, t, 2), <span class="fn">e</span>(v, u, 2)])</code></div>
+
+  <h3>4.2 Εύρεση Μονοπατιού: <code>path/4</code></h3>
+
+  <p>Θέλουμε ένα μονοπάτι από κορυφή <code>A</code> σε κορυφή <code>Z</code>, χωρίς κύκλους.</p>
+
+  <div class="cb"><code><span class="fn">path</span>(A, Z, Graph, Path) <span class="kw">:-</span>
+    <span class="fn">path1</span>(A, [Z], Graph, Path).
+
+<span class="cm">% Σταμάτα όταν φτάσουμε στο A: η λίστα παραγωγής αρχίζει από A</span>
+<span class="fn">path1</span>(A, [A<span class="op">|</span>Path1], _, [A<span class="op">|</span>Path1]) <span class="kw">:-</span>
+    <span class="fn">node</span>(A, Graph).
+<span class="cm">% Διαφορετικά, βρες γείτονα X του τρέχοντος Y, μη επισκεφθέντα</span>
+<span class="fn">path1</span>(A, [Y<span class="op">|</span>Path1], Graph, Path) <span class="kw">:-</span>
+    <span class="fn">adjacent</span>(X, Y, Graph),
+    <span class="kw">not</span> <span class="fn">member</span>(X, Path1),
+    <span class="fn">path1</span>(A, [X, Y<span class="op">|</span>Path1], Graph, Path).
+
+<span class="fn">adjacent</span>(X, Y, <span class="fn">graph</span>(_, Edges)) <span class="kw">:-</span>
+    <span class="fn">member</span>(<span class="fn">e</span>(X, Y), Edges) ; <span class="fn">member</span>(<span class="fn">e</span>(Y, X), Edges).</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Γιατί η λίστα <code>Path1</code> κρατά τα ήδη επισκεφθέντα;</div>
+    <p>Αν δεν την κρατούσαμε, η αναζήτηση θα μπορούσε να μπει σε <strong>άπειρο βρόχο</strong> πηγαίνοντας a→b→a→b→... Ο έλεγχος <code>not member(X, Path1)</code> αποτρέπει αυτή την περιττή επανεπίσκεψη.</p>
+  </div>
+
+  <h3>4.3 Μονοπάτι Hamilton</h3>
+
+  <p>Ένα <strong>μονοπάτι Hamilton</strong> επισκέπτεται κάθε κορυφή <em>ακριβώς μία φορά</em>. Στην Prolog το ορίζουμε ως απλό μονοπάτι που <em>καλύπτει</em> όλες τις κορυφές:</p>
+
+  <div class="cb"><code><span class="fn">hamiltonian</span>(Graph, Path) <span class="kw">:-</span>
+    <span class="fn">path</span>(_, _, Graph, Path),       <span class="cm">% οποιοδήποτε μονοπάτι</span>
+    <span class="fn">covers</span>(Path, Graph).            <span class="cm">% που καλύπτει όλους τους κόμβους</span>
+
+<span class="fn">covers</span>(Path, Graph) <span class="kw">:-</span>
+    <span class="kw">not</span> (<span class="fn">node</span>(N, Graph), <span class="kw">not</span> <span class="fn">member</span>(N, Path)).
+
+<span class="fn">node</span>(N, <span class="fn">graph</span>(Nodes, _)) <span class="kw">:-</span>
+    <span class="fn">member</span>(N, Nodes).</code></div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Διαβάζοντας το <code>covers</code></div>
+    <p>"<em>Δεν υπάρχει</em> κόμβος N που να μην είναι μέλος του Path". Διπλή άρνηση = κάθε κόμβος είναι μέλος. Αυτό είναι το άπειρο της Prolog: ορίζω το θετικό με δύο αρνητικά.</p>
+  </div>
+
+  <h3>4.4 Μονοπάτι με Κόστος: <code>path/5</code></h3>
+
+  <p>Επεκτείνουμε το <code>path/4</code> ώστε να συσσωρεύει το συνολικό κόστος:</p>
+
+  <div class="cb"><code><span class="fn">path</span>(A, Z, Graph, Path, Cost) <span class="kw">:-</span>
+    <span class="fn">path1</span>(A, [Z], 0, Graph, Path, Cost).
+
+<span class="fn">path1</span>(A, [A<span class="op">|</span>Path1], Cost1, _, [A<span class="op">|</span>Path1], Cost1) <span class="kw">:-</span>
+    <span class="fn">node</span>(A, Graph).
+<span class="fn">path1</span>(A, [Y<span class="op">|</span>Path1], Cost1, Graph, Path, Cost) <span class="kw">:-</span>
+    <span class="fn">adjacent</span>(X, Y, CostXY, Graph),
+    <span class="kw">not</span> <span class="fn">member</span>(X, Path1),
+    Cost2 <span class="kw">is</span> Cost1 <span class="op">+</span> CostXY,
+    <span class="fn">path1</span>(A, [X, Y<span class="op">|</span>Path1], Cost2, Graph, Path, Cost).
+
+<span class="fn">adjacent</span>(X, Y, CostXY, <span class="fn">graph</span>(_, Edges)) <span class="kw">:-</span>
+    <span class="fn">member</span>(<span class="fn">e</span>(X, Y, CostXY), Edges) ;
+    <span class="fn">member</span>(<span class="fn">e</span>(Y, X, CostXY), Edges).</code></div>
+
+  <h3>4.5 Συντομότερο/Μακρύτερο Μονοπάτι</h3>
+
+  <p>Με το <code>path/5</code> και χρήση <strong>άρνησης ως αποτυχίας</strong> μπορούμε να βρούμε το συντομότερο μονοπάτι:</p>
+
+  <div class="cb"><code><span class="cm">% Μονοπάτι ελαχίστου κόστους από node1 σε node2</span>
+?<span class="kw">-</span> <span class="fn">path</span>(node1, node2, Graph, MinPath, MinCost),
+   <span class="kw">not</span> (<span class="fn">path</span>(node1, node2, Graph, _, Cost), Cost <span class="op">&lt;</span> MinCost).</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πώς δουλεύει</div>
+    <p>"Δώσε μου ένα μονοπάτι, και βεβαιώσου ότι δεν υπάρχει άλλο με μικρότερο κόστος". Η Prolog θα δοκιμάσει κάθε δυνατό μονοπάτι μέσω backtracking μέχρι να βρει αυτό που ικανοποιεί τη συνθήκη.</p>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πολυπλοκότητα</div>
+    <p>Αυτή η προσέγγιση είναι <span class="cplx cplx-bad">εκθετική</span> γιατί δοκιμάζει όλα τα μονοπάτια. Για πραγματικά προβλήματα χρειάζονται αλγόριθμοι όπως Dijkstra ή A*. Στις εξετάσεις όμως, αυτή η δηλωτική προσέγγιση είναι αρκετή.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="graphs"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 5 · ΔΕΝΤΡΑ ΕΠΙΚΑΛΥΨΗΣ                  ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="stree">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🌐</div>
+    <h2>5. Δέντρα Επικάλυψης (Spanning Trees)</h2>
+  </div>
+
+  <p>Ένα <strong>δέντρο επικάλυψης</strong> ενός συνδεδεμένου γράφου είναι ένας <em>υπογράφος</em> που:</p>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Μνημονικός Κανόνας: Σ.Α.Σ.</div>
+    <ol style="margin:6px 0">
+      <li><strong>Σ</strong>υνεκτικότητα (Connected) — όλοι οι κόμβοι προσβάσιμοι</li>
+      <li><strong>Α</strong>πουσία κύκλων (No cycles) — ακριβώς V-1 ακμές</li>
+      <li><strong>Σ</strong>ύνδεση όλων κορυφών (Covers all vertices)</li>
+    </ol>
+  </div>
+
+  <p>Για γράφο <code>[a-b, b-c, c-d, b-d]</code> υπάρχουν 3 δέντρα επικάλυψης:</p>
+  <div class="cb"><code>SpanningTree = [a-b, b-c, c-d]
+              ή [a-b, b-d, d-c]
+              ή [a-b, b-d, b-c]</code></div>
+
+  <h3>5.1 Μέθοδος 1: Επεκτατική (spread)</h3>
+
+  <p>Ξεκίνα με μια ακμή και προσθέτε μία-μία ακμές που συνδέουν "νέο" κόμβο με υπάρχοντα.</p>
+
+  <div class="cb"><code><span class="fn">stree</span>(Graph, Tree) <span class="kw">:-</span>
+    <span class="fn">member</span>(Edge, Graph),
+    <span class="fn">spread</span>([Edge], Tree, Graph).
+
+<span class="fn">spread</span>(Tree1, Tree, Graph) <span class="kw">:-</span>
+    <span class="fn">addedge</span>(Tree1, Tree2, Graph),
+    <span class="fn">spread</span>(Tree2, Tree, Graph).
+<span class="fn">spread</span>(Tree, Tree, Graph) <span class="kw">:-</span>
+    <span class="kw">not</span> <span class="fn">addedge</span>(Tree, _, Graph).
+
+<span class="fn">addedge</span>(Tree, [A-B<span class="op">|</span>Tree], Graph) <span class="kw">:-</span>
+    <span class="fn">adjacent</span>(A, B, Graph),
+    <span class="fn">node</span>(A, Tree),
+    <span class="kw">not</span> <span class="fn">node</span>(B, Tree).         <span class="cm">% B είναι νέος κόμβος</span>
+
+<span class="fn">adjacent</span>(N1, N2, Graph) <span class="kw">:-</span>
+    <span class="fn">member</span>(N1-N2, Graph) ; <span class="fn">member</span>(N2-N1, Graph).
+
+<span class="fn">node</span>(Node, Graph) <span class="kw">:-</span>
+    <span class="fn">adjacent</span>(Node, _, Graph).</code></div>
+
+  <h3>5.2 Μέθοδος 2: Φιλτράρισμα (subset+tree)</h3>
+
+  <p>Πάρε όλα τα υποσύνολα ακμών, και κράτα όσα είναι δέντρα (συνεκτικά + χωρίς κύκλους) και καλύπτουν τις κορυφές.</p>
+
+  <div class="cb"><code><span class="fn">stree</span>(Graph, Tree) <span class="kw">:-</span>
+    <span class="fn">subset</span>(Graph, Tree),
+    <span class="fn">tree</span>(Tree),
+    <span class="fn">covers</span>(Tree, Graph).
+
+<span class="fn">tree</span>(Tree) <span class="kw">:-</span>
+    <span class="fn">connected</span>(Tree),
+    <span class="kw">not</span> <span class="fn">hascycle</span>(Tree).
+
+<span class="fn">connected</span>(Graph) <span class="kw">:-</span>
+    <span class="kw">not</span> (<span class="fn">node</span>(A, Graph), <span class="fn">node</span>(B, Graph),
+         <span class="kw">not</span> <span class="fn">path</span>(A, B, Graph, _)).
+
+<span class="fn">hascycle</span>(Graph) <span class="kw">:-</span>
+    <span class="fn">adjacent</span>(N1, N2, Graph),
+    <span class="fn">path</span>(N1, N2, Graph, [N1, X, _<span class="op">|</span>_]).  <span class="cm">% μήκος ≥ 3</span></code></div>
+
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <span class="ctag">Μέθοδος 1</span>
+      <strong>Επεκτατική</strong>
+      <p style="font-size:0.85rem">Γενετική — χτίζει σταδιακά. <strong>Πιο αποδοτική</strong> γιατί δεν εξετάζει αδύνατα υποσύνολα.</p>
+    </div>
+    <div class="compare-cell">
+      <span class="ctag">Μέθοδος 2</span>
+      <strong>Φιλτράρισμα</strong>
+      <p style="font-size:0.85rem">Generate-and-test — πιο δηλωτική αλλά αργή για μεγάλους γράφους.</p>
+    </div>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="spanning"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║          SECTION 6 · ΑΝΑΖΗΤΗΣΗ ΣΕ ΧΩΡΟ ΚΑΤΑΣΤΑΣΕΩΝ          ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="statespace">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🎮</div>
+    <h2>6. Αναζήτηση σε Χώρο Καταστάσεων</h2>
+  </div>
+
+  <p>Πολλά προβλήματα Τεχνητής Νοημοσύνης λύνονται με τη μεθοδολογία της <strong>αναζήτησης σε χώρο καταστάσεων (state-space search)</strong>:</p>
+
+  <ol class="steps">
+    <li><strong>Αναπαράσταση κατάστασης</strong> — επιλογή δομής που περιγράφει "πώς μοιάζει ο κόσμος τώρα"</li>
+    <li><strong>Αρχική κατάσταση</strong> — όπου ξεκινάμε</li>
+    <li><strong>Τελική κατάσταση(εις)</strong> — που θέλουμε να φτάσουμε</li>
+    <li><strong>Δυνατές μεταπτώσεις</strong> — πώς πάμε από μια κατάσταση σε άλλη</li>
+    <li><strong>Αποφυγή κύκλων</strong> — λίστα ήδη επισκεφθέντων καταστάσεων</li>
+  </ol>
+
+  <h3>6.1 Γενικό Πλαίσιο DFS</h3>
+
+  <p>Αυτό είναι το <strong>πιο σημαντικό κατηγόρημα του κεφαλαίου</strong> — η Εργασία 1 βασίζεται πάνω σε αυτό:</p>
+
+  <div class="cb"><code><span class="fn">depth_first_search</span>(States) <span class="kw">:-</span>
+    <span class="fn">initial_state</span>(State),
+    <span class="fn">depth_first_search</span>(State, [State], States).
+
+<span class="fn">depth_first_search</span>(State, States, States) <span class="kw">:-</span>
+    <span class="fn">final_state</span>(State).                  <span class="cm">% πέτυχε - φτάσαμε στο τέλος</span>
+<span class="fn">depth_first_search</span>(State1, SoFarStates, States) <span class="kw">:-</span>
+    <span class="fn">move</span>(State1, State2),                  <span class="cm">% κάνε μια κίνηση</span>
+    <span class="kw">not</span> <span class="fn">member</span>(State2, SoFarStates),       <span class="cm">% αν είναι νέα κατάσταση</span>
+    <span class="fn">append</span>(SoFarStates, [State2], NewSoFarStates),
+    <span class="fn">depth_first_search</span>(State2, NewSoFarStates, States).</code></div>
+
+  <div class="line-by-line">
+    <div class="lcode">depth_first_search(States) :-</div>
+    <div class="lexpl">Wrapper που αρχικοποιεί την αναζήτηση από την αρχική κατάσταση.</div>
+    <div class="lcode">    initial_state(State),</div>
+    <div class="lexpl">Διαβάζει την αρχική κατάσταση από κατηγόρημα που <em>ορίζεται από το συγκεκριμένο πρόβλημα</em>.</div>
+    <div class="lcode">depth_first_search(State, States, States) :-</div>
+    <div class="lexpl">Βασική περίπτωση: αν η τρέχουσα κατάσταση είναι η τελική, η διαδρομή <code>SoFarStates</code> είναι η λύση.</div>
+    <div class="lcode">    final_state(State).</div>
+    <div class="lexpl">Έλεγχος ότι φτάσαμε στον στόχο — επίσης ορισμένο ανά πρόβλημα.</div>
+    <div class="lcode">    move(State1, State2),</div>
+    <div class="lexpl">Παίρνει νόμιμη μετάβαση από <code>State1</code> σε νέα κατάσταση <code>State2</code>. Μη ντετερμινιστικό: η Prolog δοκιμάζει όλες τις δυνατές κινήσεις μέσω backtracking.</div>
+    <div class="lcode">    not member(State2, SoFarStates),</div>
+    <div class="lexpl"><strong>Κρίσιμη γραμμή!</strong> Αν δεν την έχουμε, η αναζήτηση θα κολλήσει σε άπειρους κύκλους.</div>
+    <div class="lcode">    append(SoFarStates, [State2], NewSoFarStates),</div>
+    <div class="lexpl">Προσθέτει τη νέα κατάσταση στο τέλος της διαδρομής.</div>
+    <div class="lcode">    depth_first_search(State2, NewSoFarStates, States).</div>
+    <div class="lexpl">Αναδρομική κλήση με την επεκτεταμένη διαδρομή.</div>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Για την Εργασία 1 (puzzle-5)</div>
+    <p>Το <code>puzzle-5</code> είναι ένα 2×3 πλέγμα με 5 πλακάκια. Θα ορίσεις:</p>
+    <ul style="margin:6px 0">
+      <li><code>initial_state/1</code> — η αρχική θέση των πλακιδίων</li>
+      <li><code>final_state/1</code> — η τελική (συνήθως αριθμητική σειρά)</li>
+      <li><code>move/2</code> — κίνηση κενού πάνω/κάτω/αριστερά/δεξιά</li>
+    </ul>
+    <p>Επιπλέον θα υλοποιήσεις <strong>LDFS (περιορισμένο βάθος)</strong> και <strong>IDS (επαναληπτική εμβάθυνση)</strong> — παραλλαγές του παραπάνω σχήματος.</p>
+  </div>
+
+  <h3>6.2 Παράδειγμα 1: Αγρότης-Λύκος-Κατσίκα-Λάχανο</h3>
+
+  <p>Ο αγρότης πρέπει να μεταφέρει λύκο, κατσίκα και λάχανο πέρα από ποτάμι. Η βάρκα χωράει μόνο αυτόν και ένα "είδος". Δεν πρέπει ποτέ να αφεθούν μόνοι ο λύκος με την κατσίκα ή η κατσίκα με το λάχανο.</p>
+
+  <p><strong>Κατάσταση:</strong> <code>fwgc(F, W, G, C)</code> όπου το καθένα είναι <code>l</code> (αριστερά) ή <code>r</code> (δεξιά).</p>
+
+  <div class="cb"><code><span class="fn">initial_state</span>(<span class="fn">fwgc</span>(l, l, l, l)).
+<span class="fn">final_state</span>(<span class="fn">fwgc</span>(r, r, r, r)).
+
+<span class="fn">move</span>(<span class="fn">fwgc</span>(F1, W1, G1, C1), <span class="fn">fwgc</span>(F2, W2, G2, C2)) <span class="kw">:-</span>
+    <span class="fn">opposite</span>(F1, F2),
+    ((W1 <span class="op">=</span> W2, G1 <span class="op">=</span> G2, C1 <span class="op">=</span> C2)         ;  <span class="cm">% αγρότης μόνος</span>
+     (<span class="fn">opposite</span>(W1, W2), G1 <span class="op">=</span> G2, C1 <span class="op">=</span> C2) ;  <span class="cm">% παίρνει λύκο</span>
+     (W1 <span class="op">=</span> W2, <span class="fn">opposite</span>(G1, G2), C1 <span class="op">=</span> C2) ;  <span class="cm">% παίρνει κατσίκα</span>
+     (W1 <span class="op">=</span> W2, G1 <span class="op">=</span> G2, <span class="fn">opposite</span>(C1, C2))),  <span class="cm">% παίρνει λάχανο</span>
+    <span class="kw">not</span> <span class="fn">illegal</span>(<span class="fn">fwgc</span>(F2, W2, G2, C2)).
+
+<span class="fn">illegal</span>(<span class="fn">fwgc</span>(F, W, G, C)) <span class="kw">:-</span>
+    <span class="fn">opposite</span>(F, G),                       <span class="cm">% αγρότης μακριά από κατσίκα</span>
+    (G <span class="op">=</span> W ; G <span class="op">=</span> C).                  <span class="cm">% και κατσίκα μόνη με λύκο ή λάχανο</span>
+
+<span class="fn">opposite</span>(l, r).
+<span class="fn">opposite</span>(r, l).</code></div>
+
+  <h3>6.3 Παράδειγμα 2: Ιεραπόστολοι & Κανίβαλοι</h3>
+
+  <p>3 ιεραπόστολοι και 3 κανίβαλοι πρέπει να διασχίσουν ποτάμι με βάρκα 2 ατόμων. Σε καμία όχθη οι κανίβαλοι δεν πρέπει να ξεπερνούν αριθμητικά τους ιεραπόστολους.</p>
+
+  <p><strong>Κατάσταση:</strong> <code>state(MB, CB, B)</code> όπου MB = ιεραπόστολοι στην όχθη της βάρκας, CB = κανίβαλοι στην ίδια όχθη, B = πλευρά της βάρκας.</p>
+
+  <div class="state-diag">
+    <div class="state-box start">
+      <strong>Αρχικό</strong><br>
+      MMM<br>CCC<br><span class="state-action">[B]│____</span>
+    </div>
+    <span class="state-arrow">→ ... →</span>
+    <div class="state-box goal">
+      <strong>Τελικό</strong><br>
+      ____<br><span class="state-action">│[B]</span><br>MMM<br>CCC
+    </div>
+  </div>
+
+  <div class="cb"><code><span class="fn">plan</span>(Plan) <span class="kw">:-</span>
+    <span class="fn">move</span>(<span class="fn">state</span>(3, 3, left), <span class="fn">state</span>(3, 3, right),
+         [<span class="fn">state</span>(3, 3, left)], Plan).
+
+<span class="fn">move</span>(State, State, Plan, Plan).
+<span class="fn">move</span>(State1, State3, Plan1, Plan3) <span class="kw">:-</span>
+    State1 <span class="op">\=</span> State3,
+    <span class="fn">legal_move</span>(State1, State2),
+    <span class="kw">not</span> <span class="fn">member</span>(State2, Plan1),
+    <span class="fn">append</span>(Plan1, [State2], Plan2),
+    <span class="fn">move</span>(State2, State3, Plan2, Plan3).
+
+<span class="fn">legal_move</span>(<span class="fn">state</span>(MB1, CB1, B1), <span class="fn">state</span>(MB2, CB2, B2)) <span class="kw">:-</span>
+    <span class="fn">opposite</span>(B1, B2),
+    <span class="fn">travel</span>(MT, CT),               <span class="cm">% MT, CT = πόσοι πάνε</span>
+    MT <span class="op">=&lt;</span> MB1,
+    CT <span class="op">=&lt;</span> CB1,
+    MB2 <span class="kw">is</span> 3 <span class="op">-</span> MB1 <span class="op">+</span> MT,
+    CB2 <span class="kw">is</span> 3 <span class="op">-</span> CB1 <span class="op">+</span> CT,
+    ((MB2 <span class="op">=\=</span> 0, MB2 <span class="op">&gt;=</span> CB2) ; MB2 <span class="op">=:=</span> 0),
+    ((MB2 <span class="op">=\=</span> 3, MB2 <span class="op">=&lt;</span> CB2) ; MB2 <span class="op">=:=</span> 3).
+
+<span class="fn">travel</span>(1, 0). <span class="fn">travel</span>(0, 1).
+<span class="fn">travel</span>(2, 0). <span class="fn">travel</span>(1, 1).
+<span class="fn">travel</span>(0, 2).</code></div>
+
+  <h3>6.4 Παράδειγμα 3: Δοχεία Νερού (Water Jugs)</h3>
+
+  <p>Έχουμε δύο κανάτες 8L και 5L (χωρίς ένδειξη). Στόχος: 4L στην πρώτη.</p>
+
+  <p><strong>Κατάσταση:</strong> <code>jugs(V1, V2)</code> με τους τρέχοντες όγκους.</p>
+
+  <div class="cb"><code><span class="fn">initial_state</span>(<span class="fn">jugs</span>(0, 0)).
+<span class="fn">final_state</span>(<span class="fn">jugs</span>(4, 0)).
+
+<span class="fn">move</span>(<span class="fn">jugs</span>(V1, V2), <span class="fn">jugs</span>(W1, W2)) <span class="kw">:-</span>
+    C1 <span class="op">=</span> 8, C2 <span class="op">=</span> 5, L <span class="kw">is</span> V1 <span class="op">+</span> V2,
+    ((V1 <span class="op">&lt;</span> C1, W1 <span class="op">=</span> C1, W2 <span class="op">=</span> V2)         ; <span class="cm">% γέμισμα 1</span>
+     (V2 <span class="op">&lt;</span> C2, W1 <span class="op">=</span> V1, W2 <span class="op">=</span> C2)         ; <span class="cm">% γέμισμα 2</span>
+     (V1 <span class="op">&gt;</span> 0, W1 <span class="op">=</span> 0, W2 <span class="op">=</span> V2)            ; <span class="cm">% άδειασμα 1</span>
+     (V2 <span class="op">&gt;</span> 0, W1 <span class="op">=</span> V1, W2 <span class="op">=</span> 0)            ; <span class="cm">% άδειασμα 2</span>
+     (<span class="fn">minimax</span>(L, C2, W2), W1 <span class="kw">is</span> L <span class="op">-</span> W2) ; <span class="cm">% μετάγγιση 1→2</span>
+     (<span class="fn">minimax</span>(L, C1, W1), W2 <span class="kw">is</span> L <span class="op">-</span> W1)). <span class="cm">% μετάγγιση 2→1</span>
+
+<span class="fn">minimax</span>(X, Y, X) <span class="kw">:-</span> X <span class="op">=&lt;</span> Y.
+<span class="fn">minimax</span>(X, Y, Y) <span class="kw">:-</span> X <span class="op">&gt;</span> Y.</code></div>
+
+  <h3>6.5 Πίθηκος-Μπανάνα (Επανάληψη από Κεφάλαιο 1)</h3>
+
+  <p>Είδαμε το κλασικό αυτό παράδειγμα στο Κεφάλαιο 1. Εδώ απλώς θυμίζουμε ότι ταιριάζει ακριβώς στο πλαίσιο DFS:</p>
+
+  <div class="cb"><code><span class="fn">canget</span>(<span class="fn">state</span>(_, _, _, has)).
+<span class="fn">canget</span>(State1) <span class="kw">:-</span>
+    <span class="fn">move</span>(State1, _, State2),
+    <span class="fn">canget</span>(State2).</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Διαφορά από το γενικό σχήμα</div>
+    <p>Σε αυτή την έκδοση δεν κρατάμε λίστα επισκεφθέντων καταστάσεων! Λειτουργεί επειδή κάθε ενέργεια αλλάζει την κατάσταση μονότονα (κίνηση πιθήκου, σπρώξιμο κιβωτίου, σκαρφάλωμα, αρπαγή) χωρίς πιθανότητα να επιστρέψει σε προηγούμενη κατάσταση. Σε γενικά CSPs <strong>χρειάζεται</strong> ο έλεγχος.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="search"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                 SECTION 7 · ΓΡΙΦΟΙ & CSPs                    ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="csp">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">🧩</div>
+    <h2>7. Λογικοί Γρίφοι & Προβλήματα Ικανοποίησης Περιορισμών</h2>
+  </div>
+
+  <p>Σε CSPs (<em>Constraint Satisfaction Problems</em>) έχουμε <strong>μεταβλητές</strong>, καθεμία με ένα <strong>πεδίο ορισμού</strong> τιμών, και <strong>περιορισμούς</strong> που συνδέουν τιμές. Στόχος: ανάθεση τιμών που ικανοποιεί όλους τους περιορισμούς.</p>
+
+  <h3>7.1 Δύο Στρατηγικές Επίλυσης</h3>
+
+  <div class="compare-grid">
+    <div class="compare-cell bad">
+      <span class="ctag">Αργό</span>
+      <strong>Generate-and-Test</strong>
+      <p style="font-size:0.88rem">Παράγει <em>όλες</em> τις δυνατές αναθέσεις και μετά ελέγχει αν ικανοποιούν τους περιορισμούς. Εκθετικό.</p>
+      <div class="cb" style="font-size:0.78rem;margin-top:8px"><code><span class="fn">go</span>(X, Y) <span class="kw">:-</span>
+    <span class="fn">generate</span>(People),
+    <span class="fn">test</span>(People).</code></div>
+    </div>
+    <div class="compare-cell good">
+      <span class="ctag">Γρήγορο</span>
+      <strong>Constrain-and-Generate</strong>
+      <p style="font-size:0.88rem">Εφαρμόζει τους περιορισμούς <em>πριν</em> και κατά τη διάρκεια της δημιουργίας τιμών. Κλαδεύει το δέντρο αναζήτησης άμεσα.</p>
+      <div class="cb" style="font-size:0.78rem;margin-top:8px"><code><span class="fn">go</span>(X, Y) <span class="kw">:-</span>
+    <span class="fn">test</span>(People),
+    <span class="fn">generate</span>(People).</code></div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Η μαγεία της Prolog</div>
+    <p>Παρατήρησε ότι ο κώδικας είναι σχεδόν ίδιος — μόνο η σειρά αλλάζει! Αυτή είναι η δηλωτική φύση της Prolog: αναδιατάσσοντας στόχους αλλάζουμε δραστικά την αποδοτικότητα χωρίς να αλλάξουμε τη σημασία.</p>
+  </div>
+
+  <h3>7.2 Το Πρόβλημα της Ζέβρας</h3>
+
+  <p>Πέντε άνθρωποι διαφορετικών εθνικοτήτων μένουν σε πέντε συνεχόμενα σπίτια. Καθένας έχει διαφορετικό επάγγελμα, αρέσει διαφορετικό ποτό, και έχει διαφορετικό κατοικίδιο. Τα πέντε σπίτια έχουν διαφορετικά χρώματα.</p>
+
+  <div class="zebra-list">
+    <div class="zebra-clue"><span class="znum">1</span>Ο Άγγλος μένει στο κόκκινο σπίτι.</div>
+    <div class="zebra-clue"><span class="znum">2</span>Ο Ισπανός έχει σκύλο.</div>
+    <div class="zebra-clue"><span class="znum">3</span>Ο Ιαπωνέζος είναι ζωγράφος.</div>
+    <div class="zebra-clue"><span class="znum">4</span>Ο Ιταλός πίνει τσάι.</div>
+    <div class="zebra-clue"><span class="znum">5</span>Ο Νορβηγός μένει στο πρώτο σπίτι.</div>
+    <div class="zebra-clue"><span class="znum">6</span>Το πράσινο σπίτι: καφές.</div>
+    <div class="zebra-clue"><span class="znum">7</span>Πράσινο σπίτι δεξιά από άσπρο.</div>
+    <div class="zebra-clue"><span class="znum">8</span>Ο γλύπτης έχει σαλιγκάρια.</div>
+    <div class="zebra-clue"><span class="znum">9</span>Ο διπλωμάτης ζει στο κίτρινο.</div>
+    <div class="zebra-clue"><span class="znum">10</span>Το μεσαίο σπίτι: γάλα.</div>
+    <div class="zebra-clue"><span class="znum">11</span>Ο Νορβηγός δίπλα σε μπλε.</div>
+    <div class="zebra-clue"><span class="znum">12</span>Ο βιολιστής πίνει χυμό.</div>
+    <div class="zebra-clue"><span class="znum">13</span>Αλεπού δίπλα σε γιατρό.</div>
+    <div class="zebra-clue"><span class="znum">14</span>Άλογο δίπλα σε διπλωμάτη.</div>
+  </div>
+
+  <p><strong>Ερωτήσεις:</strong> Ποιος έχει τη ζέβρα; Ποιος πίνει νερό;</p>
+
+  <h4>Αναπαράσταση:</h4>
+  <p>Κάθε άτομο είναι 6-τάδα: <code>(Nationality, Profession, Animal, Drink, Colour, HouseId)</code>. Η <em>λίστα</em> των πέντε ατόμων είναι ταξινομημένη κατά θέση (1 έως 5).</p>
+
+  <div class="cb"><code><span class="cm">% --- Constrain-and-Generate (πιο γρήγορο) ---</span>
+<span class="fn">go</span>(ZebraOwner, WaterDrinker) <span class="kw">:-</span>
+    <span class="fn">nationalities</span>(People),       <span class="cm">% σκελετός: 5 διαφορετικές</span>
+    <span class="fn">test</span>(People),                <span class="cm">% εφαρμόζει περιορισμούς</span>
+    <span class="fn">generate</span>(People),            <span class="cm">% συμπληρώνει τα πεδία</span>
+    <span class="fn">member</span>((ZebraOwner, _, zebra, _, _, _), People),
+    <span class="fn">member</span>((WaterDrinker, _, _, water, _, _), People).
+
+<span class="fn">nationalities</span>([(english,_,_,_,_,_), (spanish,_,_,_,_,_),
+               (japanese,_,_,_,_,_), (italian,_,_,_,_,_),
+               (norwegian,_,_,_,_,_)]).
+
+<span class="fn">test</span>(P) <span class="kw">:-</span> <span class="fn">rule1</span>(P), <span class="fn">rule2</span>(P), ..., <span class="fn">rule14</span>(P).
+
+<span class="fn">rule1</span>(P) <span class="kw">:-</span> <span class="fn">member</span>((english,_,_,_,red,_), P).
+<span class="fn">rule2</span>(P) <span class="kw">:-</span> <span class="fn">member</span>((spanish,_,dog,_,_,_), P).
+<span class="fn">rule3</span>(P) <span class="kw">:-</span> <span class="fn">member</span>((japanese,painter,_,_,_,_), P).
+<span class="cm">% ... κλπ, όλοι οι κανόνες ως μέλη της λίστας</span>
+<span class="fn">rule5</span>(P) <span class="kw">:-</span> <span class="fn">member</span>((norwegian,_,_,_,_,1), P).
+<span class="fn">rule7</span>(P) <span class="kw">:-</span>
+    <span class="fn">member</span>((_,_,_,_,green,IDG), P),
+    <span class="fn">member</span>((_,_,_,_,white,IDW), P),
+    <span class="fn">rightof</span>(IDG, IDW).
+<span class="fn">rule11</span>(P) <span class="kw">:-</span>
+    <span class="fn">member</span>((norwegian,_,_,_,_,IDN), P),
+    <span class="fn">member</span>((_,_,_,_,blue,IDB), P),
+    <span class="fn">nextto</span>(IDN, IDB).
+
+<span class="fn">nextto</span>(X, Y) <span class="kw">:-</span> <span class="fn">rightof</span>(X, Y) ; <span class="fn">rightof</span>(Y, X).
+<span class="fn">rightof</span>(2,1). <span class="fn">rightof</span>(3,2). <span class="fn">rightof</span>(4,3). <span class="fn">rightof</span>(5,4).</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Generate-and-Test εκδοχή</div>
+    <p>Αν αντιστρέψεις τη σειρά (πρώτα <code>generate</code>, μετά <code>test</code>), η Prolog θα παράγει <strong>όλους τους 5!×5!×5!×5! ≈ 200 εκατομμύρια</strong> συνδυασμούς πριν δοκιμάσει τους περιορισμούς. Πρακτικά: <span class="cplx cplx-bad">ποτέ δεν τελειώνει</span>.</p>
+    <p>Με constrain-and-generate, η λύση βρίσκεται σε <span class="cplx cplx-good">δευτερόλεπτα</span>. Η απάντηση: <code>Z = japanese, W = norwegian</code>.</p>
+  </div>
+
+  <h3>7.3 Το Πρόβλημα των N Βασιλισσών</h3>
+
+  <p>Τοποθέτησε N βασίλισσες σε σκακιέρα N×N ώστε καμία να μην απειλεί άλλη (καμία στην ίδια γραμμή, στήλη ή διαγώνιο).</p>
+
+  <h4>Αναπαράσταση:</h4>
+  <p>Λίστα <code>[Q1, Q2, ..., QN]</code> όπου το Qi είναι η <em>στήλη</em> της βασίλισσας στη γραμμή i. Επειδή μία ανά γραμμή, αυτόματα δεν συγκρούονται οριζόντια. Επειδή θέλουμε μετάθεση του [1..N], δεν συγκρούονται και κάθετα. <strong>Μένει μόνο η διαγώνιος.</strong></p>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Δύο βασίλισσες στις θέσεις (x₁,y₁) και (x₂,y₂) είναι σε διαγώνιο όταν:</div>
+    <ul style="margin:6px 0">
+      <li>x₁ - y₁ = x₂ - y₂ &nbsp;(κύρια διαγώνιος <strong>u</strong>)</li>
+      <li>x₁ + y₁ = x₂ + y₂ &nbsp;(δευτερεύουσα διαγώνιος <strong>v</strong>)</li>
+    </ul>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Απλή έκδοση με permutation + έλεγχο διαγωνίου</span>
+<span class="fn">queens</span>(N, Qs) <span class="kw">:-</span>
+    <span class="fn">numlist</span>(1, N, Ns),
+    <span class="fn">permutation</span>(Ns, Qs),
+    <span class="fn">safe</span>(Qs).
+
+<span class="fn">safe</span>([]).
+<span class="fn">safe</span>([Q<span class="op">|</span>Qs]) <span class="kw">:-</span>
+    <span class="fn">no_attack</span>(Q, Qs, 1),
+    <span class="fn">safe</span>(Qs).
+
+<span class="fn">no_attack</span>(_, [], _).
+<span class="fn">no_attack</span>(Q, [Q1<span class="op">|</span>Qs], D) <span class="kw">:-</span>
+    Q1 <span class="op">-</span> Q <span class="op">=\=</span> D,         <span class="cm">% όχι κάτω-δεξιά διαγώνιος</span>
+    Q <span class="op">-</span> Q1 <span class="op">=\=</span> D,         <span class="cm">% όχι πάνω-δεξιά διαγώνιος</span>
+    D1 <span class="kw">is</span> D <span class="op">+</span> 1,
+    <span class="fn">no_attack</span>(Q, Qs, D1).</code></div>
+
+  <p>Παράδειγμα λύσης 4-βασιλισσών:</p>
+  <div class="queens-board">
+    <div class="queens-row">
+      <div class="queens-cell light"></div>
+      <div class="queens-cell dark queen">♛</div>
+      <div class="queens-cell light"></div>
+      <div class="queens-cell dark"></div>
+    </div>
+    <div class="queens-row">
+      <div class="queens-cell dark"></div>
+      <div class="queens-cell light"></div>
+      <div class="queens-cell dark"></div>
+      <div class="queens-cell light queen">♛</div>
+    </div>
+    <div class="queens-row">
+      <div class="queens-cell light queen">♛</div>
+      <div class="queens-cell dark"></div>
+      <div class="queens-cell light"></div>
+      <div class="queens-cell dark"></div>
+    </div>
+    <div class="queens-row">
+      <div class="queens-cell dark"></div>
+      <div class="queens-cell light"></div>
+      <div class="queens-cell dark queen">♛</div>
+      <div class="queens-cell light"></div>
+    </div>
+  </div>
+
+  <p>Στο Κεφάλαιο 4 θα δούμε πώς λύνεται με <strong>CLP (Constraint Logic Programming)</strong> πιο αποδοτικά.</p>
+
+  <h3>7.4 Πρόβλημα Χρωματισμού Χάρτη</h3>
+
+  <p>Δίνονται χώρες με πληροφορία γειτνίασης. Χρωμάτισε τες με ≤4 χρώματα ώστε γειτονικές χώρες να μην έχουν ίδιο χρώμα.</p>
+
+  <div class="cb"><code><span class="fn">colour</span>(red). <span class="fn">colour</span>(blue). <span class="fn">colour</span>(green). <span class="fn">colour</span>(yellow).
+
+<span class="cm">% Παράδειγμα: BeNeLux χώρες</span>
+<span class="fn">neighbours</span>(belgium, [netherlands, luxembourg, germany, france]).
+<span class="fn">neighbours</span>(netherlands, [belgium, germany]).
+<span class="cm">% ...</span>
+
+<span class="fn">map_colour</span>([], _).
+<span class="fn">map_colour</span>([Country-Colour <span class="op">|</span> Rest], Assigned) <span class="kw">:-</span>
+    <span class="fn">colour</span>(Colour),
+    <span class="fn">neighbours</span>(Country, Ns),
+    <span class="kw">\+</span> (<span class="fn">member</span>(N, Ns), <span class="fn">member</span>(N-Colour, Assigned)),
+    <span class="fn">map_colour</span>(Rest, [Country-Colour<span class="op">|</span>Assigned]).</code></div>
+
+  <div class="note">
+    <div class="hd">📝 Το Θεώρημα των Τεσσάρων Χρωμάτων</div>
+    <p>Αποδείχθηκε μαθηματικά (Appel-Haken, 1976) ότι <strong>κάθε επίπεδος χάρτης</strong> μπορεί να χρωματιστεί με μόνο 4 χρώματα. Πρώτη αξιοσημείωτη μαθηματική απόδειξη που εκτελέστηκε εν μέρει από υπολογιστή.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="trees_graphs_search" data-section="puzzles"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                   SECTION · ΣΥΝΟΨΗ                            ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="summary">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--pdim)">📋</div>
+    <h2>Συνοπτικός Οδηγός Εξετάσεων</h2>
+  </div>
+
+  <h3>Πίνακας Αναφοράς Δομών &amp; Πολυπλοκότητας</h3>
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Δομή/Πρόβλημα</th><th>Κεντρική Ιδέα</th><th>Πολυπλοκότητα</th><th>Συνηθέστερο Λάθος</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Δυαδικό Δέντρο</td><td><code>t(L,X,R)</code> + <code>nil</code></td><td>O(n) αναζήτηση</td><td>Παράλειψη <code>nil</code></td></tr>
+      <tr><td>BST <code>in/2</code></td><td>Πάει αριστερά αν gt(Root,X)</td><td><span class="cplx cplx-good">O(log n)</span></td><td>Μη ισορροπημένο δέντρο</td></tr>
+      <tr><td>BST <code>del</code></td><td>3 περιπτώσεις + delmin</td><td>O(h)</td><td>Λάθος αντικαταστάτης</td></tr>
+      <tr><td>Quicksort</td><td>split + recurse + append</td><td><span class="cplx cplx-good">O(n log n)</span></td><td>Ξεχνάμε pivot στο append</td></tr>
+      <tr><td>path/4</td><td>Λίστα Visited</td><td>O(b<sup>d</sup>)</td><td>Δεν αποφεύγουμε κύκλους</td></tr>
+      <tr><td>Hamiltonian</td><td>path + covers</td><td>NP-complete</td><td>Λάθος ορισμός covers</td></tr>
+      <tr><td>Spanning Tree</td><td>spread (γρήγορο) ή subset+filter</td><td>O(V) ακμές</td><td>Πρόσθεση ακμών που κάνουν κύκλο</td></tr>
+      <tr><td>State-Space Search</td><td>DFS + SoFarStates</td><td>O(b<sup>d</sup>)</td><td>Παράλειψη <code>not member</code></td></tr>
+      <tr><td>N-Queens</td><td>Permutation + έλεγχος διαγωνίων</td><td>~n!</td><td>Έλεγχος μόνο γραμμών/στηλών</td></tr>
+      <tr><td>Zebra puzzle</td><td>constrain-and-generate</td><td>πολύ ποικίλει</td><td>generate-then-test</td></tr>
+    </tbody>
+  </table>
+
+  <h3>💡 Τελικές Συμβουλές για Σωστό Κώδικα</h3>
+  <ol class="steps">
+    <li><strong>Σειρά κανόνων:</strong> Πάντα η περίπτωση βάσης (<code>nil</code>, <code>[]</code>) πρώτη, μετά η αναδρομική. Αλλιώς κίνδυνος άπειρης ανακύκλωσης.</li>
+    <li><strong>Constraints early:</strong> Σε γρίφους, εφάρμοσε τους περιορισμούς ΠΡΙΝ τη γέννηση τιμών. Κλαδεύει εκθετικά.</li>
+    <li><strong>Visited list:</strong> Σε αναζήτηση καταστάσεων, <em>πάντα</em> ελέγχει <code>not member(NewState, Visited)</code>.</li>
+    <li><strong>Πράσινα cuts:</strong> Χρήσιμα για αποδοτικότητα (π.χ. στο <code>swap</code> της bubblesort) αλλά μην αλλάζουν σημασία.</li>
+    <li><strong>Αναπαράσταση κατάστασης:</strong> Διάλεξε αναπαράσταση που να περιγράφει <em>πλήρως</em> τον κόσμο και να επιτρέπει εύκολο έλεγχο τελικής κατάστασης.</li>
+  </ol>
+
+  <div class="exam">
+    <div class="hd">📚 Συνδέσεις με τις Εργασίες</div>
+    <ul style="margin:0">
+      <li><strong>Εργασία 1 (puzzle-5, LDFS, IDS):</strong> Σχήμα DFS του §6.1, με LDFS = depth-limited DFS και IDS = επαναληπτική εμβάθυνση.</li>
+      <li><strong>Εργασία 2 (Hopfield):</strong> Δομές λιστών για πίνακες (Κεφ. 2), αλλά κατασκευή πίνακα ως λίστα λιστών (όπως linearize/2).</li>
+      <li><strong>Εργασία 3 (job-shop):</strong> CSP με <code>findall</code> — η στρατηγική constrain-and-generate είναι κρίσιμη.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 3 · Δέντρα, Γράφοι &amp; Αναζήτηση</div>
+</body>
+</html>

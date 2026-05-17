@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 1 · Εισαγωγή στην Prolog</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--bdim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'?- goal.';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1rem,3vw,2.2rem);
+  color:rgba(88,166,255,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.st{color:var(--orange)}
+.cm{color:var(--dim);font-style:italic}
+.nm{color:var(--purple)}
+.tp{color:var(--cyan)}
+
+.comparison-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+.comparison-table th, .comparison-table td { padding: 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+.comparison-table th { background: var(--surf); color: var(--blue); font-family: 'Syne', sans-serif; }
+
+.trace-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+.trace-table th, .trace-table td { padding: 8px 12px; border: 1px solid var(--border); }
+.trace-table th { background: var(--surf2); color: var(--cyan); }
+.trace-table td.step { color: var(--blue); font-weight: 700; text-align: center; width: 40px; }
+
+.family-tree { background: var(--surf2); padding: 20px; border-radius: 12px; margin: 18px 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+.family-tree pre { color: var(--cyan); line-height: 1.4; }
+
+.example-block { background: var(--surf); border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 8px; margin: 16px 0; }
+.example-block .ex-title { color: var(--blue); font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.deep-dive { background: var(--gdim); border: 1px dashed var(--green); padding: 18px 22px; border-radius: 12px; margin: 20px 0; }
+.deep-dive .dd-title { color: var(--green); font-family: 'Syne', sans-serif; font-weight: 800; margin-bottom: 10px; font-size: 1rem; }
+
+.pitfall { background: var(--rdim); border-left: 4px solid var(--red); padding: 14px 18px; border-radius: 8px; margin: 14px 0; }
+.pitfall .pt-title { color: var(--red); font-weight: 700; font-family: 'Syne', sans-serif; margin-bottom: 6px; }
+
+.exer { background: var(--surf2); border: 1px solid var(--purple); padding: 16px 20px; border-radius: 10px; margin: 16px 0; }
+.exer .exer-num { color: var(--purple); font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+details { background: var(--surf); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+details summary { cursor: pointer; color: var(--cyan); font-weight: 600; font-family: 'Syne', sans-serif; }
+details[open] summary { margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+.q-arrow { color: var(--orange); font-weight: 700; }
+
+.sld-tree { background: var(--surf); padding: 20px; border-radius: 12px; margin: 18px 0; font-family: 'JetBrains Mono', monospace; }
+.sld-tree pre { font-size: 0.82rem; color: var(--txt); line-height: 1.5; white-space: pre; overflow-x: auto; }
+
+.def-list { background: var(--surf2); padding: 16px 20px; border-radius: 10px; border-left: 4px solid var(--yellow); margin: 14px 0; }
+.def-list dt { color: var(--yellow); font-weight: 700; font-family: 'Syne', sans-serif; margin-top: 8px; }
+.def-list dd { margin-left: 16px; margin-top: 4px; color: var(--muted); font-size: 0.95rem; }
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 1</div>
+  <h1>Εισαγωγή στην <em>Prolog</em></h1>
+  <p>Από τη Λογική Πρώτης Τάξης στον δηλωτικό προγραμματισμό — μηχανισμός εκτέλεσης, ενοποίηση, οπισθοδρόμηση και αναδρομή.</p>
+  <div class="chips">
+    <span class="chip">Declarative vs Procedural</span>
+    <span class="chip">Horn Clauses</span>
+    <span class="chip">Unification</span>
+    <span class="chip">Backtracking</span>
+    <span class="chip">AND-OR Trees</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#philosophy">1. Φιλοσοφία</a>
+  <a href="#syntax">2. Αλφάβητο & Σύνταξη</a>
+  <a href="#clauses">3. Γεγονότα & Κανόνες</a>
+  <a href="#family">4. Παράδειγμα Οικογένειας</a>
+  <a href="#recursion">5. Αναδρομή</a>
+  <a href="#structures">6. Σύνθετοι Όροι</a>
+  <a href="#unification">7. Ενοποίηση</a>
+  <a href="#meanings">8. Δηλωτική vs Διαδικαστική</a>
+  <a href="#backtracking">9. Backtracking & AND-OR</a>
+  <a href="#banana">10. Πίθηκος-Μπανάνα</a>
+  <a href="#predorder">11. Ανακατατάξεις (pred1-pred4)</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Καλώς ήρθατε στον κόσμο του <strong>Λογικού Προγραμματισμού</strong>. Όλη σας η εμπειρία ως φοιτητές Πληροφορικής σας έχει μάθει να σκέφτεστε <em>διαδικαστικά</em>: «βάλε το <code>x</code> στη θέση 0, μετά κάνε loop, μετά αύξησε τον δείκτη...». Είστε ο μάγειρας που γράφει συνταγή βήμα-βήμα.</p>
+  <p>Σε αυτό το κεφάλαιο θα αλλάξετε ριζικά παράδειγμα. Στην Prolog θα γίνετε ο <strong>νομοθέτης που γράφει αξιώματα</strong>: περιγράφετε <em>τι ισχύει</em> στον κόσμο και η Prolog αναλαμβάνει μόνη της την αναζήτηση της απάντησης. Η μεταστροφή αυτή είναι αρχικά αμήχανη, αλλά μόλις «κλικάρει» — και θα κλικάρει μέχρι το τέλος του κεφαλαίου — θα δείτε πόσο κομψά μπορούν να εκφραστούν προβλήματα τεχνητής νοημοσύνης, βάσεων γνώσης και συμβολικής επεξεργασίας.</p>
+</section>
+
+<!-- ======================= SECTION 1: PHILOSOPHY ======================= -->
+<section id="philosophy">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🧠</div>
+    <h2>1. Η Φιλοσοφία του Λογικού Προγραμματισμού</h2>
+  </div>
+
+  <p>Το όνομα <strong>Prolog</strong> προέρχεται από το <em>PROgramming in LOGic</em>. Η γλώσσα γεννήθηκε στις αρχές της δεκαετίας του 1970 (Colmerauer, Roussel) ως απάντηση σε ένα ερώτημα: <em>«Μπορούμε να μετατρέψουμε τη μαθηματική λογική σε προγραμματιστική γλώσσα;»</em>. Η απάντηση ήταν ένα ηχηρό «ναι» — και το αποτέλεσμα ήταν μια γλώσσα τόσο διαφορετική από τη C ή την Java που χρειάζεται μια <em>γνωστική μεταστροφή</em> για να την κατανοήσετε πραγματικά.</p>
+
+  <h3>«Τι» εναντίον «Πώς»: Η Καρδιά της Διαφοράς</h3>
+  <div class="grid2">
+    <div class="card">
+      <div class="side-label" style="color:var(--orange)">Procedural (Πώς;)</div>
+      <p style="font-size:0.93rem">Περιγράφεις <strong>βήμα-βήμα</strong> τη διαδικασία. Δηλώνεις μεταβλητές, τροποποιείς καταστάσεις, χρησιμοποιείς loops. Π.χ. στη C, αν θέλεις τη μητέρα κάποιου, γράφεις συνάρτηση που <em>ψάχνει</em> τον πίνακα.</p>
+      <p style="font-size:0.88rem; color:var(--muted); margin-top:8px"><em>«Πρώτα ανοίγω την κατσαρόλα, μετά βάζω 2 κούπες ρύζι, ύστερα 4 κούπες νερό, αναμένω 18 λεπτά…»</em></p>
+    </div>
+    <div class="card">
+      <div class="side-label" style="color:var(--green)">Declarative (Τι;)</div>
+      <p style="font-size:0.93rem">Δηλώνεις <strong>τι είναι αλήθεια</strong>. «Μια μητέρα είναι ο γονέας θηλυκού γένους». Η μηχανή σκέφτεται μόνη της <em>πώς</em> θα φτάσει στην απάντηση μέσω της <strong>ενοποίησης</strong> και της <strong>ανάλυσης</strong>.</p>
+      <p style="font-size:0.88rem; color:var(--muted); margin-top:8px"><em>«Το πιάτο αυτό λέγεται "ρυζόγαλο" όταν περιέχει ρύζι μαγειρεμένο σε γάλα.»</em></p>
+    </div>
+  </div>
+
+  <div class="wbox" style="border-color:var(--blue)">
+    <div class="lbl" style="color:var(--blue)">💡 Μνημονικός Κανόνας</div>
+    <p><strong>Declarative = Definition</strong> (ορίζω <em>τι</em> είναι κάτι)<br>
+    <strong>Procedural = Process</strong> (περιγράφω <em>πώς</em> γίνεται κάτι)</p>
+  </div>
+
+  <h3>Λογικό Υπόβαθρο</h3>
+  <p>Η Prolog εδράζεται στην <strong>Κατηγορηματική Λογική Πρώτης Τάξης</strong> (First-Order Predicate Logic). Συγκεκριμένα, χρησιμοποιεί ένα <em>υποσύνολο</em> της — τις <strong>Προτάσεις Horn</strong> (Horn Clauses) — οι οποίες επεξεργάζονται μέσω δύο θεμελιωδών μηχανισμών:</p>
+  <ul>
+    <li><strong>Αρχή της Ανάλυσης (Resolution Principle):</strong> Επιτρέπει την εξαγωγή συμπερασμάτων από προτάσεις.</li>
+    <li><strong>Ενοποίηση (Unification):</strong> Ο μηχανισμός «ταυτοποίησης» μεταξύ ορίσματος ερώτησης και ορίσματος γεγονότος/κανόνα.</li>
+  </ul>
+  <p style="font-size:0.92rem; color:var(--muted)">Θα τα δούμε αναλυτικά παρακάτω — για τώρα κρατήστε ότι η Prolog <em>είναι λογική σε εκτελέσιμη μορφή</em>.</p>
+
+  <h3>Συγκριτική Μελέτη: Το Κλασικό Παράδειγμα του Σωκράτη</h3>
+  <p>Το διασημότερο επιχείρημα της Δυτικής φιλοσοφίας μετατρέπεται σε τρεις γραμμές Prolog. Παρατηρήστε την ένα-προς-ένα αντιστοιχία:</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Φυσική Γλώσσα</th>
+        <th>Λογική Πρώτης Τάξης (FOL)</th>
+        <th>Σύνταξη Prolog</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>«Κάθε άνθρωπος είναι θνητός»</td>
+        <td>$\forall x \; (man(x) \Rightarrow fallible(x))$</td>
+        <td><code>fallible(X) :- man(X).</code></td>
+      </tr>
+      <tr>
+        <td>«Ο Σωκράτης είναι άνθρωπος»</td>
+        <td>$man(socrates)$</td>
+        <td><code>man(socrates).</code></td>
+      </tr>
+      <tr>
+        <td><strong>Ερώτημα:</strong> «Είναι ο Σωκράτης θνητός;»</td>
+        <td>$\models fallible(socrates)$</td>
+        <td><code>?- fallible(socrates).</code> <span class="q-arrow">→</span> <code>yes</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Βαθιά Ανάλυση: Πώς διαβάζεται το <code>:-</code>;</div>
+    <p>Ο τελεστής <code>:-</code> διαβάζεται ως <strong>«αν» (if)</strong>, αλλά με την αντίστροφη φορά από αυτή που θα περιμένατε από τη FOL. Ενώ στη λογική γράφουμε <em>«αν A, τότε B»</em> (A → B), στην Prolog γράφουμε <strong>B :- A</strong> = <em>«B (αληθεύει), αν A (αληθεύει)»</em>. Η κεφαλή είναι το συμπέρασμα, το σώμα είναι οι προϋποθέσεις.</p>
+    <p>Έτσι το <code>fallible(X) :- man(X).</code> διαβάζεται: <em>«το X είναι θνητό, αν το X είναι άνθρωπος»</em>. Η μεταβλητή <code>X</code> είναι <strong>καθολικά ποσοδεικτωμένη</strong> (universally quantified) — δηλαδή ισχύει για κάθε X.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="intro"></div>
+</section>
+
+<!-- ======================= SECTION 2: SYNTAX ======================= -->
+<section id="syntax">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🔤</div>
+    <h2>2. Το Αλφάβητο και οι Δομικοί Λίθοι (Syntax)</h2>
+  </div>
+
+  <p>Πριν προχωρήσουμε στη σημασιολογία, πρέπει να κατακτήσουμε τη σύνταξη. Η αυστηρή λεκτική ανάλυση της Prolog διακρίνει τα ονόματα σε σταθερές και μεταβλητές <em>μόνο</em> από τον πρώτο χαρακτήρα — και αυτή είναι η Νο1 πηγή λαθών αρχάριων.</p>
+
+  <h3>Το αλφάβητο</h3>
+  <ul>
+    <li>Κεφαλαία γράμματα: <code>A, B, …, Z</code></li>
+    <li>Πεζά γράμματα: <code>a, b, …, z</code></li>
+    <li>Ψηφία: <code>0, 1, …, 9</code></li>
+    <li>Ειδικοί χαρακτήρες: <code>+ - * / &lt; &gt; = : . , &amp; _ ~ …</code></li>
+  </ul>
+
+  <h3>Κατηγοριοποίηση Όρων (Terms)</h3>
+  <p>Κάθε δεδομένο στην Prolog είναι ένας <strong>όρος (term)</strong>. Υπάρχουν τέσσερις κατηγορίες:</p>
+
+  <div class="def-list">
+    <dl>
+      <dt>1. Άτομα (Atoms)</dt>
+      <dd>Συμβολικές σταθερές. Ξεκινούν με πεζό γράμμα και αποτελούνται από γράμματα, ψηφία ή <code>_</code>: <code>anna</code>, <code>x25</code>, <code>nil</code>, <code>alpha_beta_procedure</code>, <code>miss_Jones</code>.</dd>
+      <dd>Επίσης άτομα είναι ειδικοί συμβολισμοί όπως <code>&lt;---&gt;</code>, <code>::=</code>, <code>...</code>.</dd>
+      <dd>Αν θέλουμε άτομο με ειδικούς χαρακτήρες, κενά ή κεφαλαίο αρχικό γράμμα, το περικλείουμε σε <strong>μονά εισαγωγικά</strong>: <code>'Sarah Jones'</code>, <code>'South_America'</code>, <code>','</code>.</dd>
+
+      <dt>2. Αριθμοί (Numbers)</dt>
+      <dd>Ακέραιοι: <code>1</code>, <code>1313</code>, <code>0</code>, <code>-97</code>.</dd>
+      <dd>Πραγματικοί (floats): <code>3.14</code>, <code>-0.0035</code>, <code>100.2</code>.</dd>
+
+      <dt>3. Μεταβλητές (Variables)</dt>
+      <dd>Ξεκινούν με κεφαλαίο γράμμα ή με <code>_</code>: <code>X</code>, <code>Result</code>, <code>Object2</code>, <code>Participant_list</code>, <code>ShoppingList</code>, <code>_x23</code>, <code>_23</code>.</dd>
+      <dd><strong>Σημασία:</strong> Στην Prolog οι μεταβλητές είναι «λογικές», όχι «πληροφορικές»: δεν αλλάζουν τιμή. Είναι ποσοδείκτες — δηλώνουν «κάποιο X τέτοιο ώστε…».</dd>
+
+      <dt>4. Δομές / Σύνθετοι Όροι (Structures)</dt>
+      <dd>Αναλύονται παρακάτω στην ενότητα 6.</dd>
+    </dl>
+  </div>
+
+  <h3>Η Ανώνυμη Μεταβλητή <code>_</code></h3>
+  <p>Όταν χρειαζόμαστε μια μεταβλητή της οποίας <em>η τιμή δεν μας ενδιαφέρει</em>, χρησιμοποιούμε την <strong>underscore</strong>. Είναι ένα από τα χαρακτηριστικότερα στοιχεία της Prolog.</p>
+
+  <div class="example-block">
+    <div class="ex-title">Παράδειγμα: «Έχει παιδί;»</div>
+    <p>Θέλουμε ένα κατηγόρημα που να αληθεύει αν το X έχει παιδί. Δεν μας ενδιαφέρει <em>ποιο</em> είναι το παιδί.</p>
+    <div class="cb"><code><span class="cm">% Μη ιδανικό: η Y «κρέμεται» χωρίς να χρησιμοποιείται</span>
+<span class="fn">hasachild</span>(X) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y).
+
+<span class="cm">% Ιδανικό: η ανώνυμη μεταβλητή σηματοδοτεί ρητά «δεν με νοιάζει»</span>
+<span class="fn">hasachild</span>(X) <span class="kw">:-</span> <span class="fn">parent</span>(X, _).</code></div>
+    <p>Παρομοίως, «υπάρχει γενικά κάποιος που είναι γονέας;»:</p>
+    <div class="cb"><code><span class="fn">somebody_has_child</span> <span class="kw">:-</span> <span class="fn">parent</span>(_, _).</code></div>
+  </div>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Κάθε <code>_</code> είναι ΔΙΑΦΟΡΕΤΙΚΗ Μεταβλητή!</div>
+    <p>Στο <code>parent(_, _)</code> τα δύο <code>_</code> είναι <em>δύο διαφορετικές</em> ανώνυμες μεταβλητές. Αυτό δεν είναι το ίδιο με το <code>parent(X, X)</code>, που θα έβρισκε γονείς που είναι παιδιά του εαυτού τους! Αν θες δύο εμφανίσεις της <em>ίδιας</em> τιμής, δώσε όνομα.</p>
+  </div>
+
+  <p>Το ερώτημα <code>?- parent(X, _).</code> ζητάει <em>όλους όσους είναι γονείς κάποιου</em> — θα επιστρέψει με backtracking κάθε διαφορετική τιμή του πρώτου ορίσματος.</p>
+
+  <h3>Μνημονικός Κανόνας Σύνταξης</h3>
+  <div class="wbox" style="border-color:var(--yellow)">
+    <div class="lbl" style="color:var(--yellow)">💡 Πεζά vs Κεφαλαία</div>
+    <p><strong>Κεφαλαία = Κενά (μεταβλητές)</strong> · Περιμένουν τιμή. <em>Πιθανώς θα εμφανιστούν στο αποτέλεσμα μιας απάντησης.</em><br>
+    <strong>Πεζά = Πραγματικά δεδομένα (άτομα)</strong> · Έχουν ήδη συγκεκριμένη σημασία. <em>Είναι «το όνομα ενός πράγματος».</em></p>
+  </div>
+
+  <div class="example-block">
+    <div class="ex-title">Quick Check: Ποιοι από τους παρακάτω όρους είναι αποδεκτοί;</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-family:'JetBrains Mono', monospace; font-size:0.9rem">
+      <div style="color:var(--green)">✓ <code>Diana</code> (μεταβλητή)</div>
+      <div style="color:var(--green)">✓ <code>diana</code> (άτομο)</div>
+      <div style="color:var(--green)">✓ <code>'Diana'</code> (άτομο με εισαγωγικά)</div>
+      <div style="color:var(--green)">✓ <code>_diana</code> (μεταβλητή με _)</div>
+      <div style="color:var(--green)">✓ <code>'Diana goes south'</code> (άτομο)</div>
+      <div style="color:var(--green)">✓ <code>goes(Diana, south)</code> (δομή)</div>
+      <div style="color:var(--green)">✓ <code>45</code> (αριθμός)</div>
+      <div style="color:var(--red)">✗ <code>5(X, Y)</code> (αριθμός ως functor)</div>
+      <div style="color:var(--red)">✗ <code>+(north, west)</code> εδώ μη αποδεκτό*</div>
+      <div style="color:var(--red)">✗ <code>three(Black(Cats))</code> (μεταβλητή ως functor)</div>
+    </div>
+    <p style="font-size:0.85rem; color:var(--muted); margin-top:10px">* Το <code>+</code> είναι ορισμένος τελεστής αλλά εδώ δεν χρησιμοποιείται με τη συντακτική του ζάχαρη — σε ορισμένα συστήματα θα γίνει δεκτό.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="syntax"></div>
+</section>
+
+<!-- ======================= SECTION 3: CLAUSES ======================= -->
+<section id="clauses">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">📜</div>
+    <h2>3. Προτάσεις: Γεγονότα, Κανόνες και Ερωτήσεις</h2>
+  </div>
+
+  <p>Ένα πρόγραμμα Prolog είναι μια <strong>βάση γνώσης (knowledge base)</strong> από προτάσεις (<em>clauses</em>). Υπάρχουν τρεις τύποι:</p>
+
+  <div class="grid2" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+    <div class="card" style="border-left:4px solid var(--green)">
+      <strong>1. Γεγονότα (Facts)</strong>
+      <p style="font-size:0.9rem">Απόλυτες αλήθειες χωρίς προϋποθέσεις. Είναι αξιωματικά αληθή.</p>
+      <div class="cb" style="font-size:0.85rem"><code><span class="fn">parent</span>(pam, bob).
+<span class="fn">male</span>(tom).</code></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--blue)">
+      <strong>2. Κανόνες (Rules)</strong>
+      <p style="font-size:0.9rem">Συνεπαγωγές της μορφής <code>Κεφαλή :- Σώμα</code>.</p>
+      <div class="cb" style="font-size:0.85rem"><code><span class="fn">mother</span>(X, Y) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y),
+    <span class="fn">female</span>(X).</code></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--orange)">
+      <strong>3. Ερωτήσεις (Queries)</strong>
+      <p style="font-size:0.9rem">Ζητούν απόδειξη. Ξεκινούν με <code>?-</code>.</p>
+      <div class="cb" style="font-size:0.85rem"><code>?- <span class="fn">parent</span>(X, bob).
+   X = pam ;
+   X = tom.</code></div>
+    </div>
+  </div>
+
+  <h3>Σύνδεση Στόχων: AND και OR</h3>
+  <p>Στο σώμα ενός κανόνα (ή σε ένα ερώτημα), συνδυάζουμε υπο-στόχους:</p>
+  <ul>
+    <li><strong><code>,</code> (κόμμα) — Σύζευξη / AND:</strong> Όλοι οι στόχοι πρέπει να αληθεύουν.<br>
+    <code>mother(X,Y) :- parent(X,Y), female(X).</code> = «η X είναι μητέρα του Y <em>αν</em> είναι γονέας του Y <em>και</em> είναι θηλυκό».</li>
+    <li><strong><code>;</code> (άνω-κάτω τελεία) — Διάζευξη / OR:</strong> Αρκεί ένας στόχος να αληθεύει.<br>
+    <code>P :- Q ; R.</code> ισοδυναμεί με τις δύο προτάσεις <code>P :- Q.</code> και <code>P :- R.</code></li>
+  </ul>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Ισοδυναμίες με τη Διάζευξη</div>
+    <p>Επειδή η διάζευξη μπορεί πάντα να «αναλυθεί» σε ξεχωριστές προτάσεις, η ακόλουθη ισοδυναμία ισχύει:</p>
+    <div class="cb"><code><span class="fn">P</span> <span class="kw">:-</span> Q, R.
+<span class="fn">P</span> <span class="kw">:-</span> S, T, U.
+
+       ≡
+
+<span class="fn">P</span> <span class="kw">:-</span> (Q, R) ; (S, T, U).
+<span class="fn">P</span> <span class="kw">:-</span> Q, R ; S, T, U.   <span class="cm">% λόγω προτεραιότητας: «,» δένει πιο σφιχτά από «;»</span></code></div>
+    <p>Στην πράξη, οι περισσότεροι προτιμούν τις ξεχωριστές προτάσεις γιατί είναι πιο ευανάγνωστες.</p>
+  </div>
+
+  <h3>Δηλωτική Σημασία ενός Κανόνα</h3>
+  <p>Δεδομένος κανόνας <code>P :- Q, R.</code>:</p>
+  <ul>
+    <li><strong>Δηλωτικά:</strong> «Το P είναι αληθές <em>αν</em> τα Q και R είναι αληθή.»</li>
+    <li><strong>Δηλωτικά (αντίστροφα):</strong> «Από τα Q και R έπεται το P.»</li>
+    <li><strong>Διαδικαστικά:</strong> «Για να λυθεί το πρόβλημα P, πρώτα πρέπει να λυθεί το υποπρόβλημα Q και μετά το υποπρόβλημα R.»</li>
+    <li><strong>Διαδικαστικά:</strong> «Για να ικανοποιηθεί το P, πρώτα πρέπει να ικανοποιηθεί το Q και μετά το R.»</li>
+  </ul>
+  <p>Αυτές οι δύο όψεις (δηλωτική και διαδικαστική) ζουν παράλληλα σε κάθε πρόγραμμα Prolog και είναι το κεντρικό σημείο όλου του μαθήματος. Θα επανέλθουμε εκτενώς.</p>
+
+  <h3>Μοντελοποίηση Δεδομένων: Δύο Στυλ για τη «Μητέρα»</h3>
+  <p>Υπάρχουν συνήθως πολλοί τρόποι να αναπαραστήσουμε την ίδια γνώση. Δείτε δύο εναλλακτικές για την έννοια <em>«μητέρα»</em>:</p>
+
+  <div class="cb"><code><span class="cm">% Στυλ 1: Ξεχωριστά κατηγορήματα για κάθε ιδιότητα</span>
+<span class="fn">female</span>(pam).
+<span class="fn">female</span>(liz).
+<span class="fn">mother</span>(X, Y) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y), <span class="fn">female</span>(X).
+
+<span class="cm">% Στυλ 2: Ιδιότητα ως όρισμα δομής</span>
+<span class="fn">sex</span>(pam, feminine).
+<span class="fn">sex</span>(tom, masculine).
+<span class="fn">mother</span>(X, Y) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y), <span class="fn">sex</span>(X, feminine).</code></div>
+
+  <p>Και τα δύο στυλ είναι ορθά. Το πρώτο είναι πιο σύντομο· το δεύτερο είναι πιο ευέλικτο αν έχουμε πολλά πιθανά «φύλα» (π.χ. για μοντελοποίηση φυτών). Η <strong>επιλογή της αναπαράστασης</strong> είναι κρίσιμη απόφαση σε κάθε πρόγραμμα Prolog.</p>
+</section>
+
+<!-- ======================= SECTION 4: FAMILY EXAMPLE ======================= -->
+<section id="family">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">👨‍👩‍👧‍👦</div>
+    <h2>4. Το «Hello World» της Prolog: Η Οικογένεια</h2>
+  </div>
+
+  <p>Σε όλο το μάθημα θα συναντήσετε ξανά και ξανά μια συγκεκριμένη οικογένεια. Αξίζει να την απομνημονεύσετε γιατί κάθε νέα έννοια εμφανίζεται σε αυτό το παράδειγμα.</p>
+
+  <div class="tree-vis" style="max-width: 480px; margin: 20px auto;">
+    <svg width="360" height="260" viewBox="0 0 360 260" style="display:block; margin:0 auto">
+      <!-- Generation 1 to 2 Connectors -->
+      <path d="M 100 35 L 100 70 L 150 70 L 150 90" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <path d="M 200 35 L 200 70 L 150 70" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <path d="M 200 35 L 200 50 L 270 50 L 270 90" fill="none" stroke="var(--border)" stroke-width="2"/>
+      
+      <!-- Generation 2 to 3 Connectors -->
+      <path d="M 150 115 L 150 145 L 80 145 L 80 162" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <path d="M 150 115 L 150 145 L 170 145 L 170 162" fill="none" stroke="var(--border)" stroke-width="2"/>
+      
+      <!-- Generation 3 to 4 Connectors -->
+      <path d="M 170 185 L 170 222" fill="none" stroke="var(--border)" stroke-width="2"/>
+      
+      <!-- Generation 1 Nodes -->
+      <circle cx="100" cy="30" r="18" style="fill:var(--pdim); stroke:var(--purple); stroke-width:2"/>
+      <text class="tree-text" x="100" y="30" style="fill:var(--purple); font-weight:bold">pam</text>
+      
+      <circle cx="200" cy="30" r="18" style="fill:var(--bdim); stroke:var(--blue); stroke-width:2"/>
+      <text class="tree-text" x="200" y="30" style="fill:var(--blue); font-weight:bold">tom</text>
+      
+      <!-- Generation 2 Nodes -->
+      <circle cx="150" cy="110" r="18" style="fill:var(--bdim); stroke:var(--blue); stroke-width:2"/>
+      <text class="tree-text" x="150" y="110" style="fill:var(--blue); font-weight:bold">bob</text>
+      
+      <circle cx="270" cy="110" r="18" style="fill:var(--pdim); stroke:var(--purple); stroke-width:2"/>
+      <text class="tree-text" x="270" y="110" style="fill:var(--purple); font-weight:bold">liz</text>
+      
+      <!-- Generation 3 Nodes -->
+      <circle cx="80" cy="180" r="18" style="fill:var(--pdim); stroke:var(--purple); stroke-width:2"/>
+      <text class="tree-text" x="80" y="180" style="fill:var(--purple); font-weight:bold">ann</text>
+      
+      <circle cx="170" cy="180" r="18" style="fill:var(--pdim); stroke:var(--purple); stroke-width:2"/>
+      <text class="tree-text" x="170" y="180" style="fill:var(--purple); font-weight:bold">pat</text>
+      
+      <!-- Generation 4 Nodes -->
+      <circle cx="170" cy="240" r="18" style="fill:var(--bdim); stroke:var(--blue); stroke-width:2"/>
+      <text class="tree-text" x="170" y="240" style="fill:var(--blue); font-weight:bold">jim</text>
+    </svg>
+  </div>
+
+  <div class="cb"><code><span class="fn">parent</span>(pam, bob).
+<span class="fn">parent</span>(tom, bob).
+<span class="fn">parent</span>(tom, liz).
+<span class="fn">parent</span>(bob, ann).
+<span class="fn">parent</span>(bob, pat).
+<span class="fn">parent</span>(pat, jim).</code></div>
+
+  <h3>Παραδείγματα Ερωτήσεων</h3>
+
+  <details open>
+    <summary>Απλές ερωτήσεις: yes/no και instantiations</summary>
+    <div class="cb" style="margin-top:10px"><code>?- <span class="fn">parent</span>(bob, pat).
+   yes
+
+?- <span class="fn">parent</span>(liz, pat).
+   no
+
+?- <span class="fn">parent</span>(tom, ben).
+   no
+
+?- <span class="fn">parent</span>(X, liz).
+   X = tom
+   yes
+
+?- <span class="fn">parent</span>(bob, X).
+   X = ann  <span class="q-arrow">-&gt;</span> ;
+   X = pat
+   yes</code></div>
+    <p style="font-size:0.9rem; color:var(--muted); margin-top:10px">Το <code>-&gt; ;</code> σημαίνει: η Prolog βρήκε μία απάντηση, ο χρήστης πατάει <kbd>;</kbd> για να ζητήσει την επόμενη μέσω <em>backtracking</em>.</p>
+  </details>
+
+  <details>
+    <summary>Όλα τα γεγονότα μέσω backtracking</summary>
+    <div class="cb" style="margin-top:10px"><code>?- <span class="fn">parent</span>(X, Y).
+   X = pam, Y = bob  <span class="q-arrow">-&gt;</span> ;
+   X = tom, Y = bob  <span class="q-arrow">-&gt;</span> ;
+   X = tom, Y = liz  <span class="q-arrow">-&gt;</span> ;
+   X = bob, Y = ann  <span class="q-arrow">-&gt;</span> ;
+   X = bob, Y = pat  <span class="q-arrow">-&gt;</span> ;
+   X = pat, Y = jim
+   yes</code></div>
+    <p style="font-size:0.9rem; color:var(--muted); margin-top:10px">Παρατηρήστε ότι η Prolog επιστρέφει τα γεγονότα <em>με τη σειρά που γράφτηκαν</em>. Αυτή η σειρά είναι σημαντική!</p>
+  </details>
+
+  <details>
+    <summary>Σύνθετες ερωτήσεις: «παππούς» και «γιαγιά»</summary>
+    <div class="cb" style="margin-top:10px"><code><span class="cm">% Ποιος είναι παππούς της pat;</span>
+?- <span class="fn">parent</span>(Y, pat), <span class="fn">parent</span>(X, Y).
+   X = pam, Y = bob  ;
+   X = tom, Y = bob
+   yes
+
+<span class="cm">% Ποιοι είναι παππούς/γιαγιά της jim;</span>
+?- <span class="fn">parent</span>(pam, X), <span class="fn">parent</span>(X, Y), <span class="fn">parent</span>(Y, jim).
+   X = bob, Y = pat
+   yes</code></div>
+    <p style="font-size:0.92rem; margin-top:10px">Κάθε <code>,</code> είναι ένα AND. Η Prolog ψάχνει έναν συνδυασμό X, Y που να ικανοποιεί <em>όλους</em> τους στόχους ταυτόχρονα. Αυτό μοιάζει με ένα <strong>join</strong> σε σχεσιακή βάση δεδομένων.</p>
+  </details>
+
+  <h3>Επέκταση: Φύλο και Παράγωγες Σχέσεις</h3>
+  <div class="cb"><code><span class="fn">female</span>(pam). <span class="fn">female</span>(liz). <span class="fn">female</span>(pat). <span class="fn">female</span>(ann).
+<span class="fn">male</span>(tom).  <span class="fn">male</span>(bob).  <span class="fn">male</span>(jim).
+
+<span class="cm">% Παράγωγες σχέσεις</span>
+<span class="fn">offspring</span>(Y, X) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y).
+<span class="fn">mother</span>(X, Y)    <span class="kw">:-</span> <span class="fn">parent</span>(X, Y), <span class="fn">female</span>(X).
+<span class="fn">grandparent</span>(X, Z) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y), <span class="fn">parent</span>(Y, Z).
+<span class="fn">sister</span>(X, Y)    <span class="kw">:-</span> <span class="fn">parent</span>(Z, X), <span class="fn">parent</span>(Z, Y),
+                       <span class="fn">female</span>(X), <span class="fn">different</span>(X, Y).</code></div>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Παγίδα: Είναι η Ann αδελφή της Pat;</div>
+    <p>Αν γράψετε <code>sister(X,Y) :- parent(Z,X), parent(Z,Y), female(X).</code> <em>χωρίς</em> τον έλεγχο <code>different(X,Y)</code>, τότε η ερώτηση <code>?- sister(ann, ann).</code> θα επιστρέψει <code>yes</code> — η Ann είναι αδερφή του εαυτού της! Λάθος. Πάντα μοντελοποιείτε ρητά όσους περιορισμούς εννοούνται.</p>
+  </div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 1.1</span> Ορίστε τα κατηγορήματα:</p>
+    <ul>
+      <li><code>hasachild(X)</code>: αληθεύει αν το X έχει τουλάχιστον ένα παιδί.</li>
+      <li><code>aunt(X, Y)</code>: αληθεύει αν η X είναι θεία του Y.</li>
+      <li><code>grandchild(X, Y)</code>: αληθεύει αν το X είναι εγγόνι του Y.</li>
+    </ul>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="clauses"></div>
+</section>
+
+<!-- ======================= SECTION 5: RECURSION ======================= -->
+<section id="recursion">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🔄</div>
+    <h2>5. Η Δύναμη της Αναδρομής (Recursion)</h2>
+  </div>
+
+  <p>Η Prolog δεν έχει <code>for</code>, ούτε <code>while</code>, ούτε <code>goto</code>. Πώς λοιπόν εκτελούμε επαναλήψεις; <strong>Με αναδρομή</strong>. Η ικανότητα να σκέφτεστε αναδρομικά είναι ίσως η σημαντικότερη δεξιότητα που θα αναπτύξετε σε αυτό το μάθημα.</p>
+
+  <h3>Η Δομή κάθε Αναδρομικού Κανόνα</h3>
+  <div class="grid2">
+    <div class="card" style="border-left: 4px solid var(--green)">
+      <strong>1. Βάση (Base Case)</strong>
+      <p style="font-size:0.92rem">Η απλούστερη περίπτωση τερματισμού. <em>Χωρίς αυτήν, ο κανόνας θα έτρεχε ατέρμονα.</em></p>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--blue)">
+      <strong>2. Αναδρομική Περίπτωση (Recursive Step)</strong>
+      <p style="font-size:0.92rem">Ορίζει τη σχέση μέσω κλήσης του εαυτού της σε «μικρότερο» πρόβλημα.</p>
+    </div>
+  </div>
+
+  <h3>Μελέτη Περίπτωσης: <code>predecessor(X, Z)</code></h3>
+  <p>Ο <em>πρόγονος</em> ορίζεται ως: το X είναι πρόγονος του Z αν είναι γονέας του, ή γονέας ενός προγόνου του. Η σταδιακή εξέλιξη του ορισμού:</p>
+
+  <div class="cb"><code><span class="cm">% Έκδοση (1): Άμεσος γονέας — δουλεύει μόνο για 1 επίπεδο</span>
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).
+
+<span class="cm">% Έκδοση (2): Παππούς-γιαγιά — δουλεύει για ακριβώς 2 επίπεδα</span>
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y), <span class="fn">parent</span>(Y, Z).
+
+<span class="cm">% Έκδοση (3): Προπάππος — 3 επίπεδα</span>
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y1), <span class="fn">parent</span>(Y1, Y2), <span class="fn">parent</span>(Y2, Z).</code></div>
+
+  <p>Συνεχίζοντας έτσι θα γράφαμε άπειρες προτάσεις. Η <strong>αναδρομή</strong> συμπυκνώνει όλες σε δύο γραμμές:</p>
+
+  <div class="cb"><code><span class="cm">% Η αναδρομική, γενική έκδοση</span>
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).                  <span class="cm">% Βάση: άμεσος γονέας</span>
+
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y),
+    <span class="fn">predecessor</span>(Y, Z).            <span class="cm">% Αναδρομή: το X είναι γονέας κάποιου Y που είναι πρόγονος του Z</span></code></div>
+
+  <h3>Step-by-Step Trace: Είναι ο Tom πρόγονος της Pat;</h3>
+  <p>Ας παρακολουθήσουμε την Prolog να αποδεικνύει το <code>?- predecessor(tom, pat).</code></p>
+
+  <table class="trace-table">
+    <thead>
+      <tr><th>Βήμα</th><th>Στόχος που εξετάζεται</th><th>Αποτέλεσμα</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="step">1</td><td><code>predecessor(tom, pat)</code></td><td>Δοκιμάζει 1η πρόταση: <code>parent(tom, pat)?</code> <span style="color:var(--red)">FAIL</span></td></tr>
+      <tr><td class="step">2</td><td>Δοκιμάζει 2η πρόταση. Πρώτος στόχος: <code>parent(tom, Y)</code></td><td>Ταιριάζει με <code>parent(tom, bob)</code>. <strong>Y = bob</strong></td></tr>
+      <tr><td class="step">3</td><td>Δεύτερος στόχος: <code>predecessor(bob, pat)</code></td><td>Αναδρομική κλήση</td></tr>
+      <tr><td class="step">4</td><td>Στην αναδρομή: <code>parent(bob, pat)?</code></td><td><span style="color:var(--green)">SUCCESS</span> — γεγονός υπάρχει</td></tr>
+      <tr><td class="step">5</td><td>Άρα <code>predecessor(bob, pat)</code> ισχύει</td><td>Επιστρέφει στο επίπεδο 3</td></tr>
+      <tr><td class="step">6</td><td>Άρα <code>predecessor(tom, pat)</code> ισχύει</td><td><span style="color:var(--green)">yes</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Οπτικοποίηση: Δέντρο Ανάλυσης (Resolution Tree)</h3>
+  <div class="sld-tree">
+<pre style="color:var(--cyan)">                  predecessor(tom, pat)
+                  /                    \
+        parent(tom, pat)         parent(tom, Y)
+              |                  predecessor(Y, pat)
+            (no)                       |
+                                   Y = bob
+                                       |
+                            predecessor(bob, pat)
+                                       |
+                              parent(bob, pat)
+                                       |
+                                     (yes)</pre>
+  </div>
+
+  <div class="wbox" style="border-color:var(--orange)">
+    <div class="lbl" style="color:var(--orange)">💡 Χρυσός Κανόνας</div>
+    <p><strong>«Base case first, recursive case last»</strong> — Η σειρά των προτάσεων στην Prolog είναι κρίσιμη. Αν βάλετε πρώτη την αναδρομική περίπτωση και η αναδρομή χρησιμοποιεί την ίδια μεταβλητή στα ίδια ορίσματα, κινδυνεύετε με <strong>αριστερή αναδρομή</strong> και ατέρμονα βρόχο. Θα το δούμε αναλυτικά στην Ενότητα 11.</p>
+  </div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 1.2</span> Δοκιμάστε το ερώτημα <code>?- predecessor(pam, X).</code> Πόσες λύσεις πρέπει να επιστρέψει και ποιες;</p>
+    <details>
+      <summary>Λύση</summary>
+      <p>Από τη pam: παιδί της είναι ο bob, εγγόνια ann, pat, δισέγγονος jim.</p>
+      <div class="cb"><code>X = bob  -&gt; ;
+X = ann  -&gt; ;
+X = pat  -&gt; ;
+X = jim
+yes</code></div>
+    </details>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="recursion"></div>
+</section>
+
+<!-- ======================= SECTION 6: STRUCTURES ======================= -->
+<section id="structures">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🧱</div>
+    <h2>6. Σύνθετοι Όροι (Structures)</h2>
+  </div>
+
+  <p>Μέχρι τώρα τα ορίσματα ήταν άτομα ή μεταβλητές. Στην πραγματικότητα όμως μπορούμε να φτιάξουμε <strong>όρους-δέντρα</strong>, ομαδοποιώντας πληροφορία. Αυτό είναι το «σύστημα τύπων» της Prolog.</p>
+
+  <h3>Δομή ενός Σύνθετου Όρου</h3>
+  <p>Κάθε σύνθετος όρος έχει τα εξής χαρακτηριστικά:</p>
+  <div class="def-list">
+    <dl>
+      <dt>Functor (συναρτησιακό σύμβολο)</dt>
+      <dd>Το «όνομα» της δομής (π.χ. <code>date</code>, <code>point</code>, <code>seg</code>).</dd>
+      <dt>Arguments (ορίσματα)</dt>
+      <dd>Τα στοιχεία που συγκεντρώνει (μπορεί να είναι όροι κι αυτά — αναδρομικά).</dd>
+      <dt>Arity (βαθμός)</dt>
+      <dd>Ο αριθμός των ορισμάτων. Συμβολίζεται <code>όνομα/βαθμός</code>: π.χ. <code>date/3</code>.</dd>
+    </dl>
+  </div>
+
+  <div class="example-block">
+    <div class="ex-title">Παράδειγμα: <code>date(1, may, 1983)</code></div>
+    <p>Functor: <code>date</code> · Arity: 3 · Arguments: <code>1</code>, <code>may</code>, <code>1983</code></p>
+    <p>Δεντρική παράσταση:</p>
+    <div class="tree-vis" style="max-width: 320px; margin: 20px auto;">
+      <svg width="280" height="140" viewBox="0 0 280 140" style="display:block; margin:0 auto">
+        <line class="tree-edge-l" x1="140" y1="30" x2="60" y2="100"/>
+        <line class="tree-edge-l" x1="140" y1="30" x2="140" y2="100"/>
+        <line class="tree-edge-l" x1="140" y1="30" x2="220" y2="100"/>
+        
+        <rect x="90" y="10" width="100" height="32" rx="6" style="fill:var(--surf); stroke:var(--yellow); stroke-width:2"/>
+        <text class="tree-text root-t" x="140" y="26" style="font-weight:bold">date/3</text>
+        
+        <circle class="tree-node-c" cx="60" cy="100" r="18"/>
+        <text class="tree-text" x="60" y="100">1</text>
+        
+        <circle class="tree-node-c" cx="140" cy="100" r="18"/>
+        <text class="tree-text" x="140" y="100">may</text>
+        
+        <circle class="tree-node-c" cx="220" cy="100" r="18"/>
+        <text class="tree-text" x="220" y="100">1983</text>
+      </svg>
+    </div>
+  </div>
+
+  <p>Η δύναμη: τα ορίσματα μπορούν να είναι κι αυτά σύνθετα. Έτσι φτιάχνουμε αυθαίρετα βαθιές δομές.</p>
+
+  <h3>Γεωμετρικές Δομές: Σημεία, Ευθύγραμμα Τμήματα, Τρίγωνα</h3>
+  <div class="cb"><code><span class="cm">% Σημείο στο επίπεδο</span>
+P1 = <span class="fn">point</span>(1, 1).
+P2 = <span class="fn">point</span>(2, 3).
+
+<span class="cm">% Ευθύγραμμο τμήμα ως δομή που περιέχει 2 σημεία</span>
+S  = <span class="fn">seg</span>(P1, P2) = <span class="fn">seg</span>(<span class="fn">point</span>(1,1), <span class="fn">point</span>(2,3)).
+
+<span class="cm">% Τρίγωνο ως δομή που περιέχει 3 σημεία</span>
+T  = <span class="fn">triangle</span>(<span class="fn">point</span>(4,2), <span class="fn">point</span>(6,4), <span class="fn">point</span>(7,1)).
+
+<span class="cm">% 3D σημείο: είτε διαφορετικό όνομα είτε διαφορετική arity</span>
+<span class="fn">point3</span>(X, Y, Z)   <span class="cm">% αυστηρά 3D</span>
+<span class="fn">point</span>(X, Y, Z)    <span class="cm">% point/3 — διαφορετικό από point/2</span></code></div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Functor + Arity: Η «Ταυτότητα» ενός Κατηγορήματος</div>
+    <p>Στην Prolog, τα <code>point(X,Y)</code> και <code>point(X,Y,Z)</code> είναι <strong>εντελώς διαφορετικά</strong> κατηγορήματα παρά το κοινό όνομα. Η ταυτότητα δίνεται από το ζεύγος <em>όνομα/arity</em>. Αυτό λέγεται <strong>arity overloading</strong> και είναι θεμιτό — το <code>parent/1</code> (έχει παιδί) και το <code>parent/2</code> (γονέας του) μπορούν να συνυπάρξουν.</p>
+  </div>
+
+  <h3>Άλλο παράδειγμα: Ηλεκτρικά Κυκλώματα</h3>
+  <p>Μπορούμε να μοντελοποιήσουμε ένα κύκλωμα αντιστάσεων ως δέντρο σύνδεσης σε σειρά/παράλληλα:</p>
+  <div class="cb"><code><span class="fn">seq</span>(r1, r2)              <span class="cm">% r1 σε σειρά με r2</span>
+<span class="fn">par</span>(r1, r2)              <span class="cm">% r1 παράλληλα με r2</span>
+<span class="fn">par</span>(r1, <span class="fn">par</span>(r2, r3))    <span class="cm">% r1 παράλληλα με (r2 παράλληλα με r3)</span>
+<span class="fn">par</span>(r1, <span class="fn">seq</span>(<span class="fn">par</span>(r2, r3), r4))   <span class="cm">% σύνθετο</span></code></code></div>
+
+  <h3>Αριθμητικές Εκφράσεις ως Όροι</h3>
+  <p>Στην Prolog, ακόμα και το <code>(a+b)*(c-5)</code> είναι ένας <em>όρος</em>! Δεν υπολογίζεται αυτόματα — είναι απλώς δομή που μπορεί να αναπαρασταθεί ως δέντρο:</p>
+  <div class="cb"><code>(a + b) * (c - 5)  ≡  <span class="fn">*</span>(+(a, b), -(c, 5))</code></div>
+  <p>Αυτό θα παίξει κρίσιμο ρόλο όταν δούμε τους <strong>τελεστές</strong> και την <strong>αριθμητική αξιολόγηση</strong> στο Κεφάλαιο 2.</p>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 1.3</span> Έστω ένα τετράπλευρο παριστάνεται από τη δομή <code>four_points(P1, P2, P3, P4)</code>, όπου τα Pi είναι οι κορυφές με τη σειρά. Πώς πρέπει να οριστεί η σχέση <code>regular_rectangle(R)</code> έτσι ώστε να αληθεύει όταν το R είναι ορθογώνιο παραλληλόγραμμο με τις πλευρές κατακόρυφες και οριζόντιες;</p>
+    <details>
+      <summary>Λύση (υπόδειξη)</summary>
+      <p>Πρέπει να ενοποιήσουμε κατάλληλα τις συντεταγμένες ώστε P1, P2 να έχουν ίδιο y (οριζόντια πλευρά), P2, P3 ίδιο x, κτλ.:</p>
+      <div class="cb"><code><span class="fn">regular_rectangle</span>(<span class="fn">four_points</span>(
+    <span class="fn">point</span>(X1, Y1),
+    <span class="fn">point</span>(X2, Y1),  <span class="cm">% ίδιο y με P1</span>
+    <span class="fn">point</span>(X2, Y2),  <span class="cm">% ίδιο x με P2</span>
+    <span class="fn">point</span>(X1, Y2)   <span class="cm">% ίδιο x με P1, ίδιο y με P3</span>
+)).</code></div>
+      <p>Με μόνο την ενοποίηση εκφράζουμε γεωμετρικούς περιορισμούς!</p>
+    </details>
+  </div>
+</section>
+
+<!-- ======================= SECTION 7: UNIFICATION ======================= -->
+<section id="unification">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🧩</div>
+    <h2>7. Ενοποίηση (Unification) — Ο Κινητήρας της Prolog</h2>
+  </div>
+
+  <p>Αν ο πυρήνας της Prolog ήταν ένας κινητήρας αυτοκινήτου, η <strong>ενοποίηση</strong> θα ήταν τα έμβολά του. Κάθε φορά που η Prolog δοκιμάζει να ικανοποιήσει ένα στόχο, εκτελεί ενοποίηση μεταξύ του στόχου και της κεφαλής μιας πρότασης. Όλο το «μαγικό» pattern matching που βλέπετε γίνεται μέσα από αυτόν τον μηχανισμό.</p>
+
+  <h3>Τι Σημαίνει «Ενοποίηση»</h3>
+  <p>Δύο όροι <strong>ενοποιούνται</strong> αν υπάρχει ανάθεση τιμών στις μεταβλητές τους που τους κάνει συντακτικά ίδιους.</p>
+
+  <h3>Οι Τρεις Κανόνες της Ενοποίησης</h3>
+  <div class="def-list">
+    <dl>
+      <dt>Κανόνας 1: Δύο σταθερές (άτομα ή αριθμοί)</dt>
+      <dd>Ενοποιούνται <strong>μόνο αν είναι ίδιες</strong>. Π.χ. <code>tom = tom</code> ✓ · <code>tom = jerry</code> ✗ · <code>1 = 1</code> ✓.</dd>
+
+      <dt>Κανόνας 2: Μια μεταβλητή με οτιδήποτε</dt>
+      <dd>Μια ελεύθερη μεταβλητή ενοποιείται με <em>οποιονδήποτε</em> όρο και παίρνει ως τιμή της αυτόν τον όρο (<strong>instantiation</strong>). Π.χ. <code>X = pam</code> → <code>X</code> γίνεται <code>pam</code>.</dd>
+
+      <dt>Κανόνας 3: Δύο σύνθετοι όροι</dt>
+      <dd>Ενοποιούνται <strong>αν και μόνο αν</strong>:
+        <ol style="margin-top:6px">
+          <li>Έχουν τον <em>ίδιο functor</em>, και</li>
+          <li>Έχουν την <em>ίδια arity</em>, και</li>
+          <li>Τα αντίστοιχα ορίσματά τους ενοποιούνται όλα ένα προς ένα (αναδρομικά).</li>
+        </ol>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="example-block">
+    <div class="ex-title">Πλήρες παράδειγμα ενοποίησης</div>
+    <p>Ερώτημα: <code>?- triangle(point(1,1), A, point(2,3)) = triangle(X, point(4,Y), point(2,Z)).</code></p>
+    <p>Βήματα:</p>
+    <ol>
+      <li>Ίδια functors (<code>triangle</code>), ίδια arity (3) ✓</li>
+      <li>1ο όρισμα: <code>point(1,1) = X</code> → <code>X = point(1,1)</code></li>
+      <li>2ο όρισμα: <code>A = point(4,Y)</code> → <code>A = point(4,_0090)</code> (όπου <code>_0090</code> είναι εσωτερική ανώνυμη), <code>Y = _0090</code></li>
+      <li>3ο όρισμα: <code>point(2,3) = point(2,Z)</code> → <code>Z = 3</code></li>
+    </ol>
+    <p>Αποτέλεσμα:</p>
+    <div class="cb"><code>X = point(1, 1)
+A = point(4, _0090)
+Y = _0090
+Z = 3
+yes</code></div>
+    <p style="font-size:0.9rem; color:var(--muted)">Παρατηρήστε ότι το <code>Y</code> δεν πήρε συγκεκριμένη τιμή — απλώς συνδέθηκε με την «κενή» μεταβλητή της δομής A.</p>
+  </div>
+
+  <h3>Γενικότερη vs Λιγότερο Γενική Ενοποίηση (MGU)</h3>
+  <p>Σε πολλές περιπτώσεις, υπάρχουν πολλές ενοποιήσεις που λειτουργούν. Η Prolog πάντοτε επιλέγει την <strong>γενικότερη</strong> — αυτή που θέτει τους λιγότερους περιορισμούς. Αυτό λέγεται <strong>Most General Unifier (mgu)</strong>.</p>
+
+  <div class="example-block">
+    <div class="ex-title">Ερώτημα: <code>?- date(D, M, 1983) = date(D1, may, Y1).</code></div>
+    <table class="comparison-table">
+      <tr>
+        <th>Γενικότερη Ενοποίηση (mgu — αυτή που χρησιμοποιεί η Prolog)</th>
+        <th>Λιγότερο Γενική (παράδειγμα)</th>
+      </tr>
+      <tr>
+        <td><code>D = _0084<br>D1 = _0084<br>M = may<br>Y1 = 1983</code><br><em>Τα D και D1 ταυτίζονται αλλά παραμένουν ελεύθερα</em></td>
+        <td><code>D = 1<br>D1 = 1<br>M = may<br>Y1 = 1983</code><br><em>Επιπλέον αυθαίρετοι περιορισμοί (πχ D=1)</em></td>
+      </tr>
+    </table>
+    <p>Η Prolog δεν θα «μαντέψει» ότι <code>D=1</code>. Θα δεσμεύσει τις μεταβλητές μόνο όσο χρειάζεται.</p>
+  </div>
+
+  <h3>Πρακτική Εφαρμογή: Κάθετα/Οριζόντια Τμήματα</h3>
+  <p>Με μόνο την ενοποίηση μπορούμε να ορίσουμε γεωμετρικές ιδιότητες:</p>
+  <div class="cb"><code><span class="fn">vertical</span>(<span class="fn">seg</span>(<span class="fn">point</span>(X, Y), <span class="fn">point</span>(X, Y1))).
+<span class="fn">horizontal</span>(<span class="fn">seg</span>(<span class="fn">point</span>(X, Y), <span class="fn">point</span>(X1, Y))).
+
+?- <span class="fn">vertical</span>(<span class="fn">seg</span>(<span class="fn">point</span>(1, 1), <span class="fn">point</span>(1, 2))).
+   yes
+
+?- <span class="fn">vertical</span>(<span class="fn">seg</span>(<span class="fn">point</span>(1, 1), <span class="fn">point</span>(2, Y))).
+   no    <span class="cm">% Τα X=1 και X=2 δεν ενοποιούνται</span>
+
+?- <span class="fn">horizontal</span>(<span class="fn">seg</span>(<span class="fn">point</span>(1, 1), <span class="fn">point</span>(2, Y))).
+   Y = 1
+   yes   <span class="cm">% Η Prolog «βρήκε» ότι Y πρέπει να είναι 1</span>
+
+?- <span class="fn">vertical</span>(<span class="fn">seg</span>(<span class="fn">point</span>(2, 3), P)).
+   P = <span class="fn">point</span>(2, _0082)
+   yes   <span class="cm">% Η Prolog «κατασκευάζει» απάντηση</span>
+
+?- <span class="fn">vertical</span>(S), <span class="fn">horizontal</span>(S).
+   S = <span class="fn">seg</span>(<span class="fn">point</span>(_0084, _0085), <span class="fn">point</span>(_0084, _0085))
+   yes   <span class="cm">% Ένα κάθετο ΚΑΙ οριζόντιο τμήμα — έχει μήκος 0!</span></code></div>
+
+  <div class="wbox" style="border-color:var(--cyan)">
+    <div class="lbl" style="color:var(--cyan)">🔥 Επίδειξη Δύναμης</div>
+    <p>Παρατηρήστε τη μαγεία στο τελευταίο ερώτημα: η Prolog συμπέρανε από μόνη της ότι το μόνο τμήμα που είναι ταυτόχρονα κάθετο και οριζόντιο είναι ένα τμήμα μηδενικού μήκους (X=X και Y=Y). Όλο αυτό προέκυψε <em>καθαρά από ενοποίηση</em> — καμία αριθμητική, κανένα <code>if</code>.</p>
+  </div>
+
+  <h3>Ταίριασμα (Matching) vs Ενοποίηση</h3>
+  <p>Σε ορισμένες υλοποιήσεις (π.χ. WAM-based) η <strong>ενοποίηση</strong> διακρίνεται από το απλούστερο <strong>ταίριασμα (matching)</strong>: το matching επιτρέπει τη δέσμευση μόνο των μεταβλητών της μιας πλευράς. Η πλήρης ενοποίηση κάνει δέσμευση και στις δύο πλευρές.</p>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Πρόβλημα του Occurs Check</div>
+    <p>Στο ερώτημα <code>?- X = f(X).</code> τι πρέπει να γίνει; Λογικά, καμία πεπερασμένη τιμή του X δεν λύνει την εξίσωση — θα ήταν μια άπειρη δομή <code>f(f(f(f(...))))</code>. Η αυστηρή ενοποίηση πρέπει να κάνει <em>occurs check</em> και να αποτύχει.</p>
+    <p>Παρόλα αυτά, οι περισσότερες πρακτικές υλοποιήσεις Prolog <strong>παραλείπουν</strong> τον έλεγχο αυτόν για λόγους απόδοσης, και έτσι δημιουργούν την άπειρη δομή σιωπηλά. Αυτό είναι παγίδα για αρχάριους!</p>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="unification"></div>
+</section>
+
+<!-- ======================= SECTION 8: MEANINGS ======================= -->
+<section id="meanings">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">⚖️</div>
+    <h2>8. Δηλωτική vs Διαδικαστική Σημασία</h2>
+  </div>
+
+  <p>Κάθε πρόγραμμα Prolog έχει <strong>δύο όψεις</strong>, σαν ένα νόμισμα. Η πρώτη όψη είναι η <em>τι λέει</em>, η δεύτερη <em>πώς εκτελείται</em>. Στην ιδανική περίπτωση συμφωνούν — αλλά συχνά διαφέρουν.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Δηλωτική Σημασία (Declarative)</th>
+        <th>Διαδικαστική Σημασία (Procedural)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Λέει <strong>τι</strong> ισχύει.</td>
+        <td>Λέει <strong>πώς</strong> εκτελείται.</td>
+      </tr>
+      <tr>
+        <td>Σχέση μεταξύ ερώτησης και βάσης γνώσης.</td>
+        <td>Αλγόριθμος εύρεσης της απάντησης.</td>
+      </tr>
+      <tr>
+        <td>Δεν εξαρτάται από τη σειρά των προτάσεων.</td>
+        <td>Εξαρτάται κρίσιμα από τη σειρά!</td>
+      </tr>
+      <tr>
+        <td>«Ο P αληθεύει αν τα Q και R αληθεύουν.»</td>
+        <td>«Για να αποδείξεις P, λύσε πρώτα Q και μετά R.»</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Δηλωτική Σημασία (Επίσημα)</div>
+    <p>Ένας στόχος G είναι αληθής αν για κάποια αποτίμηση των μεταβλητών του ταυτίζεται με την κεφαλή ενός στιγμιοτύπου I κάποιας πρότασης C του προγράμματος <em>και</em> οι στόχοι του σώματος του I είναι επίσης αληθείς.</p>
+    <p>Μια σύζευξη από στόχους είναι αληθής όταν κάθε ένας από αυτούς είναι αληθής, για την ίδια αποτίμηση των μεταβλητών τους.</p>
+  </div>
+
+  <h3>Παραλλαγή (Variant) και Στιγμιότυπο (Instance)</h3>
+  <p>Όταν η Prolog εφαρμόζει έναν κανόνα, δεν χρησιμοποιεί τις «πραγματικές» μεταβλητές του — αλλά μια <strong>μετονομασμένη αντίγραφο</strong>:</p>
+  <ul>
+    <li><strong>Παραλλαγή:</strong> Ο κανόνας με τις μεταβλητές μετονομασμένες σε «φρέσκες» (π.χ. <code>X→A</code>, <code>Y→B</code>).</li>
+    <li><strong>Στιγμιότυπο:</strong> Ο κανόνας με τις μεταβλητές αντικατεστημένες με συγκεκριμένες τιμές.</li>
+  </ul>
+  <div class="cb"><code><span class="cm">% Πρόταση</span>
+<span class="fn">hasachild</span>(X) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y).
+
+<span class="cm">% Παραλλαγή (φρέσκα ονόματα)</span>
+<span class="fn">hasachild</span>(A) <span class="kw">:-</span> <span class="fn">parent</span>(A, B).
+
+<span class="cm">% Στιγμιότυπο (συγκεκριμένη τιμή)</span>
+<span class="fn">hasachild</span>(peter) <span class="kw">:-</span> <span class="fn">parent</span>(peter, Y).</code></code></div>
+</section>
+
+<!-- ======================= SECTION 9: BACKTRACKING ======================= -->
+<section id="backtracking">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">⚙️</div>
+    <h2>9. Διαδικαστική Σημασία & Backtracking</h2>
+  </div>
+
+  <p>Πώς ακριβώς εκτελείται ένα ερώτημα Prolog; Με <strong>αναζήτηση κατά βάθος (Depth-First Search, DFS)</strong> και <strong>οπισθοδρόμηση (backtracking)</strong>. Η Prolog δουλεύει σαν εξερευνητής λαβυρίνθου: μπαίνει βαθιά σε έναν διάδρομο, και αν βρει αδιέξοδο επιστρέφει στην τελευταία διασταύρωση να δοκιμάσει άλλον δρόμο.</p>
+
+  <h3>Ο Αλγόριθμος Εκτέλεσης (απλουστευμένος)</h3>
+  <ol>
+    <li>Έστω λίστα στόχων προς ικανοποίηση: <code>G1, G2, ..., Gm</code>.</li>
+    <li>Πάρε τον πρώτο στόχο <code>G1</code>.</li>
+    <li>Διέτρεξε το πρόγραμμα <strong>από πάνω προς τα κάτω</strong> και βρες την πρώτη πρόταση <code>H :- B1, ..., Bn</code> της οποίας η κεφαλή <code>H</code> ενοποιείται με το <code>G1</code>.</li>
+    <li>Αντικατάστησε το <code>G1</code> με τα <code>B1, ..., Bn</code> (στιγμιοτυπημένα) και προσπάθησε να λύσεις την νέα λίστα στόχων <em>αναδρομικά</em>.</li>
+    <li>Αν σε κάποιο σημείο δεν βρεις πρόταση που ταιριάζει, κάνε <strong>οπισθοδρόμηση</strong>: επέστρεψε στο τελευταίο σημείο επιλογής (<em>choice point</em>) και δοκίμασε την επόμενη πρόταση.</li>
+    <li>Όταν εξαντληθεί η λίστα στόχων, σημαίνει <strong>επιτυχία</strong>.</li>
+  </ol>
+
+  <div class="def-list">
+    <dl>
+      <dt>Choice Point (Σημείο Επιλογής)</dt>
+      <dd>Σημείο στην αναζήτηση όπου περισσότερες από μία προτάσεις θα μπορούσαν να ικανοποιήσουν τον στόχο. Η Prolog «θυμάται» αυτό το σημείο για πιθανό μελλοντικό backtracking.</dd>
+      <dt>Instantiation (Αποτίμηση)</dt>
+      <dd>Η δέσμευση μιας μεταβλητής σε συγκεκριμένη τιμή κατά τη διάρκεια της ενοποίησης.</dd>
+      <dt>Resolution Tree (Δέντρο Ανάλυσης)</dt>
+      <dd>Η οπτικοποίηση όλης της διαδικασίας — οι κόμβοι είναι στόχοι, οι κλάδοι είναι επιλογές προτάσεων.</dd>
+    </dl>
+  </div>
+
+  <h3>Πλήρης Οπτικοποίηση: AND-OR Δέντρο</h3>
+  <p>Με τη βάση γνώσης:</p>
+  <div class="cb"><code><span class="cm">(1)</span> <span class="fn">big</span>(bear).
+<span class="cm">(2)</span> <span class="fn">big</span>(elephant).
+<span class="cm">(3)</span> <span class="fn">small</span>(cat).
+<span class="cm">(4)</span> <span class="fn">brown</span>(bear).
+<span class="cm">(5)</span> <span class="fn">black</span>(cat).
+<span class="cm">(6)</span> <span class="fn">gray</span>(elephant).
+
+<span class="cm">(7)</span> <span class="fn">dark</span>(Z) <span class="kw">:-</span> <span class="fn">black</span>(Z).
+<span class="cm">(8)</span> <span class="fn">dark</span>(Z) <span class="kw">:-</span> <span class="fn">brown</span>(Z).</code></div>
+
+  <p>Για το ερώτημα <code>?- dark(X), big(X).</code> («ποιο ζώο είναι σκούρο ΚΑΙ μεγάλο;») η Prolog κατασκευάζει το παρακάτω δέντρο:</p>
+
+  <div class="tree-vis" style="max-width: 580px; margin: 24px auto; overflow-x: auto;">
+    <svg width="540" height="320" viewBox="0 0 540 320" style="display:block; margin:0 auto">
+      <!-- Connections -->
+      <line class="tree-edge-l" x1="270" y1="35" x2="150" y2="105"/>
+      <text class="tree-text" x="185" y="65" style="font-size:0.7rem; fill:var(--purple)">(7) X=Z</text>
+      
+      <line class="tree-edge-l" x1="270" y1="35" x2="390" y2="105"/>
+      <text class="tree-text" x="355" y="65" style="font-size:0.7rem; fill:var(--purple)">(8) X=Z</text>
+      
+      <line class="tree-edge-l" x1="150" y1="125" x2="150" y2="185"/>
+      <text class="tree-text" x="180" y="155" style="font-size:0.7rem; fill:var(--purple)">(5) Z=cat</text>
+      
+      <line class="tree-edge-l" x1="390" y1="125" x2="390" y2="185"/>
+      <text class="tree-text" x="420" y="155" style="font-size:0.7rem; fill:var(--purple)">(4) Z=bear</text>
+      
+      <line class="tree-edge-l" x1="150" y1="205" x2="150" y2="260"/>
+      <line class="tree-edge-l" x1="390" y1="205" x2="390" y2="260"/>
+      
+      <!-- Nodes drawing -->
+      <!-- Root Node (AND) -->
+      <rect x="170" y="10" width="200" height="35" rx="8" style="fill:var(--surf); stroke:var(--blue); stroke-width:2"/>
+      <text class="tree-text" x="270" y="27" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; fill:var(--txt); font-weight:700">dark(X), big(X)</text>
+      <rect x="380" y="15" width="70" height="24" rx="12" style="fill:var(--pdim); stroke:var(--purple); stroke-width:1"/>
+      <text class="tree-text" x="415" y="27" style="fill:var(--purple); font-size:0.65rem; font-weight:bold">AND Node</text>
+      
+      <!-- Level 2 Left (OR choice 1) -->
+      <rect x="60" y="105" width="180" height="30" rx="6" style="fill:var(--surf); stroke:var(--purple); stroke-width:1.5"/>
+      <text class="tree-text" x="150" y="120" style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; fill:var(--txt)">black(Z), big(Z)</text>
+      
+      <!-- Level 2 Right (OR choice 2) -->
+      <rect x="300" y="105" width="180" height="30" rx="6" style="fill:var(--surf); stroke:var(--purple); stroke-width:1.5"/>
+      <text class="tree-text" x="390" y="120" style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; fill:var(--txt)">brown(Z), big(Z)</text>
+      <rect x="490" y="108" width="40" height="22" rx="11" style="fill:var(--odim); stroke:var(--orange); stroke-width:1"/>
+      <text class="tree-text" x="510" y="119" style="fill:var(--orange); font-size:0.65rem; font-weight:bold">OR</text>
+      
+      <!-- Level 3 Left -->
+      <rect x="90" y="185" width="120" height="28" rx="6" style="fill:var(--surf); stroke:var(--border); stroke-width:1.5"/>
+      <text class="tree-text" x="150" y="199" style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; fill:var(--txt)">big(cat)</text>
+      
+      <!-- Level 3 Right -->
+      <rect x="330" y="185" width="120" height="28" rx="6" style="fill:var(--surf); stroke:var(--green); stroke-width:1.5"/>
+      <text class="tree-text" x="390" y="199" style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; fill:var(--txt)">big(bear)</text>
+      
+      <!-- Level 4 Left (FAIL) -->
+      <circle class="tree-node-c nil-c" cx="150" cy="275" r="14"/>
+      <text class="tree-text" x="150" y="275" style="fill:var(--red); font-size:0.7rem; font-weight:bold">FAIL</text>
+      <text class="tree-text" x="150" y="302" style="font-size:0.65rem; fill:var(--muted)">∅ (no fact)</text>
+      
+      <!-- Level 4 Right (SUCCESS) -->
+      <circle class="tree-node-c root-c" cx="390" cy="275" r="14" style="stroke:var(--green); fill:var(--gdim)"/>
+      <text class="tree-text" x="390" y="275" style="fill:var(--green); font-size:0.7rem; font-weight:bold">OK</text>
+      <text class="tree-text" x="390" y="302" style="font-size:0.7rem; fill:var(--green); font-weight:bold">X = bear</text>
+    </svg>
+  </div>
+
+  <p>Η Prolog δοκιμάζει πρώτα την πρόταση (7): <code>dark(Z) :- black(Z).</code>. Βρίσκει <code>black(cat)</code> άρα X=cat. Μετά ελέγχει <code>big(cat)</code>: δεν υπάρχει τέτοιο γεγονός, <strong>fail</strong>. Backtracking στην (8): <code>dark(Z) :- brown(Z).</code>. Βρίσκει <code>brown(bear)</code>. Ελέγχει <code>big(bear)</code>: ναι! <strong>X = bear</strong>.</p>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Γιατί «AND-OR» δέντρο;</div>
+    <p>Σε ένα δέντρο ανάλυσης, διακρίνουμε δύο είδη κόμβων:</p>
+    <ul>
+      <li><strong>AND κόμβοι:</strong> Όλα τα παιδιά πρέπει να ικανοποιηθούν (αντιστοιχούν στα <code>,</code> στο σώμα ενός κανόνα).</li>
+      <li><strong>OR κόμβοι:</strong> Αρκεί <em>ένα</em> παιδί να ικανοποιηθεί (αντιστοιχούν στις διαφορετικές προτάσεις του ίδιου κατηγορήματος).</li>
+    </ul>
+    <p>Το backtracking «κινείται» σε αυτό το δέντρο: όταν φτάνει σε αποτυχία στα φύλλα, επιστρέφει στον τελευταίο OR κόμβο που είχε εναλλακτικές.</p>
+  </div>
+
+  <h3>Αναλογία του Λαβυρίνθου</h3>
+  <div class="wbox" style="border-color:var(--cyan)">
+    <div class="lbl" style="color:var(--cyan)">🌀 Διαισθητική Εικόνα</div>
+    <p>Φανταστείτε ότι μπαίνετε σε έναν λαβύρινθο με στόχο να βρείτε τον θησαυρό. Σε κάθε διασταύρωση επιλέγετε ένα δρόμο (αυτό είναι το <em>choice point</em>). Αν φτάσετε σε αδιέξοδο (<em>fail</em>), επιστρέφετε στην τελευταία διασταύρωση και δοκιμάζετε άλλη πόρτα. Η Prolog κάνει ακριβώς αυτό — και κρατάει μνήμη όλων των διασταυρώσεων στις οποίες πέρασε.</p>
+  </div>
+</section>
+
+<!-- ======================= SECTION 10: BANANA ======================= -->
+<section id="banana">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🐒</div>
+    <h2>10. Εφαρμογή: Ο Πίθηκος και η Μπανάνα</h2>
+  </div>
+
+  <p>Ένα κλασικό πρόβλημα τεχνητής νοημοσύνης. Ένας πίθηκος βρίσκεται σε δωμάτιο. Στο μέσο του δωματίου κρέμεται μια μπανάνα από το ταβάνι. Στη μία γωνία υπάρχει ένα κουτί. Ο πίθηκος μπορεί να <strong>περπατήσει</strong>, να <strong>σπρώξει</strong> το κουτί, να <strong>ανέβει</strong> πάνω του και να <strong>πιάσει</strong> τη μπανάνα. Πώς θα την πιάσει;</p>
+
+  <h3>Αναπαράσταση Κατάστασης</h3>
+  <p>Κάθε κατάσταση του κόσμου περιγράφεται από έναν όρο 4 παραμέτρων:</p>
+  <div class="cb"><code><span class="fn">state</span>(MonkeyPos, MonkeyOn, BoxPos, HasBanana).</code></div>
+  <ul>
+    <li><code>MonkeyPos</code>: η θέση του πιθήκου (<code>atdoor</code>, <code>middle</code>, <code>atwindow</code>).</li>
+    <li><code>MonkeyOn</code>: <code>onfloor</code> ή <code>onbox</code>.</li>
+    <li><code>BoxPos</code>: η θέση του κουτιού.</li>
+    <li><code>HasBanana</code>: <code>has</code> ή <code>hasnot</code>.</li>
+  </ul>
+
+  <h3>Πιθανές Κινήσεις</h3>
+  <div class="cb"><code><span class="cm">% Πιάσιμο: μπορώ να πιάσω αν είμαι στη μέση, πάνω στο κουτί που είναι κι αυτό στη μέση</span>
+<span class="fn">move</span>(<span class="fn">state</span>(middle, onbox, middle, hasnot),
+     grasp,
+     <span class="fn">state</span>(middle, onbox, middle, has)).
+
+<span class="cm">% Ανέβασμα: αν είμαι στο πάτωμα στη θέση όπου είναι και το κουτί</span>
+<span class="fn">move</span>(<span class="fn">state</span>(P, onfloor, P, H),
+     climb,
+     <span class="fn">state</span>(P, onbox, P, H)).
+
+<span class="cm">% Σπρώξιμο: μετακινώ κουτί από P1 σε P2 (είμαι στο πάτωμα στο P1)</span>
+<span class="fn">move</span>(<span class="fn">state</span>(P1, onfloor, P1, H),
+     <span class="fn">push</span>(P1, P2),
+     <span class="fn">state</span>(P2, onfloor, P2, H)).
+
+<span class="cm">% Περπάτημα: από B σε P2 αν δεν είμαι πάνω στο κουτί</span>
+<span class="fn">move</span>(<span class="fn">state</span>(P1, onfloor, B, H),
+     <span class="fn">walk</span>(P1, P2),
+     <span class="fn">state</span>(P2, onfloor, B, H)).</code></div>
+
+  <h3>Ο Στόχος: «μπορώ να φτάσω σε κατάσταση με μπανάνα;»</h3>
+  <div class="cb"><code><span class="fn">canget</span>(<span class="fn">state</span>(_, _, _, has)).            <span class="cm">% βάση: ήδη την έχω</span>
+<span class="fn">canget</span>(State1) <span class="kw">:-</span>
+    <span class="fn">move</span>(State1, Move, State2),
+    <span class="fn">canget</span>(State2).                    <span class="cm">% αλλιώς, κάνε μια κίνηση και ξαναπροσπάθησε</span></code></code></div>
+
+  <p>Αρχικό ερώτημα και απάντηση:</p>
+  <div class="cb"><code>?- <span class="fn">canget</span>(<span class="fn">state</span>(atdoor, onfloor, atwindow, hasnot)).
+   yes</code></div>
+
+  <h3>Για να καταγράψουμε ΚΑΙ τις κινήσεις (επέκταση)</h3>
+  <div class="cb"><code><span class="fn">canget</span>(<span class="fn">state</span>(_, _, _, has), []).
+<span class="fn">canget</span>(State, [Action|Actions]) <span class="kw">:-</span>
+    <span class="fn">move</span>(State, Action, NewState),
+    <span class="fn">canget</span>(NewState, Actions).
+
+?- <span class="fn">canget</span>(<span class="fn">state</span>(atdoor, onfloor, atwindow, hasnot), Actions).
+   Actions = [<span class="fn">walk</span>(atdoor, atwindow),
+              <span class="fn">push</span>(atwindow, middle),
+              climb,
+              grasp]
+   yes</code></div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Γιατί η σειρά των κανόνων είναι κρίσιμη</div>
+    <p>Με τη σειρά <code>grasp, climb, push, walk</code> η Prolog θα δοκίμαζε <em>πρώτα</em> να πιάσει — αν δεν μπορεί, να ανέβει — αν δεν μπορεί, να σπρώξει — και τελευταία να περπατήσει. Όταν είσαι στην αρχική κατάσταση δεν μπορείς ούτε να πιάσεις, ούτε να ανέβεις, ούτε να σπρώξεις (το κουτί είναι αλλού). Έτσι, η μόνη επιλογή είναι το <code>walk</code>. Και κάθε επόμενη κατάσταση επιτρέπει νέο <code>walk</code>! Άρα η Prolog θα μπει σε <strong>ατέρμονο βρόχο walk-walk-walk-...</strong> πριν καν προσπαθήσει κάτι χρήσιμο.</p>
+    <p>Με την σωστή σειρά <code>grasp, climb, push, walk</code> οι «πιο εποικοδομητικές» κινήσεις δοκιμάζονται πρώτα. <strong>Συμπέρασμα:</strong> ένα πρόγραμμα δηλωτικά σωστό μπορεί να είναι διαδικαστικά λάθος.</p>
+  </div>
+
+  <h3>Πλήρες Δέντρο Αναζήτησης</h3>
+  <div class="sld-tree">
+<pre>state(atdoor, onfloor, atwindow, hasnot)
+                    | walk(atdoor, P2)
+                    ↓
+state(P2, onfloor, atwindow, hasnot)
+              /                   \
+       climb                       push(P2, P2')   <span style="color:var(--muted)">P2'=atwindow if box stays</span>
+       /                            \
+state(atwindow, onbox,             state(P2', onfloor, P2', hasnot)
+       atwindow, hasnot)                | climb
+       |  <span style="color:var(--red)">grasp fails: need middle</span>     ↓
+       ∅ FAIL                      state(P2', onbox, P2', hasnot)
+                                        | grasp  <span style="color:var(--muted)">requires P2'=middle</span>
+                                        ↓
+                                   state(middle, onbox, middle, has)
+                                        ↓
+                                       yes ✓</pre>
+  </div>
+</section>
+
+<!-- ======================= SECTION 11: PRED1-PRED4 ======================= -->
+<section id="predorder">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--bdim)">🔃</div>
+    <h2>11. Ανακατατάξεις Προτάσεων: Η Μελέτη pred1 – pred4</h2>
+  </div>
+
+  <p>Αυτή η ενότητα είναι κλασικό εξεταστικό υλικό. Παίρνουμε τον ορισμό του <code>predecessor</code> και τον γράφουμε με <strong>τέσσερις διαφορετικές διατάξεις</strong> — όλες δηλωτικά ισοδύναμες, αλλά με ριζικά διαφορετική διαδικαστική συμπεριφορά.</p>
+
+  <table class="comparison-table">
+    <tr>
+      <th>Έκδοση 1 (Σωστή)</th>
+      <th>Έκδοση 2 (Δουλεύει αλλά αργή)</th>
+    </tr>
+    <tr>
+      <td><div class="cb" style="font-size:0.82rem"><code><span class="fn">pred1</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).
+
+<span class="fn">pred1</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y),
+    <span class="fn">pred1</span>(Y, Z).</code></div></td>
+      <td><div class="cb" style="font-size:0.82rem"><code><span class="fn">pred2</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Y),
+    <span class="fn">pred2</span>(Y, Z).
+
+<span class="fn">pred2</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).</code></div></td>
+    </tr>
+    <tr>
+      <th>Έκδοση 3 (Μερικές φορές δουλεύει)</th>
+      <th>Έκδοση 4 (Πάντα αποτυγχάνει!)</th>
+    </tr>
+    <tr>
+      <td><div class="cb" style="font-size:0.82rem"><code><span class="fn">pred3</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).
+
+<span class="fn">pred3</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">pred3</span>(X, Y),
+    <span class="fn">parent</span>(Y, Z).</code></div></td>
+      <td><div class="cb" style="font-size:0.82rem"><code><span class="fn">pred4</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">pred4</span>(X, Y),
+    <span class="fn">parent</span>(Y, Z).
+
+<span class="fn">pred4</span>(X, Z) <span class="kw">:-</span>
+    <span class="fn">parent</span>(X, Z).</code></div></td>
+    </tr>
+  </table>
+
+  <h3>Ανάλυση κάθε Έκδοσης</h3>
+
+  <details open>
+    <summary><strong>pred1:</strong> Βάση πρώτη, αναδρομή στο τέλος του σώματος — η ιδανική</summary>
+    <p>Η Prolog πρώτα ελέγχει την απλή περίπτωση (<code>parent(tom, pat)</code>). Αν αποτύχει, μπαίνει στην αναδρομή με «βήμα προς τα κάτω» (<code>parent(tom, Y)</code> → Y=bob → <code>pred1(bob, pat)</code>). Η αναδρομή <strong>τερματίζεται</strong> σε πεπερασμένο χρόνο.</p>
+    <p>Δέντρο για το <code>?- pred1(tom, pat).</code>:</p>
+    <div class="sld-tree">
+<pre>           pred1(tom, pat)
+            /            \
+   parent(tom, pat)   parent(tom, Y')
+        |             pred1(Y', pat)
+       no                  | Y'=bob
+                       pred1(bob, pat)
+                           |
+                    parent(bob, pat)
+                           |
+                         yes ✓</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary><strong>pred2:</strong> Αναδρομή πρώτη, βάση μετά — δουλεύει αλλά κάνει περιττές δουλειές</summary>
+    <p>Η Prolog μπαίνει αμέσως στην αναδρομή. Δοκιμάζει όλες τις πιθανές αλυσίδες parent προτού δοκιμάσει την απλή λύση. Συμπέρασμα: ορθή απάντηση, αλλά εκθετικά περισσότερη δουλειά.</p>
+    <p>Δέντρο για <code>?- pred2(tom, pat).</code> (πολύ μεγαλύτερο):</p>
+    <div class="sld-tree">
+<pre>      pred2(tom, pat)
+            |
+   parent(tom, Y'), pred2(Y', pat)
+            | Y'=bob
+   pred2(bob, pat)
+       /         \
+  parent(bob,Y''),    parent(bob, pat)
+  pred2(Y'',pat)         yes ✓
+   /        \
+ Y''=ann   Y''=pat       <span style="color:var(--muted)">(παράλληλο μονοπάτι μέχρι το yes)</span>
+ pred2(ann,pat)  pred2(pat,pat)
+  (no path)     (no children)
+    fail            fail</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary><strong>pred3:</strong> Βάση πρώτη, αναδρομή με <code>parent</code> στο τέλος — επικίνδυνη</summary>
+    <p>Η αναδρομή χτίζει το μονοπάτι «προς τα πάνω» αντί «προς τα κάτω». Δουλεύει για κάποιες ερωτήσεις (π.χ. <code>pred3(tom, pat)</code>) αλλά για άλλες (π.χ. <code>pred3(liz, jim)</code>) μπαίνει σε ατέρμονη αναδρομή γιατί το ερώτημα <code>pred3(liz, Y)</code> ποτέ δεν τερματίζει αν η liz δεν έχει απογόνους.</p>
+  </details>
+
+  <details>
+    <summary><strong>pred4:</strong> Αριστερή αναδρομή — ΠΑΝΤΟΤΕ καταρρέει</summary>
+    <p>Η πρώτη πρόταση καλεί <strong>τον εαυτό της με τα ίδια ορίσματα</strong>. Η Prolog μπαίνει αμέσως σε άπειρο loop: <code>pred4(tom, pat) → pred4(tom, Y') → pred4(tom, Y'') → …</code></p>
+    <p>Δέντρο (καθόλου δέντρο — ευθεία γραμμή προς το άπειρο):</p>
+    <div class="sld-tree">
+<pre>     pred4(tom, pat)
+           |
+     pred4(tom, Y'), parent(Y', pat)
+           |
+     pred4(tom, Y''), parent(Y'', Y'), parent(Y', pat)
+           |
+     pred4(tom, Y'''), ...
+           |
+           ⋮  <span style="color:var(--red)">Stack overflow!</span></pre>
+    </div>
+  </details>
+
+  <div class="wbox" style="border-color:var(--red)">
+    <div class="lbl" style="color:var(--red)">🚨 Αριστερή Αναδρομή (Left Recursion)</div>
+    <p>Όταν ένας κανόνας καλεί τον εαυτό του <strong>στην αριστερότερη θέση του σώματός του με τα ίδια ορίσματα</strong>, η Prolog θα μπει σε ατέρμονη ανακύκλωση πριν καν εξετάσει τα δεδομένα. Η αριστερή αναδρομή είναι το αντίστοιχο του «infinite loop» σε γλώσσες όπως η Java.</p>
+    <p><strong>Κανόνας:</strong> Πάντα τοποθετείτε τη βάση (γεγονός) <em>πριν</em> την αναδρομική περίπτωση, και πάντα έχετε στόχους που «προχωρούν» πριν από την αναδρομική κλήση.</p>
+  </div>
+
+  <h3>Σύνοψη pred1-pred4</h3>
+  <table class="comparison-table">
+    <tr><th>Έκδοση</th><th>Συμπεριφορά</th></tr>
+    <tr><td><code>pred1</code></td><td>✅ Πάντα τερματίζει, αποδοτική</td></tr>
+    <tr><td><code>pred2</code></td><td>⚠️ Τερματίζει αλλά κάνει περιττές δουλειές</td></tr>
+    <tr><td><code>pred3</code></td><td>⚠️ Μερικές φορές ατέρμονη ανακύκλωση (π.χ. <code>pred3(liz, jim)</code>)</td></tr>
+    <tr><td><code>pred4</code></td><td>❌ Πάντα οδηγεί σε ατέρμονη ανακύκλωση</td></tr>
+  </table>
+
+  <div class="wbox" style="border-color:var(--blue)">
+    <div class="lbl" style="color:var(--blue)">💡 Ο Χρυσός Κανόνας του Καθηγητή</div>
+    <p style="font-size:1.05rem; text-align:center; font-style:italic">«Να δοκιμάζεις τα απλούστερα πράγματα πρώτα.»</p>
+    <p>Αυτό σημαίνει:</p>
+    <ul>
+      <li>Η <strong>βάση της αναδρομής</strong> πρώτη.</li>
+      <li>Οι <strong>πιο περιοριστικοί στόχοι</strong> πρώτοι στο σώμα.</li>
+      <li>Η αναδρομή τελευταία — και πάντα να «προχωρεί» τη μεταβλητή.</li>
+    </ul>
+  </div>
+
+  <h3>Τελικό Συμπέρασμα Κεφαλαίου</h3>
+  <p>Φτάσατε στο τέλος του Κεφαλαίου 1. Αυτό που έχετε καταλάβει:</p>
+  <ul>
+    <li><strong>Η Prolog είναι λογική γλώσσα</strong> — γράφεις γεγονότα, κανόνες, και ερωτήσεις.</li>
+    <li><strong>Δηλωτική vs Διαδικαστική σημασία</strong> — δύο αλληλένδετες όψεις κάθε προγράμματος.</li>
+    <li><strong>Ενοποίηση</strong> — ο πυρήνας κάθε υπολογισμού.</li>
+    <li><strong>Backtracking + DFS</strong> — η μέθοδος αναζήτησης λύσεων.</li>
+    <li><strong>Αναδρομή</strong> — η μόνη μέθοδος επανάληψης.</li>
+    <li><strong>Η σειρά μετράει</strong> — δηλωτική ορθότητα δεν συνεπάγεται διαδικαστική.</li>
+  </ul>
+  <p>Στο επόμενο κεφάλαιο θα δούμε <strong>λίστες</strong> — τη βασικότερη δομή δεδομένων της Prolog — και τον περίφημο τελεστή <strong>!</strong> (cut) που μας επιτρέπει να ελέγχουμε το backtracking.</p>
+
+  <h3>📝 Ασκήσεις Αυτοαξιολόγησης</h3>
+
+  <div class="exer">
+    <div class="dd-title">Άσκηση 1: Γεωμετρία — Ορθογώνιο Παραλληλόγραμμο</div>
+    <p>Έστω ένα τετράπλευρο που παριστάνεται με τον όρο <code>four_points(P1, P2, P3, P4)</code> (κορυφές κυκλικά). Ορίστε το κατηγόρημα <code>regular_rectangle(R)</code> που πετυχαίνει όταν το R είναι ορθογώνιο παραλληλόγραμμο με πλευρές κατακόρυφες και οριζόντιες.</p>
+    <details>
+      <summary style="cursor:pointer;color:var(--green);margin-top:8px;font-weight:600">▶ Λύση</summary>
+      <div class="cb"><code><span class="fn">vertical</span>(<span class="fn">seg</span>(<span class="fn">point</span>(X, _), <span class="fn">point</span>(X, _))).
+<span class="fn">horizontal</span>(<span class="fn">seg</span>(<span class="fn">point</span>(_, Y), <span class="fn">point</span>(_, Y))).
+
+<span class="fn">regular_rectangle</span>(<span class="fn">four_points</span>(P1, P2, P3, P4)) <span class="kw">:-</span>
+    <span class="fn">vertical</span>(<span class="fn">seg</span>(P1, P2)),
+    <span class="fn">horizontal</span>(<span class="fn">seg</span>(P2, P3)),
+    <span class="fn">vertical</span>(<span class="fn">seg</span>(P3, P4)),
+    <span class="fn">horizontal</span>(<span class="fn">seg</span>(P4, P1)).</code></div>
+    </details>
+  </div>
+
+  <div class="exer">
+    <div class="dd-title">Άσκηση 2: Σχέση <code>relatives/2</code></div>
+    <p>Με βάση τα κατηγορήματα της οικογένειας <code>parent/2</code>, ορίστε τη σχέση <code>relatives(X, Y)</code> που πετυχαίνει αν τα X και Y είναι συγγενείς (μοιράζονται κοινό πρόγονο).</p>
+    <details>
+      <summary style="cursor:pointer;color:var(--green);margin-top:8px;font-weight:600">▶ Λύση</summary>
+      <div class="cb"><code><span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span> <span class="fn">parent</span>(X, Z).
+<span class="fn">predecessor</span>(X, Z) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y), <span class="fn">predecessor</span>(Y, Z).
+
+<span class="fn">relatives</span>(X, Y) <span class="kw">:-</span>
+    <span class="fn">predecessor</span>(Z, X),       <span class="cm">% κοινός πρόγονος Z</span>
+    <span class="fn">predecessor</span>(Z, Y),
+    X <span class="op">\=</span> Y.</code></div>
+    </details>
+  </div>
+
+  <div class="exer">
+    <div class="dd-title">Άσκηση 3: Αριθμοί Peano</div>
+    <p>Δίνεται η αναπαράσταση αριθμών Peano: <code>0</code> για το μηδέν, <code>s(0)</code> για το ένα, <code>s(s(0))</code> για το δύο, κλπ. Και τα γεγονότα/κανόνες:</p>
+    <div class="cb"><code><span class="fn">f</span>(<span class="nm">1</span>, one).
+<span class="fn">f</span>(<span class="fn">s</span>(<span class="nm">1</span>), two).
+<span class="fn">f</span>(<span class="fn">s</span>(<span class="fn">s</span>(<span class="nm">1</span>)), three).
+<span class="fn">f</span>(<span class="fn">s</span>(<span class="fn">s</span>(<span class="fn">s</span>(X))), N) <span class="kw">:-</span> <span class="fn">f</span>(X, N).</code></div>
+    <p>Τι θα απαντήσει η Prolog στις παρακάτω ερωτήσεις;</p>
+    <ol>
+      <li><code>?- f(s(1), A).</code></li>
+      <li><code>?- f(s(s(1)), two).</code></li>
+      <li><code>?- f(s(s(s(s(s(1))))), C).</code></li>
+    </ol>
+    <details>
+      <summary style="cursor:pointer;color:var(--green);margin-top:8px;font-weight:600">▶ Λύση</summary>
+      <ol>
+        <li><code>A = two</code> (άμεση ταιριάσματος της 2ης πρότασης)</li>
+        <li><code>yes</code> (άμεση ταιριάσματος της 3ης πρότασης)</li>
+        <li><code>C = three</code>. Σκεπτικό: η Prolog χρησιμοποιεί την 4η πρόταση: <code>s(s(s(X))) = s(s(s(s(s(1)))))</code> → <code>X = s(s(1))</code>. Καλεί <code>f(s(s(1)), N)</code> → <code>N = three</code>.</li>
+      </ol>
+    </details>
+  </div>
+
+  <div class="exer">
+    <div class="dd-title">Άσκηση 4: Επανέγραψε χωρίς διάζευξη</div>
+    <p>Δίνεται:</p>
+    <div class="cb"><code><span class="fn">translate</span>(Number, Word) <span class="kw">:-</span>
+    Number = <span class="nm">1</span>, Word = one ;
+    Number = <span class="nm">2</span>, Word = two ;
+    Number = <span class="nm">3</span>, Word = three.</code></div>
+    <p>Επανέγραψέ το χωρίς να χρησιμοποιείς διάζευξη (<code>;</code>).</p>
+    <details>
+      <summary style="cursor:pointer;color:var(--green);margin-top:8px;font-weight:600">▶ Λύση</summary>
+      <div class="cb"><code><span class="fn">translate</span>(<span class="nm">1</span>, one).
+<span class="fn">translate</span>(<span class="nm">2</span>, two).
+<span class="fn">translate</span>(<span class="nm">3</span>, three).</code></div>
+      <p>Στην Prolog, η διάζευξη μεταξύ ολόκληρων προτάσεων εκφράζεται φυσικά με <strong>πολλαπλές προτάσεις</strong> του ίδιου κατηγορήματος.</p>
+    </details>
+  </div>
+
+  <div class="section-quiz" data-topic="intro_prolog" data-section="procedural"></div>
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 1 · Master Edition</div>
+</body>
+</html>

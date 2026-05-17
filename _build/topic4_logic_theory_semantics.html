@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 4 · Θεωρία &amp; Σημασιολογία</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--odim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'M_P = lfp(T_P) = SS(P)';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(0.9rem,2.5vw,1.8rem);
+  color:rgba(240,136,62,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10;padding:16px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.55;margin:12px 0}
+.cb code{display:block;white-space:pre}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.nm{color:var(--purple)}
+.cm{color:var(--dim);font-style:italic}
+.str{color:var(--green)}
+.op{color:var(--orange)}
+
+/* Notes / warnings / tips / mnemonics — exam-prep boxes */
+.note,.warn,.tip-box,.mnemo,.exam,.def{
+  border-left:4px solid;padding:14px 18px;margin:18px 0;border-radius:6px;
+  background:var(--surf);position:relative;
+}
+.note{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.07),transparent 60%)}
+.warn{border-color:var(--red);background:linear-gradient(90deg,rgba(248,81,73,.07),transparent 60%)}
+.tip-box{border-color:var(--green);background:linear-gradient(90deg,rgba(63,185,80,.07),transparent 60%)}
+.mnemo{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.07),transparent 60%)}
+.exam{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.08),transparent 60%)}
+.def{border-color:var(--orange);background:linear-gradient(90deg,rgba(240,136,62,.07),transparent 60%)}
+.note .hd,.warn .hd,.tip-box .hd,.mnemo .hd,.exam .hd,.def .hd{
+  font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;
+}
+.note .hd{color:var(--blue)}
+.warn .hd{color:var(--red)}
+.tip-box .hd{color:var(--green)}
+.mnemo .hd{color:var(--yellow)}
+.exam .hd{color:var(--purple)}
+.def .hd{color:var(--orange)}
+
+/* Math formula box */
+.math{
+  background:#060a10;padding:16px 20px;border-radius:8px;border:1px solid var(--border);
+  margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:1.05rem;line-height:1.6;
+  text-align:center;color:var(--txt);overflow-x:auto;
+}
+.math em{color:var(--yellow);font-style:normal;font-weight:600}
+.math .var{color:var(--purple)}
+.math .op{color:var(--orange)}
+.math .set{color:var(--cyan)}
+.math .quant{color:var(--blue);font-weight:700}
+
+/* T_P iteration table */
+.tp-iter{width:100%;border-collapse:collapse;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:0.85rem}
+.tp-iter th,.tp-iter td{padding:8px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}
+.tp-iter th{background:var(--surf);color:var(--cyan)}
+.tp-iter .new{color:var(--green);font-weight:700}
+.tp-iter .step{color:var(--yellow);font-weight:700;min-width:80px}
+
+/* Three-semantics diagram */
+.tri-eq{
+  display:flex;justify-content:center;align-items:center;gap:14px;
+  margin:20px 0;padding:20px;background:var(--surf);border-radius:10px;border:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.tri-cell{
+  padding:14px 20px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-weight:700;
+  min-width:140px;text-align:center;
+}
+.tri-cell.m{background:var(--bdim);color:var(--blue);border:2px solid var(--blue)}
+.tri-cell.f{background:var(--cdim);color:var(--cyan);border:2px solid var(--cyan)}
+.tri-cell.s{background:var(--gdim);color:var(--green);border:2px solid var(--green)}
+.tri-eq-sym{font-size:2rem;color:var(--purple);font-weight:700}
+
+/* SLD tree */
+.sld-tree{
+  padding:20px;background:var(--surf);border-radius:10px;border:1px solid var(--border);
+  margin:14px 0;overflow-x:auto;display:flex;justify-content:center;
+}
+.sld-tree svg{max-width:100%}
+.sld-goal{fill:var(--surf2);stroke:var(--purple);stroke-width:2}
+.sld-goal.empty{stroke:var(--green);fill:var(--gdim);stroke-width:3}
+.sld-goal.fail{stroke:var(--red);fill:var(--rdim)}
+.sld-text{fill:var(--txt);font-family:'JetBrains Mono',monospace;font-size:11px;text-anchor:middle;dominant-baseline:central;font-weight:600}
+.sld-text.empty-t{fill:var(--green);font-size:14px}
+.sld-text.fail-t{fill:var(--red)}
+.sld-edge{stroke:var(--dim);stroke-width:1.5;fill:none}
+.sld-label{fill:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:9px}
+
+/* Theorem/proof boxes */
+.theorem{
+  background:linear-gradient(135deg,var(--ydim),transparent);
+  border:2px solid var(--yellow);border-radius:8px;
+  padding:16px 20px;margin:18px 0;
+}
+.theorem .th-label{
+  color:var(--yellow);font-weight:700;font-size:0.85rem;
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;
+}
+
+/* Summary table */
+.summary-tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem}
+.summary-tbl th,.summary-tbl td{padding:10px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}
+.summary-tbl th{background:var(--surf);color:var(--orange);font-weight:600}
+.summary-tbl tr:nth-child(even) td{background:var(--surf)}
+.summary-tbl code{background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:0.85em}
+
+/* Steps */
+.steps{counter-reset:step;list-style:none;padding-left:0;margin:14px 0}
+.steps li{counter-increment:step;position:relative;padding:8px 0 8px 44px;margin-bottom:4px;border-left:1px solid var(--border);margin-left:16px}
+.steps li::before{
+  content:counter(step);position:absolute;left:-16px;top:8px;
+  width:32px;height:32px;border-radius:50%;background:var(--odim);
+  color:var(--orange);font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--orange);font-family:'JetBrains Mono',monospace;
+}
+
+/* Compare cells */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+@media (max-width:720px){.compare-grid{grid-template-columns:1fr}}
+.compare-cell{padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--surf)}
+.compare-cell.bad{border-color:var(--red);background:linear-gradient(180deg,rgba(248,81,73,.06),transparent)}
+.compare-cell.good{border-color:var(--green);background:linear-gradient(180deg,rgba(63,185,80,.06),transparent)}
+
+/* Line-by-line code commentary */
+.line-by-line{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  font-family:'JetBrains Mono',monospace;font-size:0.83rem;
+}
+.line-by-line .lcode{
+  background:#060a10;padding:8px 12px;border-bottom:1px solid var(--border);
+  white-space:pre;color:var(--txt);
+}
+.line-by-line .lexpl{
+  background:var(--surf);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:0.9rem;color:var(--muted);
+}
+.line-by-line>div:nth-last-child(-n+2){border-bottom:none}
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 4</div>
+  <h1>Θεωρία &amp; <em>Semantics</em></h1>
+  <p>Από την Κατηγορηματική Λογική Πρώτης Τάξης μέχρι την SLD-Ανάλυση. Η μαθηματική θεμελίωση της Prolog — και γιατί δουλεύει.</p>
+  <div class="chips">
+    <span class="chip">FOL</span>
+    <span class="chip">Horn Clauses</span>
+    <span class="chip">Herbrand</span>
+    <span class="chip">Fixpoint</span>
+    <span class="chip">SLD</span>
+    <span class="chip">CLP</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#fol">1. FOL: Σύνταξη</a>
+  <a href="#wff">2. WFF &amp; Ποσοδείκτες</a>
+  <a href="#clauses">3. Λεκτικά &amp; Προτάσεις</a>
+  <a href="#mts">4. Μοντελοθεωρητική</a>
+  <a href="#fixpoint">5. Σταθερό Σημείο</a>
+  <a href="#sld">6. SLD-Ανάλυση</a>
+  <a href="#equiv">7. Ισοδυναμία</a>
+  <a href="#clp">8. CLP</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Στο κεφάλαιο αυτό ανοίγουμε το "κουτί" της Prolog για να δούμε <strong>γιατί δουλεύει</strong>. Η Prolog δεν είναι απλώς μια γλώσσα προγραμματισμού — είναι ένα <em>μαθηματικό σύστημα</em>. Κάθε εκτέλεση είναι, με μαθηματική ακρίβεια, μια <strong>λογική απόδειξη</strong>.</p>
+  <p>Θα δούμε τρεις διαφορετικές αλλά <em>ισοδύναμες</em> προσεγγίσεις στη σημασιολογία ενός λογικού προγράμματος. Αυτή η ισοδυναμία είναι από τα ωραιότερα αποτελέσματα στην επιστήμη υπολογιστών.</p>
+
+  <div class="exam">
+    <div class="hd">📚 Τι θα χρειαστείς για τις εξετάσεις</div>
+    <ul style="margin:0">
+      <li>Τους <strong>τυπικούς ορισμούς</strong> όρου, ατόμου, wff, πρότασης, Horn</li>
+      <li>Πώς να βρίσκεις <strong>Herbrand Universe</strong> και <strong>Base</strong> ενός προγράμματος</li>
+      <li>Πώς να υπολογίζεις <strong>ελάχιστο μοντέλο Herbrand</strong> με <em>επαναληπτική εφαρμογή του T_P</em></li>
+      <li>Τι είναι <strong>αντικατάσταση, στιγμιότυπο, ενοποιητής, mgu</strong></li>
+      <li>Πώς να γράφεις δέντρο SLD-ανάλυσης</li>
+      <li>Πώς λύνεται <strong>πρόβλημα CSP με CLP</strong> (8-βασίλισσες σε ECLiPSe)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 1 · FOL ΣΥΝΤΑΞΗ                          ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="fol">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">📜</div>
+    <h2>1. Κατηγορηματική Λογική Πρώτης Τάξης</h2>
+  </div>
+
+  <p>Η <strong>Κατηγορηματική Λογική Πρώτης Τάξης (First-Order Logic, FOL)</strong> είναι το μαθηματικό υπόβαθρο της Prolog. Θα ορίσουμε αυστηρά τα συντακτικά της στοιχεία.</p>
+
+  <h3>1.1 Τα Τρία Σύνολα Συμβόλων</h3>
+
+  <p>Μια γλώσσα πρώτης τάξης αποτελείται από τρία ξεχωριστά σύνολα:</p>
+
+  <div class="math">
+    <span class="set">P</span> = σύνολο <em>κατηγορημάτων</em> (predicates)<br>
+    <span class="set">F</span> = σύνολο <em>συναρτησιακών συμβόλων</em> (function symbols)<br>
+    <span class="set">V</span> = σύνολο <em>μεταβλητών</em> (variables)
+  </div>
+
+  <p>Σε κάθε κατηγόρημα ή συναρτησιακό σύμβολο αντιστοιχεί ένας ακέραιος <strong>n ≥ 0</strong> που λέγεται <strong>βαθμός</strong> ή <strong>τάξη (arity)</strong>. Γράφουμε <code>k/n</code> για κατηγόρημα/σύμβολο k με arity n.</p>
+
+  <div class="note">
+    <div class="hd">📝 Σταθερές</div>
+    <p>Τα συναρτησιακά σύμβολα τάξης 0 (δηλαδή χωρίς ορίσματα) αναφέρονται και ως <strong>σταθερές (constants)</strong>. Π.χ. <code>socrates/0</code> ή <code>1/0</code> είναι σταθερές.</p>
+  </div>
+
+  <h3>1.2 Ορισμός Όρου (Term)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Αναδρομικός Ορισμός: ΟΡΟΣ</div>
+    <ol style="margin:6px 0">
+      <li>Αν <span class="var">x</span> ∈ V, τότε το <span class="var">x</span> είναι όρος</li>
+      <li>Αν c/0 ∈ F, τότε το c είναι όρος (σταθερά)</li>
+      <li>Αν f/n ∈ F (n &gt; 0) και t₁, t₂, …, tₙ είναι όροι, τότε το <strong>f(t₁, t₂, …, tₙ)</strong> είναι όρος</li>
+    </ol>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Παραδείγματα όρων με f/1, g/1, a/0, x ∈ V</span>
+a              <span class="cm">% σταθερά</span>
+x              <span class="cm">% μεταβλητή</span>
+f(x)           <span class="cm">% f εφαρμοσμένο σε x</span>
+g(f(x))        <span class="cm">% σύνθεση</span>
+f(g(a))        <span class="cm">% σύνθεση</span></code></div>
+
+  <h3>1.3 Ορισμός Ατομικού Τύπου / Ατόμου (Atom)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Αναδρομικός Ορισμός: ΑΤΟΜΟ</div>
+    <ol style="margin:6px 0">
+      <li>Αν p/0 ∈ P, τότε το p είναι άτομο</li>
+      <li>Αν p/n ∈ P (n &gt; 0) και t₁, t₂, …, tₙ είναι όροι, τότε το <strong>p(t₁, t₂, …, tₙ)</strong> είναι άτομο</li>
+    </ol>
+  </div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Όρος vs Άτομο — Η Κρίσιμη Διάκριση</div>
+    <ul style="margin:6px 0">
+      <li><strong>Όρος</strong> = κάτι που <em>είναι</em> (π.χ. αντικείμενο, αριθμός). Δεν έχει τιμή αλήθειας.</li>
+      <li><strong>Άτομο</strong> = κάτι που <em>μπορεί να αληθεύει</em> (π.χ. σχέση, ιδιότητα). Έχει τιμή true/false.</li>
+    </ul>
+    <p>Διαφορά: <code>parent(tom, bob)</code> είναι <em>άτομο</em> (true ή false). <code>tom</code> και <code>bob</code> είναι <em>όροι</em> (αντικείμενα).</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 2 · WFF & ΠΟΣΟΔΕΙΚΤΕΣ                   ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="wff">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">📐</div>
+    <h2>2. Καλοσχηματισμένοι Τύποι (WFF) &amp; Ποσοδείκτες</h2>
+  </div>
+
+  <h3>2.1 Λογικά Συνδετικά</h3>
+
+  <p>Με τα ακόλουθα <strong>συνδετικά (connectives)</strong> κατασκευάζουμε πιο σύνθετους τύπους από άτομα:</p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Σύμβολο</th><th>Όνομα</th><th>Αγγλικά</th><th>Διαβάζεται</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>¬</strong></td><td>άρνηση</td><td>negation</td><td>"όχι"</td></tr>
+      <tr><td><strong>∧</strong></td><td>σύζευξη</td><td>conjunction</td><td>"και"</td></tr>
+      <tr><td><strong>∨</strong></td><td>διάζευξη</td><td>disjunction</td><td>"ή"</td></tr>
+      <tr><td><strong>→</strong></td><td>συνεπαγωγή</td><td>implication</td><td>"αν ... τότε ..."</td></tr>
+      <tr><td><strong>↔</strong></td><td>ισοδυναμία</td><td>equivalence</td><td>"αν και μόνο αν"</td></tr>
+      <tr><td><strong>∀</strong></td><td>καθολικός</td><td>universal quantifier</td><td>"για κάθε"</td></tr>
+      <tr><td><strong>∃</strong></td><td>υπαρξιακός</td><td>existential quantifier</td><td>"υπάρχει"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Ορισμός WFF (Well-Formed Formula)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Αναδρομικός Ορισμός: WFF</div>
+    <ol style="margin:6px 0">
+      <li>Αν Α είναι άτομο, τότε το Α είναι τύπος (atomic formula)</li>
+      <li>Αν F και G είναι τύποι, τότε και τα <strong>(¬F)</strong>, <strong>(F∧G)</strong>, <strong>(F∨G)</strong>, <strong>(F→G)</strong>, <strong>(F↔G)</strong> είναι τύποι</li>
+      <li>Αν F είναι τύπος και <span class="var">x</span> ∈ V, τότε και τα <strong>(∀x F)</strong> και <strong>(∃x F)</strong> είναι τύποι</li>
+    </ol>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Παραδείγματα τύπων με x,y ∈ V, p/2, q/1, r/1 ∈ P, a/0, f/1, g/1 ∈ F</span>
+∀x ∃y  (p(x, y) → q(x))
+¬ ∃x (p(x, a) ∧ q(f(x)))
+∀x  (p(x, g(x)) ← q(x) ∧ ¬r(x))</code></div>
+
+  <div class="note">
+    <div class="hd">📝 Ιεραρχία Προτεραιότητας</div>
+    <p>Για να μειώνουμε παρενθέσεις, υπονοούμε ιεραρχία:</p>
+    <div class="math">
+      <span class="op">¬</span> &gt; <span class="op">∀, ∃</span> &gt; <span class="op">∧</span> &gt; <span class="op">∨</span> &gt; <span class="op">→</span> &gt; <span class="op">↔</span>
+    </div>
+    <p>Έτσι το <code>∀x p(x) ∧ q(x) → r(x)</code> διαβάζεται ως <code>((∀x p(x)) ∧ q(x)) → r(x)</code>.</p>
+  </div>
+
+  <h3>2.3 Εμβέλεια (Scope) και Δεσμευμένες/Ελεύθερες Μεταβλητές</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμοί</div>
+    <ul style="margin:6px 0">
+      <li><strong>Εμβέλεια (scope)</strong> ενός ποσοδείκτη ∀x ή ∃x σε τύπο <strong>∀x F</strong> είναι ο τύπος F.</li>
+      <li><strong>Δεσμευμένη εμφάνιση (bound)</strong> μεταβλητής x είναι μια εμφάνιση είτε αμέσως μετά ποσοδείκτη, είτε <em>μέσα</em> στην εμβέλεια ποσοδείκτη που ποσοτικοποιεί αυτή τη μεταβλητή.</li>
+      <li><strong>Ελεύθερη εμφάνιση (free)</strong> είναι κάθε άλλη.</li>
+      <li><strong>Κλειστός τύπος (closed formula)</strong> = δεν περιέχει ελεύθερες εμφανίσεις μεταβλητών.</li>
+    </ul>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Παράδειγμα Εξετάσεων</div>
+    <p>Στον τύπο: <code>∃x (p(x, y) ∧ q(x))</code></p>
+    <ul style="margin:6px 0">
+      <li><strong>Πρώτη x</strong> (αμέσως μετά ∃): δεσμευμένη</li>
+      <li><strong>Δεύτερη x</strong> (μέσα σε <code>p(x, y)</code>): δεσμευμένη (μέσα σε scope του ∃x)</li>
+      <li><strong>Τρίτη x</strong> (μέσα σε <code>q(x)</code>): δεσμευμένη</li>
+      <li><strong>Η y</strong>: <em>ελεύθερη</em></li>
+    </ul>
+    <p>Άρα ο τύπος <code>∃x (p(x, y) ∧ q(x))</code> δεν είναι κλειστός. Αντίθετα, ο <code>∀y ∃x (p(x, y) ∧ q(x))</code> είναι κλειστός.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="fol"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 3 · ΛΕΚΤΙΚΑ & ΠΡΟΤΑΣΕΙΣ                 ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="clauses">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">🧩</div>
+    <h2>3. Λεκτικά, Προτάσεις, και Horn Clauses</h2>
+  </div>
+
+  <h3>3.1 Λεκτικό (Literal)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΛΕΚΤΙΚΟ</div>
+    <p>Ένα <strong>λεκτικό (literal)</strong> είναι είτε ένα άτομο, είτε η άρνηση ενός ατόμου.</p>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Παραδείγματα λεκτικών</span>
+p(a)           <span class="cm">% θετικό λεκτικό</span>
+¬p(a)          <span class="cm">% αρνητικό λεκτικό</span>
+q(x, f(y))     <span class="cm">% θετικό λεκτικό</span>
+¬r(z)          <span class="cm">% αρνητικό λεκτικό</span></code></div>
+
+  <h3>3.2 Πρόταση (Clause)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΠΡΟΤΑΣΗ</div>
+    <p>Μια <strong>πρόταση (clause)</strong> είναι ένας τύπος της μορφής:</p>
+    <div class="math">
+      <span class="quant">∀</span>x₁ <span class="quant">∀</span>x₂ … <span class="quant">∀</span>xₛ (L₁ <span class="op">∨</span> L₂ <span class="op">∨</span> … <span class="op">∨</span> Lₘ)
+    </div>
+    <p>όπου τα Lᵢ είναι λεκτικά και τα xⱼ είναι όλες οι μεταβλητές που εμφανίζονται στα λεκτικά.</p>
+  </div>
+
+  <p>Δηλαδή: <strong>καθολική ποσοτικοποίηση μιας διάζευξης λεκτικών</strong>.</p>
+
+  <h3>3.3 Εναλλακτική Γραφή — Implication Form</h3>
+
+  <p>Αν χωρίσουμε τα λεκτικά μιας πρότασης σε θετικά Aᵢ και αρνητικά ¬Bⱼ:</p>
+
+  <div class="math">
+    (A₁ <span class="op">∨</span> … <span class="op">∨</span> A_k <span class="op">∨</span> ¬B₁ <span class="op">∨</span> … <span class="op">∨</span> ¬B_n)<br>
+    ⇕<br>
+    A₁, …, A_k <span class="op">←</span> B₁, …, B_n
+  </div>
+
+  <p>Το αριστερό μέλος (Aᵢ) λέγεται <strong>κεφαλή (head)</strong>, το δεξί (Bⱼ) <strong>σώμα (body)</strong>.</p>
+
+  <h3>3.4 Κατηγοριοποίηση Προτάσεων</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>k (θετικά)</th><th>n (αρνητικά)</th><th>Όνομα</th><th>Μορφή</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>k = 1</code></td><td>n ≥ 0</td><td><strong>Οριστική (Definite)</strong></td><td><code>A ← B₁, …, B_n</code></td></tr>
+      <tr><td><code>k = 1</code></td><td>n = 0</td><td><strong>Μοναδιαία (Unit) / Γεγονός</strong></td><td><code>A ←</code></td></tr>
+      <tr><td><code>k = 0</code></td><td>n ≥ 1</td><td><strong>Οριστικός Στόχος (Goal)</strong></td><td><code>← B₁, …, B_n</code></td></tr>
+      <tr><td><code>k = 0</code></td><td>n = 0</td><td><strong>Κενή Πρόταση (□)</strong></td><td><code>←</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.5 Πρόταση Horn</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΠΡΟΤΑΣΗ HORN</div>
+    <p>Μια <strong>πρόταση Horn</strong> είναι είτε <em>οριστική πρόταση</em> είτε <em>οριστικός στόχος</em>. Δηλαδή πρόταση με <strong>το πολύ ένα θετικό λεκτικό</strong>.</p>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί η Prolog περιορίζεται σε Horn;</div>
+    <p>Οι προτάσεις Horn έχουν μια ζωτική ιδιότητα: το <strong>ελάχιστο μοντέλο</strong> ενός συνόλου Horn προτάσεων υπάρχει και είναι μοναδικό. Επιπλέον, η SLD-ανάλυση είναι <em>πλήρης</em> για Horn προτάσεις. Όλη η μαγεία της Prolog στηρίζεται σε αυτό.</p>
+  </div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Μνημονικός: Από Πρόταση Horn σε Prolog</div>
+    <table class="summary-tbl" style="margin:8px 0">
+      <thead><tr><th>Λογική</th><th>Prolog</th></tr></thead>
+      <tbody>
+        <tr><td><code>A ←</code></td><td><code>A.</code> (γεγονός)</td></tr>
+        <tr><td><code>A ← B₁, …, B_n</code></td><td><code>A :- B₁, …, B_n.</code> (κανόνας)</td></tr>
+        <tr><td><code>← B₁, …, B_n</code></td><td><code>?- B₁, …, B_n.</code> (ερώτηση)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.6 Οριστικό Πρόγραμμα</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Ένα <strong>οριστικό πρόγραμμα (definite program)</strong> είναι ένα σύνολο οριστικών προτάσεων. Αυτό είναι ακριβώς το είδος προγράμματος που μπορεί να γράψει η Prolog.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="clauses"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 4 · ΜΟΝΤΕΛΟΘΕΩΡΗΤΙΚΗ                    ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="mts">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">🌌</div>
+    <h2>4. Μοντελοθεωρητική Σημασιολογία &amp; Herbrand</h2>
+  </div>
+
+  <p>Η <strong>μοντελοθεωρητική σημασιολογία (model-theoretic semantics)</strong> δίνει νόημα σε ένα πρόγραμμα μέσω <em>μοντέλων</em> — ερμηνείες όπου το πρόγραμμα αληθεύει.</p>
+
+  <h3>4.1 Πλήρως Αποτιμημένοι (Ground) Όροι</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Ένας όρος ή τύπος που <strong>δεν περιέχει μεταβλητές</strong> λέγεται <strong>πλήρως αποτιμημένος (ground)</strong>.</p>
+  </div>
+
+  <h3>4.2 Σύμπαν Herbrand (U_L)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: HERBRAND UNIVERSE</div>
+    <p>Δοθείσης γλώσσας L, το <strong>σύμπαν Herbrand U_L</strong> είναι το σύνολο <em>όλων</em> των ground όρων που κατασκευάζονται χρησιμοποιώντας τα σύμβολα της L (συμπεριλαμβανομένων σταθερών).</p>
+    <p style="font-size:0.88rem">Αν δεν υπάρχει σταθερά στη γλώσσα, εισάγουμε μια αυθαίρετη (π.χ. <code>a</code>) ώστε το U_L να μην είναι κενό.</p>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Παράδειγμα Υπολογισμού U_L</div>
+    <p>Έστω L με σύμβολα: <code>f/1, a/0, p/1</code>. Τότε:</p>
+    <div class="math">
+      U_L = { a, f(a), f(f(a)), f(f(f(a))), … } &nbsp;= &nbsp;<span class="set">άπειρο</span>
+    </div>
+    <p>Με σύμβολα μόνο <code>a/0, b/0, c/0, p/2</code> (χωρίς συναρτησιακά &gt; 0):</p>
+    <div class="math">
+      U_L = { a, b, c } &nbsp;(πεπερασμένο)
+    </div>
+  </div>
+
+  <h3>4.3 Βάση Herbrand (B_L)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: HERBRAND BASE</div>
+    <p>Η <strong>βάση Herbrand B_L</strong> είναι το σύνολο όλων των <em>ground ατόμων</em> με κατηγορήματα της L και ορίσματα από το U_L.</p>
+  </div>
+
+  <div class="exam">
+    <div class="hd">📚 Παράδειγμα (συνέχεια)</div>
+    <p>Με L έχοντας: <code>a/0, b/0, c/0, p/1, q/1, r/1</code>:</p>
+    <div class="math">
+      U_L = { a, b, c }<br>
+      B_L = { p(a), p(b), p(c), q(a), q(b), q(c), r(a), r(b), r(c) }
+    </div>
+  </div>
+
+  <h3>4.4 Ερμηνεία Herbrand</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Μια <strong>ερμηνεία Herbrand (Herbrand interpretation)</strong> είναι ένα <em>υποσύνολο</em> Ι ⊆ B_L. Διαισθητικά: τα άτομα που "αληθεύουν" σύμφωνα με την Ι.</p>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Για B_L = {p(a), p(b), p(c), q(a), q(b), q(c), r(a), r(b), r(c)}</span>
+<span class="cm">% μία ερμηνεία I μπορεί να είναι:</span>
+I = { p(a), p(c), q(c), r(b) }</code></div>
+
+  <h3>4.5 Τιμή Αλήθειας ενός Κλειστού Τύπου σε μια Ερμηνεία</h3>
+
+  <p>Δοθείσης ερμηνείας Ι, ένας κλειστός τύπος F αληθεύει στην Ι σύμφωνα με αναδρομικούς κανόνες:</p>
+
+  <ol class="steps">
+    <li>Αν F = A (ground άτομο), τότε αληθεύει iff Α ∈ Ι</li>
+    <li>Αν F = ¬G, τότε αληθεύει iff G δεν αληθεύει στην Ι</li>
+    <li>Αν F = G ∧ H, τότε αληθεύει iff <em>και τα δύο</em> G, H αληθεύουν</li>
+    <li>Αν F = G ∨ H, τότε αληθεύει iff τουλάχιστον ένα από G, H αληθεύει</li>
+    <li>Αν F = G → H, τότε αληθεύει iff (G δεν αληθεύει) ή (H αληθεύει)</li>
+    <li>Αν F = G ↔ H, τότε αληθεύει iff (G και H έχουν ίδια τιμή)</li>
+    <li>Αν F = ∀x G, τότε αληθεύει iff για όλα τα d ∈ U_L, το G[x/d] αληθεύει</li>
+    <li>Αν F = ∃x G, τότε αληθεύει iff υπάρχει d ∈ U_L τέτοιο ώστε το G[x/d] αληθεύει</li>
+  </ol>
+
+  <h3>4.6 Μοντέλο Herbrand</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Μια ερμηνεία Ι λέγεται <strong>μοντέλο Herbrand (Herbrand model)</strong> ενός συνόλου τύπων S, αν κάθε τύπος του S αληθεύει στην Ι.</p>
+  </div>
+
+  <h3>4.7 Ελάχιστο Μοντέλο Herbrand (M_P)</h3>
+
+  <div class="theorem">
+    <div class="th-label">🎓 Θεώρημα (Van Emden &amp; Kowalski, 1976)</div>
+    <p>Αν P είναι οριστικό πρόγραμμα, τότε η <strong>τομή</strong> όλων των μοντέλων Herbrand του P είναι κι αυτή μοντέλο.</p>
+    <p>Αυτή η τομή λέγεται <strong>ελάχιστο μοντέλο Herbrand (least Herbrand model)</strong>, συμβολίζεται <strong>M_P</strong>, και ταυτίζεται με:</p>
+    <div class="math">
+      M_P = { A ∈ B_L &nbsp;|&nbsp; P ⊨ A }
+    </div>
+    <p>(όλα τα ground άτομα που είναι <em>λογικές συνέπειες</em> του P)</p>
+  </div>
+
+  <h3>4.8 Πλήρες Παράδειγμα Υπολογισμού M_P</h3>
+
+  <div class="exam">
+    <div class="hd">📚 Δουλειά Εξετάσεων</div>
+    <p>Δίνεται το οριστικό πρόγραμμα P:</p>
+    <div class="cb"><code>p(x) ← q(x)
+q(x) ← r(x)
+p(a) ←
+q(b) ←
+r(c) ←</code></div>
+
+    <p><strong>Βήμα 1: Υπολογισμός U_L</strong> — Σύμβολα: <code>a, b, c, p/1, q/1, r/1</code>. Δεν υπάρχουν συναρτησιακά τάξης &gt; 0.</p>
+    <div class="math">U_L = { a, b, c }</div>
+
+    <p><strong>Βήμα 2: Υπολογισμός B_L</strong></p>
+    <div class="math">B_L = { p(a), p(b), p(c), q(a), q(b), q(c), r(a), r(b), r(c) }</div>
+
+    <p><strong>Βήμα 3: Ποια άτομα είναι λογικές συνέπειες;</strong></p>
+    <ul>
+      <li><code>p(a)</code>: άμεσο γεγονός ✓</li>
+      <li><code>q(b)</code>: άμεσο γεγονός ✓</li>
+      <li><code>r(c)</code>: άμεσο γεγονός ✓</li>
+      <li><code>q(c)</code>: από <code>q(x) ← r(x)</code> και <code>r(c)</code> ✓</li>
+      <li><code>p(c)</code>: από <code>p(x) ← q(x)</code> και <code>q(c)</code> ✓</li>
+      <li><code>p(b)</code>: από <code>p(x) ← q(x)</code> και <code>q(b)</code> ✓</li>
+    </ul>
+    <p><strong>Άρα:</strong></p>
+    <div class="math">M_P = { p(a), p(b), p(c), q(b), q(c), r(c) }</div>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Δεν είναι όλα ground άτομα στο M_P</div>
+    <p>Τα <code>q(a), r(a), r(b)</code> <strong>δεν</strong> ανήκουν στο M_P γιατί <strong>δεν αποδεικνύονται</strong> από το πρόγραμμα. Αυτό είναι το <em>"Closed World Assumption"</em> — ό,τι δεν αποδεικνύεται είναι ψευδές.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="model-theoretic"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 5 · ΣΗΜΑΣΙΟΛΟΓΙΑ ΣΤΑΘΕΡΟΥ ΣΗΜΕΙΟΥ     ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="fixpoint">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">📈</div>
+    <h2>5. Σημασιολογία Σταθερού Σημείου (Fixpoint)</h2>
+  </div>
+
+  <p>Η μοντελοθεωρητική σημασιολογία μας λέει <em>τι</em> είναι το M_P, αλλά όχι <em>πώς να το υπολογίσουμε</em>. Η σημασιολογία σταθερού σημείου δίνει <strong>κατασκευαστικό</strong> τρόπο.</p>
+
+  <h3>5.1 Ο Τελεστής T_P</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΤΕΛΕΣΤΗΣ T_P</div>
+    <p>Δοθέντος οριστικού προγράμματος P, ορίζουμε τον <strong>τελεστή T_P</strong> ως:</p>
+    <div class="math">
+      T_P: 2<sup>B_L</sup> → 2<sup>B_L</sup><br><br>
+      T_P(I) = { A ∈ B_L  |  A ← A₁, …, Aₙ είναι<br>
+      πλήρως αποτιμημένο στιγμιότυπο πρότασης του P<br>
+      και { A₁, …, Aₙ } ⊆ I }
+    </div>
+  </div>
+
+  <p>Σε ανθρώπινη γλώσσα: <em>"το T_P(Ι) είναι όλα τα άτομα που μπορούν να αποδειχθούν σε <strong>ένα βήμα</strong> ξεκινώντας από αυτά που έχουμε στο Ι."</em></p>
+
+  <h3>5.2 Ελάχιστο Σταθερό Σημείο (Least Fixpoint)</h3>
+
+  <p>Ένα <strong>σταθερό σημείο (fixpoint)</strong> του T_P είναι μια ερμηνεία Ι τέτοια ώστε T_P(Ι) = Ι.</p>
+
+  <div class="theorem">
+    <div class="th-label">🎓 Θεώρημα Knaster-Tarski (εφαρμοσμένο)</div>
+    <p>Επειδή ο T_P είναι <strong>μονότονος</strong> και <strong>συνεχής</strong>, έχει ελάχιστο σταθερό σημείο, το οποίο υπολογίζεται ως:</p>
+    <div class="math">
+      <strong>lfp(T_P) = T_P↑ω = ⋃ { T_P<sup>n</sup>(∅) : n ≥ 0 }</strong>
+    </div>
+    <p>Δηλαδή: ξεκινάς από το κενό σύνολο και εφαρμόζεις το T_P επανειλημμένα.</p>
+  </div>
+
+  <h3>5.3 Πλήρης Υπολογισμός με Επαναλήψεις</h3>
+
+  <div class="exam">
+    <div class="hd">📚 Υπολογισμός lfp(T_P) — Το ίδιο πρόγραμμα όπως πριν</div>
+    <p>P:</p>
+    <div class="cb"><code>p(x) ← q(x)
+q(x) ← r(x)
+p(a) ←
+q(b) ←
+r(c) ←</code></div>
+
+    <p>Ξεκινάμε από Ι₀ = ∅ και εφαρμόζουμε το T_P:</p>
+
+    <table class="tp-iter">
+      <thead>
+        <tr><th>Βήμα</th><th>Σύνολο</th><th>Νέα άτομα</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="step">T_P(∅)</td>
+          <td>{ p(a), q(b), r(c) }</td>
+          <td class="new">+ p(a), q(b), r(c)<br>(από τα γεγονότα — δεν χρειάζονται συνθήκες)</td>
+        </tr>
+        <tr>
+          <td class="step">T_P²(∅)</td>
+          <td>{ p(a), q(b), r(c), p(b), q(c) }</td>
+          <td class="new">+ p(b) (από p(x)←q(x) και q(b))<br>+ q(c) (από q(x)←r(x) και r(c))</td>
+        </tr>
+        <tr>
+          <td class="step">T_P³(∅)</td>
+          <td>{ p(a), q(b), r(c), p(b), q(c), p(c) }</td>
+          <td class="new">+ p(c) (από p(x)←q(x) και q(c))</td>
+        </tr>
+        <tr>
+          <td class="step">T_P⁴(∅)</td>
+          <td>{ p(a), q(b), r(c), p(b), q(c), p(c) }</td>
+          <td class="new">— (καμία αλλαγή = σταθερό σημείο!)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Άρα:</strong></p>
+    <div class="math">
+      lfp(T_P) = { p(a), p(b), p(c), q(b), q(c), r(c) } = M_P ✓
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πώς ξέρω ότι έφτασα σε σταθερό σημείο;</div>
+    <p>Όταν T_P<sup>n+1</sup>(∅) = T_P<sup>n</sup>(∅) — δηλαδή <em>δεν προστίθεται κανένα νέο άτομο</em>. Σταμάτα και το αποτέλεσμα είναι το M_P.</p>
+  </div>
+
+  <div class="theorem">
+    <div class="th-label">🎓 Πρώτη Ισοδυναμία</div>
+    <div class="math">
+      M_P = lfp(T_P)
+    </div>
+    <p>Η μοντελοθεωρητική και η fixpoint σημασιολογία παράγουν το ίδιο αποτέλεσμα.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="fixpoint"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 6 · ΕΠΙΧΕΙΡΗΣΙΑΚΗ - SLD                ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="sld">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">⚙️</div>
+    <h2>6. Επιχειρησιακή Σημασιολογία: SLD-Ανάλυση</h2>
+  </div>
+
+  <p>Η <strong>επιχειρησιακή σημασιολογία</strong> αντιστοιχεί στην πραγματική εκτέλεση: η Prolog εφαρμόζει επαναλαμβανόμενα έναν <em>κανόνα συμπερασμού</em> — την <strong>SLD-ανάλυση</strong>.</p>
+
+  <h3>6.1 Αντικατάσταση (Substitution)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Μια <strong>αντικατάσταση θ</strong> είναι πεπερασμένο σύνολο της μορφής:</p>
+    <div class="math">
+      θ = { v₁/t₁, v₂/t₂, …, vₙ/tₙ }
+    </div>
+    <p>όπου τα vᵢ είναι διαφορετικές μεταβλητές και τα tᵢ είναι όροι διαφορετικοί από τα αντίστοιχα vᵢ.</p>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Παραδείγματα αντικαταστάσεων</span>
+θ = { x/a, y/f(b) }       <span class="cm">% x αντικαθίσταται με a, y με f(b)</span>
+σ = { x/y, z/g(x) }       <span class="cm">% x→y, z→g(x)</span>
+ε = { }                    <span class="cm">% κενή αντικατάσταση</span></code></div>
+
+  <h3>6.2 Στιγμιότυπο (Instance)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Αν Ε είναι όρος ή τύπος και θ αντικατάσταση, το <strong>Εθ</strong> προκύπτει αντικαθιστώντας <em>ταυτόχρονα</em> κάθε εμφάνιση vᵢ με το tᵢ. Λέγεται <strong>στιγμιότυπο</strong> του Ε.</p>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Έστω E = p(x, f(y)) και θ = { x/a, y/b }</span>
+Eθ = p(a, f(b))</code></div>
+
+  <h3>6.3 Παραλλαγή (Variant)</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός</div>
+    <p>Το Ε λέγεται <strong>παραλλαγή</strong> του F αν υπάρχουν αντικαταστάσεις θ, σ τέτοιες ώστε <code>E = Fθ</code> και <code>F = Eσ</code>.</p>
+    <p>Διαισθητικά: ίδια δομή, διαφορετικά ονόματα μεταβλητών.</p>
+  </div>
+
+  <h3>6.4 Σύνθεση Αντικαταστάσεων</h3>
+
+  <p>Αν θ = {u₁/s₁, …, uₘ/sₘ} και σ = {v₁/t₁, …, vₙ/tₙ}, η <strong>σύνθεση</strong> θσ είναι αυτό που προκύπτει:</p>
+  <ol>
+    <li>Σχηματίζω <code>{u₁/s₁σ, …, uₘ/sₘσ, v₁/t₁, …, vₙ/tₙ}</code></li>
+    <li>Διαγράφω uᵢ/sᵢσ όταν uᵢ = sᵢσ</li>
+    <li>Διαγράφω vⱼ/tⱼ όταν vⱼ ∈ {u₁, …, uₘ}</li>
+  </ol>
+
+  <h3>6.5 Ενοποιητής και mgu</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμοί</div>
+    <p>Έστω S = {E₁, …, Eₙ} σύνολο όρων ή ατόμων.</p>
+    <ul style="margin:6px 0">
+      <li><strong>Ενοποιητής (unifier)</strong>: μια αντικατάσταση θ τέτοια ώστε <strong>Sθ είναι μονοσύνολο</strong> (δηλαδή E₁θ = E₂θ = … = Eₙθ).</li>
+      <li><strong>Γενικότερος ενοποιητής (mgu)</strong>: ενοποιητής θ τέτοιος ώστε για κάθε άλλο ενοποιητή σ, υπάρχει γ με σ = θγ.</li>
+      <li><strong>Ενοποίηση</strong>: η διαδικασία υπολογισμού του mgu ενός συνόλου.</li>
+    </ul>
+  </div>
+
+  <div class="cb"><code><span class="cm">% Παράδειγμα</span>
+S = { p(x, b), p(a, y) }
+
+<span class="cm">% Ενοποιητής:</span>
+θ = { x/a, y/b }
+
+<span class="cm">% Sθ = { p(a, b) } — μονοσύνολο ✓</span>
+
+<span class="cm">% Είναι mgu γιατί κάθε άλλος ενοποιητής (π.χ. {x/a, y/b, z/c}) προκύπτει από αυτόν.</span></code></div>
+
+  <h3>6.6 Ο Κανόνας Συμπερασμού SLD</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΚΑΝΟΝΑΣ SLD</div>
+    <p>Έστω <strong>στόχος</strong> G = <code>← A₁, …, Aₘ, …, Aₖ</code> και <strong>πρόταση</strong> C = <code>A ← B₁, …, B_q</code>.</p>
+    <p>Αν θ είναι mgu των Aₘ και Α, τότε ο νέος στόχος G' που <strong>παράγεται (is derived)</strong> από τα G και C είναι:</p>
+    <div class="math">
+      G' = ← (A₁, …, A_{m-1}, B₁, …, B_q, A_{m+1}, …, A_k) θ
+    </div>
+  </div>
+
+  <div class="line-by-line">
+    <div class="lcode">G = ← A₁, …, Aₘ, …, Aₖ</div>
+    <div class="lexpl">Αρχικός στόχος: ζητάμε να αποδείξουμε όλα τα Aᵢ.</div>
+    <div class="lcode">Επιλέγω Aₘ (κάποιο)</div>
+    <div class="lexpl">Συνήθως Prolog επιλέγει το πρώτο (αριστερότερο).</div>
+    <div class="lcode">Βρίσκω πρόταση A ← B₁, …, B_q</div>
+    <div class="lexpl">Όπου η κεφαλή Α ενοποιείται με Aₘ μέσω θ.</div>
+    <div class="lcode">Αντικαθιστώ Aₘ με B₁, …, B_q</div>
+    <div class="lexpl">Το σώμα της πρότασης γίνεται νέοι υπο-στόχοι.</div>
+    <div class="lcode">Εφαρμόζω θ σε όλα</div>
+    <div class="lexpl">Η αντικατάσταση διαδίδεται σε όλους τους νέους και υπάρχοντες στόχους.</div>
+  </div>
+
+  <h3>6.7 SLD-Απόρριψη και Σύνολο Επιτυχίας</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμοί</div>
+    <ul style="margin:6px 0">
+      <li><strong>SLD-απόρριψη (SLD-refutation)</strong> του P ∪ {G}: μια ακολουθία εφαρμογών του κανόνα SLD που καταλήγει στην <strong>κενή πρόταση □</strong>.</li>
+      <li><strong>Σύνολο Επιτυχίας SS(P)</strong>: το σύνολο των ground ατόμων A τέτοιων ώστε υπάρχει SLD-απόρριψη του P ∪ {←A}.</li>
+    </ul>
+  </div>
+
+  <h3>6.8 Παράδειγμα: SLD-Δέντρο</h3>
+
+  <p>Για το πρόγραμμα family με στόχο <code>← predecessor(tom, pat)</code>, ένα τυπικό SLD-δέντρο:</p>
+
+  <div class="sld-tree">
+    <svg width="500" height="280" viewBox="0 0 500 280">
+      <!-- Root -->
+      <rect x="180" y="10" width="140" height="35" class="sld-goal" rx="4"/>
+      <text class="sld-text" x="250" y="28">← predecessor(tom,pat)</text>
+
+      <!-- Two branches -->
+      <line x1="220" y1="45" x2="100" y2="75" class="sld-edge"/>
+      <line x1="280" y1="45" x2="400" y2="75" class="sld-edge"/>
+      <text class="sld-label" x="135" y="62">clause 1</text>
+      <text class="sld-label" x="335" y="62">clause 2</text>
+
+      <!-- Left: ← parent(tom, pat) -->
+      <rect x="20" y="80" width="160" height="35" class="sld-goal fail" rx="4"/>
+      <text class="sld-text fail-t" x="100" y="98">← parent(tom,pat)</text>
+      <line x1="100" y1="115" x2="100" y2="135" class="sld-edge"/>
+      <text class="sld-label" x="105" y="128">fail</text>
+      <text class="sld-text fail-t" x="100" y="155">no</text>
+
+      <!-- Right: ← parent(tom, Y), predecessor(Y, pat) -->
+      <rect x="290" y="80" width="200" height="35" class="sld-goal" rx="4"/>
+      <text class="sld-text" x="390" y="98">← parent(tom,Y),pred(Y,pat)</text>
+
+      <line x1="390" y1="115" x2="390" y2="140" class="sld-edge"/>
+      <text class="sld-label" x="395" y="130">Y=bob</text>
+
+      <rect x="310" y="145" width="160" height="35" class="sld-goal" rx="4"/>
+      <text class="sld-text" x="390" y="163">← pred(bob,pat)</text>
+
+      <line x1="390" y1="180" x2="390" y2="200" class="sld-edge"/>
+      <text class="sld-label" x="395" y="193">clause 1</text>
+
+      <rect x="310" y="205" width="160" height="35" class="sld-goal" rx="4"/>
+      <text class="sld-text" x="390" y="223">← parent(bob,pat)</text>
+
+      <line x1="390" y1="240" x2="390" y2="258" class="sld-edge"/>
+      <text class="sld-label" x="395" y="252">fact</text>
+
+      <circle cx="390" cy="265" r="10" class="sld-goal empty"/>
+      <text class="sld-text empty-t" x="390" y="265">□</text>
+    </svg>
+  </div>
+
+  <p>Η αριστερή διακλάδωση αποτυγχάνει (δεν υπάρχει <code>parent(tom, pat)</code>). Η δεξιά επιτυγχάνει μέσω <code>Y = bob</code>, οδηγώντας στην κενή πρόταση □ → <strong>επιτυχής απόδειξη</strong>.</p>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="operational"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 7 · ΙΣΟΔΥΝΑΜΙΑ                          ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="equiv">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">🔄</div>
+    <h2>7. Η Ισοδυναμία των Τριών Σημασιολογιών</h2>
+  </div>
+
+  <p>Έχουμε ορίσει τρεις φαινομενικά διαφορετικές προσεγγίσεις στη σημασιολογία:</p>
+  <ul>
+    <li><strong>M_P</strong> — μοντελοθεωρητική: ελάχιστο μοντέλο Herbrand</li>
+    <li><strong>lfp(T_P)</strong> — fixpoint: ελάχιστο σταθερό σημείο του τελεστή T_P</li>
+    <li><strong>SS(P)</strong> — επιχειρησιακή: σύνολο επιτυχίας SLD-ανάλυσης</li>
+  </ul>
+
+  <div class="theorem">
+    <div class="th-label">🎓 Θεμελιώδες Θεώρημα Λογικού Προγραμματισμού</div>
+    <p>Για κάθε οριστικό πρόγραμμα P:</p>
+    <div class="tri-eq">
+      <div class="tri-cell m">M_P</div>
+      <div class="tri-eq-sym">=</div>
+      <div class="tri-cell f">lfp(T_P)</div>
+      <div class="tri-eq-sym">=</div>
+      <div class="tri-cell s">SS(P)</div>
+    </div>
+    <p style="text-align:center;margin-top:8px">Οι τρεις σημασιολογίες είναι <strong>ισοδύναμες</strong>.</p>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί είναι σπουδαίο</div>
+    <p>Αυτή η ισοδυναμία είναι <em>ορθότητα</em> και <em>πληρότητα</em> της SLD-ανάλυσης. Σημαίνει ότι ό,τι αποδεικνύει η Prolog (SS) είναι λογικά αληθές (M_P), και κάθε λογική συνέπεια αποδεικνύεται.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="semantics"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 8 · CLP                                  ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="clp">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">🔗</div>
+    <h2>8. Λογικός Προγραμματισμός με Περιορισμούς (CLP)</h2>
+  </div>
+
+  <p>Ο <strong>Λογικός Προγραμματισμός με Περιορισμούς (Constraint Logic Programming, CLP)</strong> είναι επέκταση της Prolog που επιτρέπει <em>δηλωτική και αποδοτική</em> αντιμετώπιση προβλημάτων ικανοποίησης περιορισμών (CSPs).</p>
+
+  <h3>8.1 Generate-and-Test vs Constrain-and-Generate</h3>
+
+  <div class="compare-grid">
+    <div class="compare-cell bad">
+      <span style="color:var(--red);font-weight:700">❌ Generate-and-Test</span>
+      <p style="font-size:0.9rem">Γέννηση όλων δυνατών συνδυασμών, μετά έλεγχος αν ισχύουν οι περιορισμοί.</p>
+      <p style="font-size:0.85rem;color:var(--muted)">Εκθετικά αργό για μεγάλα προβλήματα.</p>
+    </div>
+    <div class="compare-cell good">
+      <span style="color:var(--green);font-weight:700">✓ Constrain-and-Generate</span>
+      <p style="font-size:0.9rem">Διατύπωση περιορισμών <em>πριν</em>, εφαρμογή τους κατά τη γέννηση τιμών.</p>
+      <p style="font-size:0.85rem;color:var(--muted)">Κουρεύει αμέσως αδύνατους κλάδους.</p>
+    </div>
+  </div>
+
+  <h3>8.2 Μεθοδολογία CLP</h3>
+
+  <ol class="steps">
+    <li><strong>Όρισε μεταβλητές</strong> και τα πεδία τους (π.χ. <code>X :: 1..10</code>)</li>
+    <li><strong>Διατύπωσε περιορισμούς</strong> (π.χ. <code>X #&gt; Y</code>, <code>X+Y #= 5</code>)</li>
+    <li><strong>Μη-ντετερμινιστική γέννηση τιμών</strong> για εύρεση λύσης</li>
+  </ol>
+
+  <h3>8.3 N-Βασίλισσες σε ECLiPSe</h3>
+
+  <p>Η ECLiPSe είναι κλασική γλώσσα CLP. Λύνει τις N-βασίλισσες αποδοτικά:</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="kw">lib</span>(ic).
+
+<span class="fn">nqueens</span>(N, Solution) <span class="kw">:-</span>
+    <span class="fn">length</span>(Solution, N),
+    Solution <span class="op">::</span> 1..N,         <span class="cm">% κάθε στήλη μεταξύ 1..N</span>
+    <span class="fn">constrain</span>(Solution),       <span class="cm">% επιβολή περιορισμών</span>
+    <span class="fn">generate</span>(Solution).        <span class="cm">% labeling</span>
+
+<span class="fn">constrain</span>([]).
+<span class="fn">constrain</span>([Column<span class="op">|</span>Columns]) <span class="kw">:-</span>
+    <span class="fn">noattack</span>(Column, Columns, 1),
+    <span class="fn">constrain</span>(Columns).
+
+<span class="fn">noattack</span>(_, [], _).
+<span class="fn">noattack</span>(Column1, [Column2<span class="op">|</span>Columns], Offset) <span class="kw">:-</span>
+    Column1 <span class="op">##</span> Column2,                   <span class="cm">% ίδια στήλη</span>
+    Column1 <span class="op">##</span> Column2 <span class="op">+</span> Offset,          <span class="cm">% διαγώνιος ↘</span>
+    Column1 <span class="op">##</span> Column2 <span class="op">-</span> Offset,          <span class="cm">% διαγώνιος ↗</span>
+    NewOffset <span class="kw">is</span> Offset <span class="op">+</span> 1,
+    <span class="fn">noattack</span>(Column1, Columns, NewOffset).
+
+<span class="fn">generate</span>([]).
+<span class="fn">generate</span>([Column<span class="op">|</span>Columns]) <span class="kw">:-</span>
+    <span class="fn">indomain</span>(Column),
+    <span class="fn">generate</span>(Columns).</code></code></div>
+
+  <div class="note">
+    <div class="hd">📝 Τι σημαίνουν τα σύμβολα</div>
+    <ul style="margin:6px 0">
+      <li><code>X :: 1..N</code> — η X είναι μεταβλητή πεδίου με τιμές 1..N</li>
+      <li><code>X ## Y</code> — περιορισμός: X ≠ Y</li>
+      <li><code>indomain(X)</code> — μη-ντετερμινιστική εκχώρηση τιμής</li>
+    </ul>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί τόσο γρήγορο</div>
+    <p>Όταν εκτελείται <code>indomain(Column1)</code>, οι περιορισμοί <code>Column1 ## Column2</code> εφαρμόζονται <em>άμεσα</em> και αφαιρούν αδύνατες τιμές από τα πεδία των επόμενων μεταβλητών. Αυτό λέγεται <strong>constraint propagation</strong> και κουρεύει εκθετικά τον χώρο αναζήτησης.</p>
+  </div>
+
+  <h3>8.4 Εφαρμογές CLP</h3>
+
+  <ul>
+    <li><strong>Κατασκευή ωρολογίων προγραμμάτων</strong> (πανεπιστήμια, νοσοκομεία)</li>
+    <li><strong>Προγραμματισμός προσωπικού</strong> (shifts)</li>
+    <li><strong>Σχεδίαση παραγωγής</strong> (job-shop scheduling — όπως η Εργ. 3!)</li>
+    <li><strong>Διανομή αγαθών</strong> (vehicle routing)</li>
+    <li><strong>Σχεδίαση κυκλωμάτων</strong></li>
+  </ul>
+
+  <div class="exam">
+    <div class="hd">📚 Σύνδεση με τη Εργ. 3 (job-shop)</div>
+    <p>Η Εργ. 3 (job-shop scheduling) είναι κλασικό CSP. Παρόλο που η εκφώνηση το ζητάει σε καθαρή Prolog, η <em>στρατηγική</em> είναι ταυτόσημη με CLP: εφάρμοσε τους περιορισμούς (deadline, πόροι) όσο το δυνατόν νωρίτερα. Αν τυχόν χρησιμοποιήσετε ECLiPSe, η λύση γίνεται πολύ απλούστερη και γρηγορότερη.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="logic_theory_semantics" data-section="clp"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  ΣΥΝΟΨΗ                                       ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="summary">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--odim)">📋</div>
+    <h2>Συνοπτικός Οδηγός Εξετάσεων</h2>
+  </div>
+
+  <h3>Βασικοί Ορισμοί σε Πίνακα</h3>
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Έννοια</th><th>Σύμβολο</th><th>Σύντομος Ορισμός</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Σύμπαν Herbrand</td><td>U_L</td><td>Όλοι οι ground όροι</td></tr>
+      <tr><td>Βάση Herbrand</td><td>B_L</td><td>Όλα τα ground άτομα</td></tr>
+      <tr><td>Ερμηνεία Herbrand</td><td>Ι</td><td>Ι ⊆ B_L (τι αληθεύει)</td></tr>
+      <tr><td>Μοντέλο Herbrand</td><td>—</td><td>Ερμηνεία όπου το P αληθεύει</td></tr>
+      <tr><td>Ελάχιστο μοντέλο</td><td>M_P</td><td>Τομή όλων των μοντέλων</td></tr>
+      <tr><td>Τελεστής βήματος</td><td>T_P</td><td>Νέα άτομα σε ένα βήμα συμπερασμού</td></tr>
+      <tr><td>Ελάχιστο σταθερό σημείο</td><td>lfp(T_P)</td><td>Όριο επαναλήψεων T_P</td></tr>
+      <tr><td>Σύνολο επιτυχίας</td><td>SS(P)</td><td>Άτομα με επιτυχή SLD-απόρριψη</td></tr>
+      <tr><td>Αντικατάσταση</td><td>θ</td><td>{vᵢ/tᵢ}</td></tr>
+      <tr><td>Στιγμιότυπο</td><td>Eθ</td><td>Ε με αντικατεστημένες μεταβλητές</td></tr>
+      <tr><td>Ενοποιητής</td><td>—</td><td>θ τέτοιο ώστε Sθ μονοσύνολο</td></tr>
+      <tr><td>mgu</td><td>—</td><td>Γενικότερος ενοποιητής</td></tr>
+      <tr><td>Πρόταση Horn</td><td>—</td><td>Πρόταση με ≤1 θετικό λεκτικό</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Στρατηγική για Άσκηση Υπολογισμού M_P</h3>
+  <ol class="steps">
+    <li><strong>Συγκέντρωσε σύμβολα</strong> P (κατηγορήματα), F (συναρτησιακά), V (μεταβλητές) από το πρόγραμμα</li>
+    <li><strong>Κατασκεύασε U_L</strong> από όλους τους πιθανούς ground όρους</li>
+    <li><strong>Κατασκεύασε B_L</strong> από όλους τους πιθανούς ground άτομα</li>
+    <li><strong>Εφάρμοσε T_P επανειλημμένα</strong> ξεκινώντας από ∅ μέχρι να μην προστίθεται τίποτα νέο</li>
+    <li><strong>Το αποτέλεσμα είναι το M_P</strong></li>
+  </ol>
+
+  <div class="exam">
+    <div class="hd">📚 Συνδέσεις με τις Εργασίες</div>
+    <ul style="margin:0">
+      <li><strong>Εργ. 1 (puzzle-5):</strong> Δοκιμή της επιχειρησιακής σημασιολογίας (SLD + backtracking)</li>
+      <li><strong>Εργ. 3 (job-shop):</strong> Πρόβλημα CSP — η στρατηγική constrain-and-generate (από CLP) είναι κρίσιμη ακόμα και σε καθαρή Prolog</li>
+    </ul>
+  </div>
+
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 4 · Θεωρία &amp; Σημασιολογία</div>
+</body>
+</html>

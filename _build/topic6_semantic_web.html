@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 6 · Αναπαράσταση Γνώσης &amp; Σημαντικός Ιστός</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cyan-rgb:57,212,200;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--cdim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'<rdf:RDF>';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1rem,3vw,2.2rem);
+  color:rgba(57,212,200,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10;padding:16px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.55;margin:12px 0}
+.cb code{display:block;white-space:pre}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.nm{color:var(--purple)}
+.cm{color:var(--dim);font-style:italic}
+.str{color:var(--green)}
+.op{color:var(--orange)}
+.tag{color:var(--cyan)}
+.attr{color:var(--purple)}
+
+/* Notes / warnings / tips / mnemonics — exam-prep boxes */
+.note,.warn,.tip-box,.mnemo,.exam,.def{
+  border-left:4px solid;padding:14px 18px;margin:18px 0;border-radius:6px;
+  background:var(--surf);position:relative;
+}
+.note{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.07),transparent 60%)}
+.warn{border-color:var(--red);background:linear-gradient(90deg,rgba(248,81,73,.07),transparent 60%)}
+.tip-box{border-color:var(--green);background:linear-gradient(90deg,rgba(63,185,80,.07),transparent 60%)}
+.mnemo{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.07),transparent 60%)}
+.exam{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.08),transparent 60%)}
+.def{border-color:var(--cyan);background:linear-gradient(90deg,rgba(57,212,200,.07),transparent 60%)}
+.note .hd,.warn .hd,.tip-box .hd,.mnemo .hd,.exam .hd,.def .hd{
+  font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;
+}
+.note .hd{color:var(--blue)}
+.warn .hd{color:var(--red)}
+.tip-box .hd{color:var(--green)}
+.mnemo .hd{color:var(--yellow)}
+.exam .hd{color:var(--purple)}
+.def .hd{color:var(--cyan)}
+
+/* Semantic network diagram */
+.semnet{
+  padding:20px;background:var(--surf);border-radius:10px;border:1px solid var(--border);
+  margin:14px 0;overflow-x:auto;display:flex;justify-content:center;
+}
+.semnet svg{max-width:100%}
+.sn-node{fill:var(--surf2);stroke:var(--cyan);stroke-width:2}
+.sn-node.instance{stroke:var(--green);fill:var(--gdim)}
+.sn-node.class{stroke:var(--cyan)}
+.sn-node.property{stroke:var(--yellow);fill:var(--ydim)}
+.sn-edge{stroke:var(--purple);stroke-width:1.5;fill:none}
+.sn-text{fill:var(--txt);font-family:'JetBrains Mono',monospace;font-size:12px;text-anchor:middle;dominant-baseline:central;font-weight:600}
+.sn-label{fill:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;text-anchor:middle}
+
+/* Frame card */
+.frame-card{
+  display:inline-block;min-width:200px;margin:10px;
+  background:var(--surf);border:2px solid var(--cyan);border-radius:8px;
+  overflow:hidden;vertical-align:top;
+}
+.frame-header{
+  background:var(--cdim);color:var(--cyan);
+  padding:8px 14px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:0.9rem;
+  border-bottom:1px solid var(--cyan);
+}
+.frame-slot{
+  display:grid;grid-template-columns:1fr 1fr;
+  padding:6px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+}
+.frame-slot:last-child{border-bottom:none}
+.frame-slot .key{color:var(--purple)}
+.frame-slot .val{color:var(--green)}
+.frames-row{display:flex;flex-wrap:wrap;gap:0;margin:14px 0;justify-content:center}
+
+/* Triple table */
+.triple-tbl{
+  width:100%;border-collapse:collapse;margin:14px 0;font-size:0.88rem;
+  font-family:'JetBrains Mono',monospace;
+}
+.triple-tbl th,.triple-tbl td{padding:8px 14px;border:1px solid var(--border);text-align:left}
+.triple-tbl th{background:var(--surf);color:var(--cyan)}
+.triple-tbl .s{color:var(--green);font-weight:600}
+.triple-tbl .p{color:var(--yellow);font-weight:600}
+.triple-tbl .o{color:var(--purple);font-weight:600}
+
+/* DL formula */
+.dl-formula{
+  font-family:'JetBrains Mono',monospace;font-size:1rem;
+  padding:14px 20px;background:#060a10;border-radius:8px;border:1px solid var(--border);
+  margin:12px 0;text-align:center;color:var(--txt);overflow-x:auto;line-height:1.7;
+}
+.dl-formula .c{color:var(--cyan);font-weight:600}
+.dl-formula .r{color:var(--yellow);font-weight:600}
+.dl-formula .i{color:var(--green);font-weight:600}
+.dl-formula .op{color:var(--orange);font-weight:700;font-size:1.1rem}
+
+/* Summary table */
+.summary-tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem}
+.summary-tbl th,.summary-tbl td{padding:10px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}
+.summary-tbl th{background:var(--surf);color:var(--cyan);font-weight:600}
+.summary-tbl tr:nth-child(even) td{background:var(--surf)}
+.summary-tbl code{background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:0.85em}
+
+/* Comparison cells */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+@media (max-width:720px){.compare-grid{grid-template-columns:1fr}}
+.compare-cell{padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--surf)}
+.compare-cell.bad{border-color:var(--red);background:linear-gradient(180deg,rgba(248,81,73,.06),transparent)}
+.compare-cell.good{border-color:var(--green);background:linear-gradient(180deg,rgba(63,185,80,.06),transparent)}
+.compare-cell .ctag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.compare-cell.bad .ctag{background:var(--rdim);color:var(--red)}
+.compare-cell.good .ctag{background:var(--gdim);color:var(--green)}
+
+/* Layer cake */
+.layer-cake{
+  display:flex;flex-direction:column-reverse;align-items:center;gap:0;
+  margin:14px 0;padding:14px;background:var(--surf);border-radius:8px;border:1px solid var(--border);
+}
+.layer{
+  padding:8px 24px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+  border-radius:4px;margin:1px 0;color:var(--txt);font-weight:600;
+  border:1px solid var(--border);
+}
+.layer.l0{background:#2d1010;border-color:var(--red);min-width:480px}
+.layer.l1{background:var(--rdim);border-color:#a04040;min-width:440px}
+.layer.l2{background:var(--odim);border-color:var(--orange);min-width:400px}
+.layer.l3{background:var(--ydim);border-color:var(--yellow);min-width:360px}
+.layer.l4{background:var(--gdim);border-color:var(--green);min-width:320px}
+.layer.l5{background:var(--cdim);border-color:var(--cyan);min-width:280px}
+.layer.l6{background:var(--bdim);border-color:var(--blue);min-width:240px}
+.layer.l7{background:var(--pdim);border-color:var(--purple);min-width:200px}
+
+/* Steps */
+.steps{counter-reset:step;list-style:none;padding-left:0;margin:14px 0}
+.steps li{counter-increment:step;position:relative;padding:8px 0 8px 44px;margin-bottom:4px;border-left:1px solid var(--border);margin-left:16px}
+.steps li::before{
+  content:counter(step);position:absolute;left:-16px;top:8px;
+  width:32px;height:32px;border-radius:50%;background:var(--cdim);
+  color:var(--cyan);font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--cyan);font-family:'JetBrains Mono',monospace;
+}
+
+/* Line-by-line code commentary */
+.line-by-line{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  font-family:'JetBrains Mono',monospace;font-size:0.83rem;
+}
+.line-by-line .lcode{
+  background:#060a10;padding:8px 12px;border-bottom:1px solid var(--border);
+  white-space:pre;color:var(--txt);
+}
+.line-by-line .lexpl{
+  background:var(--surf);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:0.9rem;color:var(--muted);
+}
+.line-by-line>div:nth-last-child(-n+2){border-bottom:none}
+
+/* TBox/ABox split */
+.box-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media (max-width:720px){.box-split{grid-template-columns:1fr}}
+.box-tbox{padding:14px;border:2px solid var(--blue);background:var(--bdim);border-radius:8px}
+.box-abox{padding:14px;border:2px solid var(--green);background:var(--gdim);border-radius:8px}
+.box-tbox h4,.box-abox h4{margin-top:0}
+.box-tbox h4{color:var(--blue)}
+.box-abox h4{color:var(--green)}
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 6</div>
+  <h1>Αναπαράσταση Γνώσης &amp; <em>Semantic Web</em></h1>
+  <p>Από Σημασιολογικά Δίκτυα και Πλαίσια μέχρι RDF, OWL και Description Logics. Η γέφυρα μεταξύ Λογικού Προγραμματισμού και Παγκόσμιου Ιστού.</p>
+  <div class="chips">
+    <span class="chip">Semantic Networks</span>
+    <span class="chip">Frames</span>
+    <span class="chip">Datalog</span>
+    <span class="chip">RDF/RDFS</span>
+    <span class="chip">OWL/DL</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#kr">1. Αναπαράσταση Γνώσης</a>
+  <a href="#semnet">2. Σημασιολογικά Δίκτυα</a>
+  <a href="#frames">3. Πλαίσια (Frames)</a>
+  <a href="#datalog">4. Datalog</a>
+  <a href="#sw">5. Σημαντικός Ιστός</a>
+  <a href="#rdf">6. XML &amp; RDF</a>
+  <a href="#owl">7. OWL &amp; DL</a>
+  <a href="#reason">8. Συλλογιστική DL</a>
+  <a href="#owa">9. OWA vs CWA</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Στο τελευταίο κεφάλαιο εφαρμόζουμε τις αρχές του λογικού προγραμματισμού στο πιο <em>φιλόδοξο</em> εγχείρημα τεχνητής νοημοσύνης: τη <strong>συστηματική αναπαράσταση γνώσης</strong> για μηχανές. Θα δούμε πώς εξελίχθηκε από τα σημασιολογικά δίκτυα του '70 μέχρι το σημερινό <strong>Σημαντικό Ιστό</strong>.</p>
+  <p>Ο Σημαντικός Ιστός είναι η μετάβαση από <em>"ιστό κειμένων"</em> σε <em>"ιστό δεδομένων"</em>: αντί ο χρήστης να ψάχνει σελίδες, οι μηχανές κατανοούν τη σημασία της πληροφορίας και απαντούν σε σύνθετα ερωτήματα συνδυάζοντας πηγές.</p>
+
+  <div class="exam">
+    <div class="hd">📚 Τι θα χρειαστείς για τις εξετάσεις</div>
+    <ul style="margin:0">
+      <li>Αναπαράσταση γνώσης με <strong>σημασιολογικά δίκτυα</strong> και σε Prolog</li>
+      <li><strong>Πλαίσια (Frames)</strong> με slot/value και κληρονομικότητα</li>
+      <li><strong>Datalog</strong>: EDB/IDB, ασφάλεια, εξάρτηση, στρωματοποιημένη άρνηση</li>
+      <li><strong>RDF triples</strong> και RDFS classes/properties</li>
+      <li>Διαφορά <strong>OWL Lite/DL/Full</strong></li>
+      <li>Σύνταξη <strong>Περιγραφικής Λογικής (DL)</strong>: ⊓ ⊔ ¬ ∀R.C ∃R.C</li>
+      <li>Διαχωρισμός <strong>TBox</strong> και <strong>ABox</strong></li>
+      <li>Διαφορά <strong>OWA</strong> (Σημαντικός Ιστός) και <strong>CWA</strong> (Prolog)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 1 · ΑΝΑΠΑΡΑΣΤΑΣΗ ΓΝΩΣΗΣ                 ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="kr">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🧠</div>
+    <h2>1. Αναπαράσταση Γνώσης (Knowledge Representation)</h2>
+  </div>
+
+  <p>Πολλά πραγματικά προβλήματα εμπλέκουν <strong>αντικείμενα</strong> που συσχετίζονται και αλληλεπιδρούν. Όταν ο όγκος αυξάνεται, χρειάζεται <em>δομημένη οργάνωση της γνώσης</em>.</p>
+
+  <div class="def">
+    <div class="hd">⚡ Δεδομένα vs Πληροφορία vs Γνώση</div>
+    <ul style="margin:6px 0">
+      <li><strong>Δεδομένα</strong> = ακατέργαστοι αριθμοί, κείμενα (π.χ. <code>"42"</code>, <code>"Tom"</code>)</li>
+      <li><strong>Πληροφορία</strong> = δεδομένα + δομή (π.χ. <code>parent(Tom, Bob)</code>)</li>
+      <li><strong>Γνώση</strong> = πληροφορία + κανόνες/συμπερασμοί (π.χ. <em>"αν parent(X,Y) και parent(Y,Z) τότε grandparent(X,Z)"</em>)</li>
+    </ul>
+  </div>
+
+  <p>Στο κεφάλαιο αυτό θα δούμε τρεις κλασικές μεθοδολογίες, σε ιστορική σειρά:</p>
+  <ol class="steps">
+    <li><strong>Σημασιολογικά Δίκτυα</strong> (Quillian, 1968) — αναπαράσταση μέσω γράφου</li>
+    <li><strong>Πλαίσια (Frames)</strong> (Minsky, 1974) — δομές με slots</li>
+    <li><strong>Datalog</strong> — επαγωγικές βάσεις δεδομένων</li>
+  </ol>
+  <p>Στη συνέχεια θα δούμε τη σύγχρονη απόληξη: τον <strong>Σημαντικό Ιστό</strong> (RDF, OWL, Description Logics).</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 2 · ΣΗΜΑΣΙΟΛΟΓΙΚΑ ΔΙΚΤΥΑ                ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="semnet">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🕸️</div>
+    <h2>2. Σημασιολογικά Δίκτυα (Semantic Networks)</h2>
+  </div>
+
+  <p>Τα <strong>σημασιολογικά δίκτυα</strong> εμφανίστηκαν για πρώτη φορά από τον <em>Quillian (1968)</em> για την απεικόνιση της σημασίας προτάσεων αγγλικής γλώσσας. Η ιδέα: γράφος με <strong>κόμβους = έννοιες/οντότητες</strong>, <strong>ακμές = σχέσεις</strong>.</p>
+
+  <h3>2.1 Παράδειγμα: Ένα Ποντίκι</h3>
+
+  <div class="semnet">
+    <svg width="500" height="180" viewBox="0 0 500 180">
+      <!-- Edges -->
+      <line class="sn-edge" x1="120" y1="50" x2="220" y2="50" marker-end="url(#arr)"/>
+      <line class="sn-edge" x1="280" y1="50" x2="380" y2="50" marker-end="url(#arr)"/>
+      <line class="sn-edge" x1="250" y1="65" x2="250" y2="105" marker-end="url(#arr)"/>
+      <line class="sn-edge" x1="250" y1="125" x2="250" y2="165" marker-end="url(#arr)"/>
+
+      <!-- Labels -->
+      <text class="sn-label" x="170" y="40">has</text>
+      <text class="sn-label" x="330" y="40">drinks</text>
+      <text class="sn-label" x="265" y="85">isa</text>
+      <text class="sn-label" x="265" y="145">isa</text>
+
+      <!-- Nodes -->
+      <ellipse class="sn-node property" cx="80" cy="50" rx="40" ry="20"/>
+      <text class="sn-text" x="80" y="50">hair</text>
+
+      <ellipse class="sn-node class" cx="250" cy="50" rx="40" ry="20"/>
+      <text class="sn-text" x="250" y="50">mammal</text>
+
+      <ellipse class="sn-node property" cx="420" cy="50" rx="40" ry="20"/>
+      <text class="sn-text" x="420" y="50">milk</text>
+
+      <ellipse class="sn-node class" cx="250" cy="115" rx="40" ry="20"/>
+      <text class="sn-text" x="250" y="115">rodent</text>
+
+      <ellipse class="sn-node instance" cx="250" cy="175" rx="40" ry="15"/>
+      <text class="sn-text" x="250" y="175">mouse</text>
+
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="var(--purple)"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <p>Διάβασμα: <em>"Ένα ποντίκι (mouse) είναι κάτι (isa) τύπου rodent, που είναι (isa) mammal, που έχει (has) τρίχωμα (hair) και πίνει (drinks) γάλα (milk)."</em></p>
+
+  <h3>2.2 Η Σχέση <code>isa</code> και η Κληρονομικότητα</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Κληρονομικότητα (Inheritance)</div>
+    <p>Η σχέση <strong>isa</strong> συνδέει ειδικότερες με γενικότερες κλάσεις (taxonomies). Μια οντότητα <strong>κληρονομεί</strong> τις ιδιότητες των προγονικών της κόμβων, εκτός κι αν διευκρινίζεται διαφορετικά.</p>
+  </div>
+
+  <h3>2.3 Παράδειγμα Σύνθετο: Πτηνά</h3>
+
+  <div class="semnet">
+    <svg width="600" height="280" viewBox="0 0 600 280">
+      <!-- Top level -->
+      <ellipse class="sn-node class" cx="300" cy="30" rx="40" ry="18"/>
+      <text class="sn-text" x="300" y="30">animal</text>
+
+      <!-- bird -->
+      <line class="sn-edge" x1="300" y1="48" x2="300" y2="78" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="312" y="65">isa</text>
+      <ellipse class="sn-node class" cx="300" cy="98" rx="32" ry="16"/>
+      <text class="sn-text" x="300" y="98">bird</text>
+
+      <!-- daylight + fly -->
+      <line class="sn-edge" x1="268" y1="98" x2="180" y2="98" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="220" y="89">active_at</text>
+      <ellipse class="sn-node property" cx="140" cy="98" rx="40" ry="16"/>
+      <text class="sn-text" x="140" y="98">daylight</text>
+
+      <line class="sn-edge" x1="332" y1="98" x2="440" y2="98" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="380" y="89">moving_method</text>
+      <ellipse class="sn-node property" cx="470" cy="98" rx="30" ry="16"/>
+      <text class="sn-text" x="470" y="98">fly</text>
+
+      <!-- albatross + kiwi -->
+      <line class="sn-edge" x1="285" y1="114" x2="200" y2="170" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="225" y="148">isa</text>
+      <ellipse class="sn-node class" cx="170" cy="180" rx="42" ry="16"/>
+      <text class="sn-text" x="170" y="180">albatross</text>
+
+      <line class="sn-edge" x1="315" y1="114" x2="400" y2="170" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="365" y="148">isa</text>
+      <ellipse class="sn-node class" cx="430" cy="180" rx="28" ry="16"/>
+      <text class="sn-text" x="430" y="180">kiwi</text>
+
+      <!-- albatross children -->
+      <line class="sn-edge" x1="160" y1="196" x2="80" y2="240" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="110" y="220">colour</text>
+      <ellipse class="sn-node property" cx="60" cy="250" rx="45" ry="14"/>
+      <text class="sn-text" x="60" y="250">black_white</text>
+
+      <line class="sn-edge" x1="170" y1="196" x2="170" y2="240" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="182" y="225">isa</text>
+      <ellipse class="sn-node instance" cx="170" cy="252" rx="32" ry="12"/>
+      <text class="sn-text" x="170" y="252">albert</text>
+
+      <!-- kiwi children -->
+      <line class="sn-edge" x1="420" y1="196" x2="350" y2="240" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="375" y="222">isa</text>
+      <ellipse class="sn-node instance" cx="330" cy="252" rx="28" ry="12"/>
+      <text class="sn-text" x="330" y="252">kim</text>
+
+      <line class="sn-edge" x1="438" y1="196" x2="500" y2="240" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="480" y="222">colour</text>
+      <ellipse class="sn-node property" cx="520" cy="252" rx="32" ry="12"/>
+      <text class="sn-text" x="520" y="252">brown</text>
+
+      <line class="sn-edge" x1="445" y1="194" x2="450" y2="225" marker-end="url(#arr2)"/>
+      <text class="sn-label" x="465" y="218">active_at</text>
+      <ellipse class="sn-node property" cx="450" cy="232" rx="26" ry="10"/>
+      <text class="sn-text" x="450" y="232" style="font-size:10px">night</text>
+
+      <defs>
+        <marker id="arr2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="var(--purple)"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <p><strong>Παρατηρήσεις:</strong></p>
+  <ul>
+    <li>Το <code>kiwi</code> "παρακάμπτει" την κληρονομικότητα: ορίζει <code>active_at = night</code> (αντί daylight) και <code>moving_method = walk</code> (αντί fly).</li>
+    <li>Το <code>albert</code> είναι στιγμιότυπο (instance) όχι κλάση.</li>
+    <li>Ο <code>kim</code> κληρονομεί από <code>kiwi</code> τα <code>moving_method=walk</code>, <code>active_at=night</code>, <code>colour=brown</code>.</li>
+  </ul>
+
+  <h3>2.4 Υλοποίηση σε Prolog</h3>
+
+  <p>Η αναπαράσταση γίνεται με γεγονότα:</p>
+
+  <div class="cb"><code><span class="fn">isa</span>(bird, animal).
+<span class="fn">isa</span>(albatross, bird).
+<span class="fn">isa</span>(albert, albatross).
+<span class="fn">isa</span>(ross, albatross).
+<span class="fn">isa</span>(kiwi, bird).
+<span class="fn">isa</span>(kim, kiwi).
+
+<span class="fn">active_at</span>(bird, daylight).
+<span class="fn">active_at</span>(kiwi, night).
+<span class="fn">moving_method</span>(bird, fly).
+<span class="fn">moving_method</span>(kiwi, walk).
+<span class="fn">colour</span>(albatross, black_and_white).
+<span class="fn">colour</span>(kiwi, brown).</code></div>
+
+  <h3>2.5 Κληρονομικότητα: Στοιχειώδης Προσέγγιση</h3>
+
+  <p>Πρέπει να γράψουμε <em>ειδικό κανόνα</em> για κάθε ιδιότητα:</p>
+
+  <div class="cb"><code><span class="fn">moving_method</span>(X, Method) <span class="kw">:-</span>
+    <span class="fn">isa</span>(X, SuperX),
+    <span class="fn">moving_method</span>(SuperX, Method).
+
+<span class="fn">colour</span>(X, C) <span class="kw">:-</span>
+    <span class="fn">isa</span>(X, SuperX),
+    <span class="fn">colour</span>(SuperX, C).
+
+<span class="fn">active_at</span>(X, A) <span class="kw">:-</span>
+    <span class="fn">isa</span>(X, SuperX),
+    <span class="fn">active_at</span>(SuperX, A).
+<span class="cm">% ... και ούτω καθεξής για κάθε ιδιότητα</span></code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πρόβλημα Επεκτασιμότητας</div>
+    <p>Αυτή η προσέγγιση απαιτεί γραφή ξεχωριστού κανόνα για <em>κάθε</em> ιδιότητα. Για 50 ιδιότητες, 50 κανόνες. Άσχημη επεκτασιμότητα.</p>
+  </div>
+
+  <h3>2.6 Γενικευμένη Κληρονομικότητα μέσω <code>=..</code></h3>
+
+  <p>Με μετα-προγραμματισμό (Κεφάλαιο 5), μπορούμε να γράψουμε <em>έναν</em> γενικό κανόνα κληρονομικότητας:</p>
+
+  <div class="cb"><code><span class="fn">fact</span>(Fact) <span class="kw">:-</span>
+    <span class="fn">call</span>(Fact), <span class="kw">!</span>.        <span class="cm">% Είναι άμεσο γεγονός;</span>
+<span class="fn">fact</span>(Fact) <span class="kw">:-</span>
+    Fact <span class="op">=..</span> [Rel, Arg1, Arg2],
+    <span class="fn">isa</span>(Arg1, SuperArg),     <span class="cm">% Πήγαινε στον πατέρα</span>
+    SuperFact <span class="op">=..</span> [Rel, SuperArg, Arg2],
+    <span class="fn">fact</span>(SuperFact).         <span class="cm">% Ρώτησε για τον πατέρα</span>
+
+?<span class="kw">-</span> <span class="fn">fact</span>(<span class="fn">moving_method</span>(kim, M)).
+M = walk
+
+?<span class="kw">-</span> <span class="fn">fact</span>(<span class="fn">moving_method</span>(albert, M)).
+M = fly</code></div>
+
+  <div class="line-by-line">
+    <div class="lcode">Fact =.. [Rel, Arg1, Arg2]</div>
+    <div class="lexpl">Αποσύνθεση του γεγονότος σε όνομα-σχέσης και 2 ορίσματα.</div>
+    <div class="lcode">isa(Arg1, SuperArg)</div>
+    <div class="lexpl">Βρες τον "πατέρα" της οντότητας (π.χ. αν Arg1=kim, SuperArg=kiwi).</div>
+    <div class="lcode">SuperFact =.. [Rel, SuperArg, Arg2]</div>
+    <div class="lexpl">Σύνθεσε ένα νέο γεγονός με τον πατέρα.</div>
+    <div class="lcode">fact(SuperFact)</div>
+    <div class="lexpl">Αναδρομικά ψάχνε σε υψηλότερο επίπεδο.</div>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Δηλωτικότητα + Επεκτασιμότητα</div>
+    <p>Με αυτή την προσέγγιση, μπορούμε να προσθέσουμε νέες ιδιότητες χωρίς να αλλάξουμε καθόλου τη μηχανή κληρονομικότητας.</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 3 · ΠΛΑΙΣΙΑ                              ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="frames">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">📋</div>
+    <h2>3. Πλαίσια (Frames)</h2>
+  </div>
+
+  <p>Τα <strong>Πλαίσια (Frames)</strong> εισήχθησαν από τον <em>Minsky (1974)</em>. Η ιδέα: η γνώση οργανώνεται σε <em>πλαίσια</em>, καθένα περιγράφει ένα αντικείμενο ή μια κατηγορία.</p>
+
+  <div class="def">
+    <div class="hd">⚡ Δομή Πλαισίου</div>
+    <p>Ένα πλαίσιο είναι δομή με:</p>
+    <ul style="margin:6px 0">
+      <li><strong>Όνομα</strong> — αναγνωριστικό</li>
+      <li><strong>Σχισμές (slots)</strong> — ιδιότητες με ονόματα</li>
+      <li>Κάθε σχισμή έχει <strong>τιμή</strong>: απλή, αναφορά σε άλλο πλαίσιο, ή <em>διαδικασία υπολογισμού</em></li>
+    </ul>
+    <p>Δύο ειδικές σχισμές: <code>a_kind_of</code> (κλάση-υπερκλάσης) και <code>instance_of</code> (στιγμιότυπο-κλάσης).</p>
+  </div>
+
+  <h3>3.1 Παράδειγμα: Πτηνά σε Πλαίσια</h3>
+
+  <div class="frames-row">
+    <div class="frame-card">
+      <div class="frame-header">FRAME: bird</div>
+      <div class="frame-slot"><span class="key">a_kind_of</span><span class="val">animal</span></div>
+      <div class="frame-slot"><span class="key">moving_method</span><span class="val">fly</span></div>
+      <div class="frame-slot"><span class="key">active_at</span><span class="val">daylight</span></div>
+    </div>
+    <div class="frame-card">
+      <div class="frame-header">FRAME: albatross</div>
+      <div class="frame-slot"><span class="key">a_kind_of</span><span class="val">bird</span></div>
+      <div class="frame-slot"><span class="key">colour</span><span class="val">black_and_white</span></div>
+      <div class="frame-slot"><span class="key">size</span><span class="val">115</span></div>
+    </div>
+    <div class="frame-card">
+      <div class="frame-header">FRAME: kiwi</div>
+      <div class="frame-slot"><span class="key">a_kind_of</span><span class="val">bird</span></div>
+      <div class="frame-slot"><span class="key">moving_method</span><span class="val">walk</span></div>
+      <div class="frame-slot"><span class="key">active_at</span><span class="val">night</span></div>
+      <div class="frame-slot"><span class="key">colour</span><span class="val">brown</span></div>
+      <div class="frame-slot"><span class="key">size</span><span class="val">40</span></div>
+    </div>
+    <div class="frame-card">
+      <div class="frame-header">FRAME: albert</div>
+      <div class="frame-slot"><span class="key">instance_of</span><span class="val">albatross</span></div>
+      <div class="frame-slot"><span class="key">size</span><span class="val">120</span></div>
+    </div>
+  </div>
+
+  <h3>3.2 Υλοποίηση σε Prolog</h3>
+
+  <p>Κάθε πλαίσιο γίνεται μια ομάδα γεγονότων με <em>όνομα κατηγορήματος ίδιο με το όνομα του πλαισίου</em>:</p>
+
+  <div class="cb"><code><span class="fn">bird</span>(a_kind_of, animal).
+<span class="fn">bird</span>(moving_method, fly).
+<span class="fn">bird</span>(active_at, daylight).
+
+<span class="fn">albatross</span>(a_kind_of, bird).
+<span class="fn">albatross</span>(colour, black_and_white).
+<span class="fn">albatross</span>(size, 115).
+
+<span class="fn">kiwi</span>(a_kind_of, bird).
+<span class="fn">kiwi</span>(moving_method, walk).
+<span class="fn">kiwi</span>(active_at, night).
+<span class="fn">kiwi</span>(colour, brown).
+<span class="fn">kiwi</span>(size, 40).
+
+<span class="fn">albert</span>(instance_of, albatross).
+<span class="fn">albert</span>(size, 120).</code></div>
+
+  <h3>3.3 Υπολογισμός Τιμών Σχισμών</h3>
+
+  <p>Με γενικό κατηγόρημα που <strong>κληρονομεί από προγονικά πλαίσια</strong> αν η σχισμή δεν είναι ορισμένη τοπικά:</p>
+
+  <div class="cb"><code><span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span>
+    Query <span class="op">=..</span> [Frame, Slot, Value],
+    <span class="fn">call</span>(Query), <span class="kw">!</span>.            <span class="cm">% τοπικά ορισμένη;</span>
+<span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span>
+    <span class="fn">parent</span>(Frame, ParentFrame),
+    <span class="fn">value</span>(ParentFrame, Slot, Value).  <span class="cm">% αλλιώς κληρονόμηση</span>
+
+<span class="fn">parent</span>(Frame, ParentFrame) <span class="kw">:-</span>
+    (Query <span class="op">=..</span> [Frame, a_kind_of, ParentFrame] ;
+     Query <span class="op">=..</span> [Frame, instance_of, ParentFrame]),
+    <span class="fn">call</span>(Query).
+
+?<span class="kw">-</span> <span class="fn">value</span>(albert, active_at, T).
+T = daylight                    <span class="cm">% κληρονόμησε από bird</span>
+
+?<span class="kw">-</span> <span class="fn">value</span>(kim, moving_method, M).
+M = walk                        <span class="cm">% τοπικά στο kiwi</span></code></div>
+
+  <h3>3.4 Σχισμές με Διαδικαστική Τιμή</h3>
+
+  <p>Πιο ισχυρό: μια σχισμή μπορεί να έχει <em>διαδικασία</em> αντί απλής τιμής. Π.χ. το <code>relative_size</code> ενός ζώου ως ποσοστό του μέσου όρου της κλάσης του:</p>
+
+  <div class="cb"><code><span class="fn">animal</span>(relative_size,
+        <span class="fn">execute</span>(<span class="fn">relative_size</span>(Object, Value), Object, Value)).
+
+<span class="fn">relative_size</span>(Object, RelativeSize) <span class="kw">:-</span>
+    <span class="fn">value</span>(Object, size, ObjSize),
+    <span class="fn">value</span>(Object, instance_of, ObjClass),
+    <span class="fn">value</span>(ObjClass, size, ClassSize),
+    RelativeSize <span class="kw">is</span> ObjSize <span class="op">/</span> ClassSize <span class="op">*</span> 100.
+
+?<span class="kw">-</span> <span class="fn">value</span>(ross, relative_size, R).
+R = 34.78</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Procedural Attachment</div>
+    <p>Αυτό το χαρακτηριστικό λέγεται <strong>procedural attachment</strong> και είναι θεμελιώδες σε αντικειμενοστραφή προγραμματισμό. Στα πλαίσια προηγείται κατά 2 δεκαετίες την OOP!</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 4 · DATALOG                              ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="datalog">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">💾</div>
+    <h2>4. Datalog: Επαγωγικές Βάσεις Δεδομένων</h2>
+  </div>
+
+  <p>Η <strong>Datalog</strong> είναι μια <em>υποδιάλεκτος</em> της Prolog ειδικά για βάσεις δεδομένων. Συνδυάζει τη δηλωτικότητα της λογικής με την αποτελεσματικότητα των DBMS.</p>
+
+  <h3>4.1 EDB vs IDB</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Δύο Είδη Δεδομένων</div>
+    <ul style="margin:6px 0">
+      <li><strong>EDB (Extensional Database)</strong> = τα <em>γεγονότα</em> (facts). Αυτό αποθηκεύεται φυσικά.</li>
+      <li><strong>IDB (Intensional Database)</strong> = οι <em>κανόνες</em> (rules). Αυτό παράγει νέα γνώση από το EDB.</li>
+    </ul>
+  </div>
+
+  <div class="cb"><code><span class="cm">% --- EDB: γεγονότα ---</span>
+<span class="fn">parent</span>(tom, bob).
+<span class="fn">parent</span>(bob, ann).
+<span class="fn">parent</span>(bob, pat).
+
+<span class="cm">% --- IDB: κανόνες ---</span>
+<span class="fn">ancestor</span>(X, Y) <span class="kw">:-</span> <span class="fn">parent</span>(X, Y).
+<span class="fn">ancestor</span>(X, Y) <span class="kw">:-</span> <span class="fn">parent</span>(X, Z), <span class="fn">ancestor</span>(Z, Y).</code></div>
+
+  <h3>4.2 Περιορισμοί της Datalog</h3>
+
+  <p>Σε σχέση με την πλήρη Prolog, η Datalog έχει περιορισμούς:</p>
+  <ul>
+    <li><strong>Δεν υπάρχουν συναρτησιακά σύμβολα</strong> (π.χ. όχι <code>f(x)</code>) — εξασφαλίζει πεπερασμένο Herbrand Universe</li>
+    <li><strong>Όλες οι μεταβλητές της κεφαλής εμφανίζονται και στο σώμα</strong> (κανόνας ασφάλειας)</li>
+    <li><strong>Όλες οι μεταβλητές αρνητικών λεκτικών εμφανίζονται και σε θετικά</strong></li>
+  </ul>
+
+  <div class="note">
+    <div class="hd">📝 Γιατί αυτοί οι περιορισμοί;</div>
+    <p>Εξασφαλίζουν ότι η αξιολόγηση είναι <strong>πεπερασμένη</strong> και η εξαγωγή του ελάχιστου μοντέλου Herbrand <strong>τερματίζεται</strong> πάντα. Στην πλήρη Prolog δεν ισχύει αυτό.</p>
+  </div>
+
+  <h3>4.3 Γράφος Εξάρτησης &amp; Στρωματοποιημένη Άρνηση</h3>
+
+  <p>Όταν προστίθεται <code>not</code> στους κανόνες, χρειάζεται προσοχή. Η Datalog υποστηρίζει <strong>στρωματοποιημένη άρνηση</strong>:</p>
+
+  <ol class="steps">
+    <li>Φτιάχνουμε <strong>γράφο εξάρτησης</strong>: για κάθε κανόνα <code>A :- ...B...</code>, ακμή από Β προς Α</li>
+    <li>Αν υπάρχει αρνητικό σώμα <code>not B</code>, η ακμή είναι "αρνητική"</li>
+    <li>Αν δεν υπάρχει <strong>κύκλος με αρνητική ακμή</strong>, το πρόγραμμα είναι <em>στρωματοποιημένο</em></li>
+    <li>Τότε μπορούμε να το αξιολογήσουμε σε στρώματα (πρώτα γεγονότα, μετά πρώτο επίπεδο, μετά δεύτερο…)</li>
+  </ol>
+
+  <h3>4.4 Σχέση Datalog – SQL</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Έννοια</th><th>Datalog</th><th>SQL</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Σχέσεις</td><td>Κατηγορήματα</td><td>Πίνακες</td></tr>
+      <tr><td>Γεγονότα</td><td>Unit clauses</td><td>Rows</td></tr>
+      <tr><td>Κανόνες</td><td>Rules</td><td>Views</td></tr>
+      <tr><td>Ερώτηση</td><td><code>?- p(X,Y).</code></td><td><code>SELECT * FROM p</code></td></tr>
+      <tr><td>Σύνδεση</td><td>Κοινές μεταβλητές</td><td>JOIN</td></tr>
+      <tr><td>Αναδρομή</td><td>Φυσικά</td><td>WITH RECURSIVE</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tip-box">
+    <div class="hd">💡 Datalog στην πράξη</div>
+    <p>Σύγχρονες υλοποιήσεις (Soufflé, Datomic, LogicBlox) χρησιμοποιούνται σε static analysis, σε εφαρμογές γράφων (όπως Neo4j) και σε εμπορικά συστήματα. Η Datalog ζει!</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 5 · ΣΗΜΑΝΤΙΚΟΣ ΙΣΤΟΣ                    ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="sw">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🌐</div>
+    <h2>5. Σημαντικός Ιστός — Το Όραμα</h2>
+  </div>
+
+  <p>Ο <strong>Σημαντικός Ιστός (Semantic Web)</strong> είναι όραμα του <em>Tim Berners-Lee</em> (εφευρέτη του WWW) από το 2001: η εξέλιξη του ιστού από <strong>"ιστό κειμένων"</strong> σε <strong>"ιστό δεδομένων (Web of Data)"</strong>, όπου η πληροφορία έχει σαφή <em>σημασία επεξεργάσιμη από μηχανές</em>.</p>
+
+  <h3>5.1 Η "Τούρτα των Επιπέδων" (Layer Cake)</h3>
+
+  <p>Η αρχιτεκτονική του Σημαντικού Ιστού είναι διαστρωματωμένη:</p>
+
+  <div class="layer-cake">
+    <div class="layer l0">Unicode &amp; URI</div>
+    <div class="layer l1">XML</div>
+    <div class="layer l2">RDF</div>
+    <div class="layer l3">RDFS (RDF Schema)</div>
+    <div class="layer l4">OWL (Ontologies)</div>
+    <div class="layer l5">SWRL (Rules)</div>
+    <div class="layer l6">Logic / Proof</div>
+    <div class="layer l7">Trust</div>
+  </div>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Επίπεδο</th><th>Σκοπός</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Unicode &amp; URI</strong></td><td>Παγκόσμια ταυτοποίηση πόρων</td></tr>
+      <tr><td><strong>XML</strong></td><td>Δομημένο μεταφερόμενο φορμά</td></tr>
+      <tr><td><strong>RDF</strong></td><td>Μοντέλο δεδομένων: τριάδες S-P-O</td></tr>
+      <tr><td><strong>RDFS</strong></td><td>Σχήμα: κλάσεις, ιδιότητες, ιεραρχία</td></tr>
+      <tr><td><strong>OWL</strong></td><td>Πλούσιες οντολογίες με λογικό συμπερασμό</td></tr>
+      <tr><td><strong>SWRL</strong></td><td>Κανόνες πέρα από αυτό που εκφράζει η OWL</td></tr>
+      <tr><td><strong>Logic/Proof/Trust</strong></td><td>Έλεγχος ορθότητας &amp; αξιοπιστίας</td></tr>
+    </tbody>
+  </table>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 6 · XML & RDF                            ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="rdf">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">📄</div>
+    <h2>6. XML, RDF και RDFS</h2>
+  </div>
+
+  <h3>6.1 XML — Δομημένο Φορμά</h3>
+
+  <p>Η <strong>XML (eXtensible Markup Language)</strong> είναι το βασικό φορμά μετάφορτωσης δεδομένων στον ιστό:</p>
+
+  <div class="cb"><code><span class="tag">&lt;person&gt;</span>
+  <span class="tag">&lt;name&gt;</span>Tom<span class="tag">&lt;/name&gt;</span>
+  <span class="tag">&lt;age&gt;</span>45<span class="tag">&lt;/age&gt;</span>
+  <span class="tag">&lt;child&gt;</span>Bob<span class="tag">&lt;/child&gt;</span>
+  <span class="tag">&lt;child&gt;</span>Liz<span class="tag">&lt;/child&gt;</span>
+<span class="tag">&lt;/person&gt;</span></code></div>
+
+  <p>Όμως η XML είναι μόνο <em>συντακτικά</em> δομημένη — δεν λέει τίποτα για τη <em>σημασία</em>. Για αυτό χρειαζόμαστε το RDF.</p>
+
+  <h3>6.2 RDF — Resource Description Framework</h3>
+
+  <div class="def">
+    <div class="hd">⚡ Ορισμός: ΤΡΙΑΔΑ (Triple)</div>
+    <p>Η βασική μονάδα του RDF είναι η <strong>τριάδα</strong>:</p>
+    <div class="dl-formula">
+      ⟨ <span class="i">Subject</span> , <span class="r">Predicate</span> , <span class="c">Object</span> ⟩
+    </div>
+    <p>"Το <em>Subject</em> έχει την <em>Predicate</em> ιδιότητα με τιμή <em>Object</em>."</p>
+  </div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 S-P-O = Subject-Predicate-Object</div>
+    <p>Είναι σαν πρόταση γλώσσας: <em>"Ο Tom (S) είναι γονιός (P) του Bob (O)"</em>.</p>
+  </div>
+
+  <table class="triple-tbl">
+    <thead>
+      <tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="s">:Tom</td><td class="p">:hasName</td><td class="o">"Tom Smith"</td></tr>
+      <tr><td class="s">:Tom</td><td class="p">:hasAge</td><td class="o">45</td></tr>
+      <tr><td class="s">:Tom</td><td class="p">:parentOf</td><td class="o">:Bob</td></tr>
+      <tr><td class="s">:Bob</td><td class="p">:parentOf</td><td class="o">:Pat</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.3 Σύνδεση RDF ↔ Prolog</h3>
+
+  <p>Μια τριάδα RDF αντιστοιχεί δομικά σε γεγονός Prolog:</p>
+
+  <div class="compare-grid">
+    <div class="compare-cell">
+      <strong>Τριάδα RDF</strong>
+      <div class="cb" style="font-size:0.8rem;margin-top:8px"><code>⟨:Tom, :parentOf, :Bob⟩</code></div>
+    </div>
+    <div class="compare-cell">
+      <strong>Prolog γεγονός</strong>
+      <div class="cb" style="font-size:0.8rem;margin-top:8px"><code>parentOf(tom, bob).</code></div>
+    </div>
+  </div>
+
+  <p>Διαφορά: τα κατηγορήματα RDF είναι <strong>URIs</strong>, π.χ. <code>http://example.org/ontology#parentOf</code>.</p>
+
+  <h3>6.4 Σειριοποιήσεις RDF</h3>
+
+  <p>Η ίδια πληροφορία μπορεί να σειριοποιηθεί διαφορετικά:</p>
+
+  <div class="cb"><code><span class="cm">% N-Triples (απλούστερο)</span>
+&lt;http://example.org/Tom&gt; &lt;http://example.org/parentOf&gt; &lt;http://example.org/Bob&gt; .
+
+<span class="cm">% Turtle (πιο συμπαγές)</span>
+<span class="attr">@prefix</span> ex: &lt;http://example.org/&gt; .
+ex:Tom ex:parentOf ex:Bob .
+ex:Bob ex:parentOf ex:Pat .
+
+<span class="cm">% RDF/XML</span>
+<span class="tag">&lt;rdf:Description</span> <span class="attr">rdf:about=</span><span class="str">"http://example.org/Tom"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;ex:parentOf</span> <span class="attr">rdf:resource=</span><span class="str">"http://example.org/Bob"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/rdf:Description&gt;</span></code></div>
+
+  <h3>6.5 RDFS — RDF Schema</h3>
+
+  <p>Το <strong>RDFS</strong> προσθέτει βασικές δομές οντολογίας:</p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>RDFS κατασκευή</th><th>Έννοια</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>rdfs:Class</code></td><td>Κλάση οντοτήτων</td></tr>
+      <tr><td><code>rdf:type</code></td><td>"είναι στιγμιότυπο" (αντίστοιχο του isa)</td></tr>
+      <tr><td><code>rdfs:subClassOf</code></td><td>Ιεραρχία κλάσεων</td></tr>
+      <tr><td><code>rdf:Property</code></td><td>Σχέση/ιδιότητα</td></tr>
+      <tr><td><code>rdfs:subPropertyOf</code></td><td>Ιεραρχία ιδιοτήτων</td></tr>
+      <tr><td><code>rdfs:domain</code></td><td>Πεδίο ορισμού ιδιότητας</td></tr>
+      <tr><td><code>rdfs:range</code></td><td>Πεδίο τιμών ιδιότητας</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cb"><code><span class="cm">% Παράδειγμα RDFS</span>
+ex:Person <span class="attr">rdf:type</span> rdfs:Class .
+ex:Man <span class="attr">rdfs:subClassOf</span> ex:Person .
+ex:hasParent <span class="attr">rdfs:domain</span> ex:Person .
+ex:hasParent <span class="attr">rdfs:range</span> ex:Person .
+ex:Tom <span class="attr">rdf:type</span> ex:Man .   <span class="cm">% συνεπάγεται: Tom είναι Person</span></code></div>
+
+  <div class="section-quiz" data-topic="semantic_web" data-section="rdf"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 7 · OWL & DL                             ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="owl">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🦉</div>
+    <h2>7. OWL &amp; Περιγραφικές Λογικές</h2>
+  </div>
+
+  <p>Η <strong>OWL (Web Ontology Language)</strong> είναι μια <em>γλώσσα οντολογιών</em> πολύ πιο εκφραστική από RDFS. Επιτρέπει σύνθετους περιορισμούς και αυτόματο λογικό συμπερασμό.</p>
+
+  <h3>7.1 Τρεις Εκδοχές OWL</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Εκδοχή</th><th>Εκφραστικότητα</th><th>Αποφασισιμότητα</th><th>Χρήση</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>OWL Lite</strong></td><td>Περιορισμένη</td><td>Ναι, γρήγορη</td><td>Απλές ιεραρχίες, κληρονομικότητα</td></tr>
+      <tr><td><strong>OWL DL</strong></td><td>Υψηλή (DL)</td><td>Ναι, αλλά πιο αργή</td><td>Σύνθετες οντολογίες</td></tr>
+      <tr><td><strong>OWL Full</strong></td><td>Μέγιστη (FOPL)</td><td>Όχι!</td><td>Μέγιστη ευελιξία, μη πρακτική</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.2 Description Logics (DL)</h3>
+
+  <p>Η <strong>Περιγραφική Λογική (DL)</strong> είναι το τυπικό μαθηματικό υπόβαθρο της OWL DL. Διακρίνει:</p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Στοιχείο</th><th>Σύμβολο στην DL</th><th>Στην Prolog</th><th>Παράδειγμα</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Έννοια (Concept)</strong></td><td>C, D</td><td>Μονομελές κατηγόρημα</td><td><code>Person</code></td></tr>
+      <tr><td><strong>Ρόλος (Role)</strong></td><td>R, S</td><td>Διμελές κατηγόρημα</td><td><code>hasChild</code></td></tr>
+      <tr><td><strong>Άτομο (Individual)</strong></td><td>a, b</td><td>Σταθερά</td><td><code>pam</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.3 Κατασκευαστές DL</h3>
+
+  <p>Από βασικές έννοιες/ρόλους κατασκευάζουμε σύνθετες με <strong>κατασκευαστές</strong>:</p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Σύνταξη DL</th><th>Όνομα</th><th>Σημασία</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>C ⊓ D</code></td><td>Conjunction</td><td>Στοιχεία στη C <em>και</em> στη D</td></tr>
+      <tr><td><code>C ⊔ D</code></td><td>Disjunction</td><td>Στοιχεία στη C <em>ή</em> στη D</td></tr>
+      <tr><td><code>¬C</code></td><td>Negation</td><td>Στοιχεία <em>όχι</em> στη C</td></tr>
+      <tr><td><code>∃R.C</code></td><td>Existential</td><td>Στοιχεία που έχουν R προς κάποιο στοιχείο της C</td></tr>
+      <tr><td><code>∀R.C</code></td><td>Universal</td><td>Στοιχεία όλων των R τιμών των οποίων ανήκουν στη C</td></tr>
+      <tr><td><code>C ⊑ D</code></td><td>Subsumption</td><td>Όλα τα C είναι D (υποκλάση)</td></tr>
+      <tr><td><code>C ≡ D</code></td><td>Equivalence</td><td>Ισοδυναμία κλάσεων</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.4 Παράδειγμα: Ορισμός HappyParent</h3>
+
+  <p>Πώς ορίζεται μαθηματικά το <em>"ευτυχισμένος γονιός"</em>; Π.χ.: <em>"Άτομο που είναι γονιός, και όλα του τα παιδιά είτε είναι γιατροί είτε έχουν γιατρό σύζυγο."</em></p>
+
+  <div class="dl-formula">
+    <span class="c">HappyParent</span> <span class="op">≡</span><br>
+    <span class="c">Person</span> <span class="op">⊓</span> <span class="op">∃</span><span class="r">hasChild</span>.<span class="c">Person</span><br>
+    <span class="op">⊓</span> <span class="op">∀</span><span class="r">hasChild</span>.( <span class="c">Doctor</span> <span class="op">⊔</span> <span class="op">∃</span><span class="r">marriedTo</span>.<span class="c">Doctor</span> )
+  </div>
+
+  <div class="line-by-line">
+    <div class="lcode">HappyParent ≡</div>
+    <div class="lexpl">Ορισμός νέας έννοιας ως <em>ισοδύναμης</em> με το δεξί μέλος.</div>
+    <div class="lcode">Person ⊓</div>
+    <div class="lexpl">Πρέπει να είναι άτομο (Person).</div>
+    <div class="lcode">∃hasChild.Person ⊓</div>
+    <div class="lexpl">Υπάρχει τουλάχιστον ένα παιδί που είναι άτομο. (Δηλαδή, είναι γονιός.)</div>
+    <div class="lcode">∀hasChild.( Doctor ⊔ ∃marriedTo.Doctor )</div>
+    <div class="lexpl">Όλα τα παιδιά είναι είτε γιατροί είτε παντρεμένα με γιατρό.</div>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί ισοδυναμία και όχι μόνο υπαγωγή;</div>
+    <p>Με <code>≡</code> ορίζουμε <em>πλήρως</em> την έννοια: η μηχανή συμπερασμού μπορεί να αναγνωρίσει αυτόματα ποια άτομα είναι HappyParent με βάση τις άλλες ιδιότητές τους. Με <code>⊑</code> θα είχαμε μόνο τη μία κατεύθυνση.</p>
+  </div>
+
+  <h3>7.5 Ταξινομία Description Logics</h3>
+
+  <p>Υπάρχουν διάφορες DL με διαφορετική εκφραστικότητα:</p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Όνομα</th><th>Κατασκευαστές</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>AL</strong> (Attributive)</td><td>⊓, ¬ (μόνο σε ατομικές), ∀R.C, ∃R.⊤</td></tr>
+      <tr><td><strong>ALC</strong></td><td>AL + ¬ σε οποιαδήποτε έννοια + ⊔</td></tr>
+      <tr><td><strong>SHIF(D)</strong></td><td>OWL Lite</td></tr>
+      <tr><td><strong>SHOIN(D)</strong></td><td>OWL DL</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-quiz" data-topic="semantic_web" data-section="owl"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 8 · TBox/ABox & ΣΥΛΛΟΓΙΣΤΙΚΗ            ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="reason">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🔍</div>
+    <h2>8. TBox / ABox &amp; Συλλογιστική</h2>
+  </div>
+
+  <h3>8.1 Διαχωρισμός TBox / ABox</h3>
+
+  <p>Μια οντολογία DL αποτελείται από <strong>δύο μέρη</strong>:</p>
+
+  <div class="box-split">
+    <div class="box-tbox">
+      <h4>📐 TBox (Terminological)</h4>
+      <p>Η <em>"θεωρία"</em> ή σχήμα. Περιέχει ορισμούς εννοιών και αξιώματα υπαγωγής.</p>
+      <div class="cb" style="font-size:0.8rem;background:transparent;border:none;padding:0;margin:8px 0"><code><span class="c">Parent</span> <span class="op">≡</span> <span class="c">Person</span> <span class="op">⊓</span> <span class="op">∃</span><span class="r">hasChild</span>.<span class="c">Person</span>
+<span class="c">Doctor</span> <span class="op">⊑</span> <span class="c">Person</span></code></div>
+    </div>
+    <div class="box-abox">
+      <h4>📊 ABox (Assertional)</h4>
+      <p>Τα <em>"γεγονότα"</em>. Περιέχει συγκεκριμένα άτομα και τις ιδιότητές τους.</p>
+      <div class="cb" style="font-size:0.8rem;background:transparent;border:none;padding:0;margin:8px 0"><code><span class="i">tom</span> : <span class="c">Person</span>
+(<span class="i">tom</span>, <span class="i">bob</span>) : <span class="r">hasChild</span>
+<span class="i">bob</span> : <span class="c">Person</span></code></div>
+    </div>
+  </div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 TBox vs ABox μνημονικός</div>
+    <ul style="margin:6px 0">
+      <li><strong>T</strong>Box για <strong>T</strong>heory / <strong>T</strong>erminology</li>
+      <li><strong>A</strong>Box για <strong>A</strong>ssertions / <strong>A</strong>ctual data</li>
+    </ul>
+  </div>
+
+  <h3>8.2 Βασικές Εργασίες Συλλογιστικής</h3>
+
+  <p>Δοθείσης μιας οντολογίας (TBox + ABox), η μηχανή συμπερασμού (reasoner) μπορεί να εκτελέσει:</p>
+
+  <ol class="steps">
+    <li><strong>Έλεγχος Ικανοποιησιμότητας (Satisfiability)</strong>: Είναι η έννοια C ικανοποιήσιμη; (Υπάρχουν στοιχεία;)</li>
+    <li><strong>Υπαγωγή (Subsumption)</strong>: Είναι C ⊑ D; (Είναι κάθε C και D;)</li>
+    <li><strong>Έλεγχος Στιγμιοτύπου (Instance Checking)</strong>: Είναι το άτομο a στιγμιότυπο της C;</li>
+    <li><strong>Ταξινόμηση (Classification)</strong>: Πλήρης υπολογισμός της ιεραρχίας υπαγωγής όλων των εννοιών</li>
+    <li><strong>Ανάκτηση (Retrieval)</strong>: Ποια άτομα είναι στιγμιότυπα της C;</li>
+  </ol>
+
+  <h3>8.3 Δημοφιλείς Reasoners</h3>
+
+  <ul>
+    <li><strong>Pellet</strong> — Java, ανοιχτού κώδικα</li>
+    <li><strong>HermiT</strong> — Java, hypertableau αλγόριθμος</li>
+    <li><strong>FaCT++</strong> — C++, για OWL 2</li>
+    <li><strong>RACER</strong> — εμπορικό</li>
+  </ul>
+
+  <h3>8.4 SWRL — Κανόνες πέρα από την OWL</h3>
+
+  <p>Η <strong>SWRL (Semantic Web Rule Language)</strong> προσθέτει κανόνες Horn-like στην OWL:</p>
+
+  <div class="cb"><code><span class="c">hasParent</span>(?x, ?y) <span class="op">∧</span> <span class="c">hasBrother</span>(?y, ?z) <span class="op">→</span> <span class="c">hasUncle</span>(?x, ?z)</code></div>
+
+  <p>Αυτό δεν εκφράζεται από καθαρή OWL DL — γι' αυτό χρειάζεται SWRL.</p>
+
+  <div class="section-quiz" data-topic="semantic_web" data-section="dl"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 9 · OWA vs CWA                          ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="owa">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">⚖️</div>
+    <h2>9. Open World vs Closed World</h2>
+  </div>
+
+  <p>Μια θεμελιώδης διαφορά μεταξύ <strong>Prolog</strong> και <strong>Σημαντικού Ιστού</strong> είναι η υπόθεση για ό,τι "δεν ξέρουμε":</p>
+
+  <div class="compare-grid">
+    <div class="compare-cell">
+      <span class="ctag" style="background:var(--rdim);color:var(--red)">CWA</span>
+      <strong>Closed World Assumption</strong>
+      <p style="font-size:0.9rem"><em>"Αν δεν αποδεικνύεται, είναι ψευδές."</em></p>
+      <p style="font-size:0.85rem;color:var(--muted)">Χρησιμοποιείται σε Prolog (μέσω <code>not</code>) και σχεσιακές βάσεις δεδομένων.</p>
+      <p style="font-size:0.85rem"><strong>Πότε ταιριάζει:</strong> Κλειστά συστήματα (μισθοδοσία εταιρείας, ηλεκτρονικό κατάστημα) όπου έχουμε <em>ολοκληρωμένη γνώση</em>.</p>
+    </div>
+    <div class="compare-cell">
+      <span class="ctag" style="background:var(--gdim);color:var(--green)">OWA</span>
+      <strong>Open World Assumption</strong>
+      <p style="font-size:0.9rem"><em>"Αν δεν αποδεικνύεται, απλώς δεν ξέρουμε."</em></p>
+      <p style="font-size:0.85rem;color:var(--muted)">Χρησιμοποιείται στον Σημαντικό Ιστό (RDF, OWL).</p>
+      <p style="font-size:0.85rem"><strong>Πότε ταιριάζει:</strong> Ανοιχτά συστήματα (Web) όπου η γνώση είναι <em>κατανεμημένη και ημιτελής</em>.</p>
+    </div>
+  </div>
+
+  <h3>9.1 Παράδειγμα Διαφοροποίησης</h3>
+
+  <p>Έστω η οντολογία:</p>
+  <div class="cb"><code><span class="c">Tom</span> : <span class="c">Person</span>
+(<span class="c">Tom</span>, <span class="c">Bob</span>) : <span class="r">hasChild</span></code></div>
+
+  <p>Ερώτηση: <em>"Έχει ο Tom άλλα παιδιά εκτός από τον Bob;"</em></p>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Υπόθεση</th><th>Απάντηση</th><th>Σκεπτικό</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>CWA</strong> (Prolog)</td><td>"Όχι"</td><td>Δεν υπάρχει άλλο γεγονός hasChild → δεν υπάρχει άλλο παιδί</td></tr>
+      <tr><td><strong>OWA</strong> (OWL)</td><td>"Δεν ξέρω"</td><td>Μπορεί να υπάρχουν, απλά δεν τα γνωρίζουμε ακόμα</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.2 Συνέπειες της OWA</h3>
+
+  <p>Η OWA επηρεάζει σημαντικά τη σχεδίαση οντολογιών:</p>
+
+  <ul>
+    <li><strong>Δεν μπορούμε να συμπεράνουμε αρνητικά</strong> από απουσία πληροφορίας</li>
+    <li>Για να πούμε <em>"δεν είναι παιδί"</em>, πρέπει να το <strong>δηλώσουμε ρητά</strong></li>
+    <li>Χρειαζόμαστε τη <strong>Unique Name Assumption (UNA)</strong>: είναι ίδιο το <code>Tom</code> και ο <code>thomas</code>; — στην OWL <em>όχι αυτόματα</em></li>
+  </ul>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πιθανή σύγχυση</div>
+    <p>Αν χρησιμοποιείς οντολογία OWL αλλά σκέφτεσαι σε όρους Prolog/SQL (CWA), θα παραξενευτείς που πολλά "προφανή" συμπεράσματα δεν παράγονται. Πρόσεξε σε ποιο "κόσμο" εργάζεσαι!</p>
+  </div>
+
+  <div class="section-quiz" data-topic="semantic_web" data-section="rules"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  ΣΥΝΟΨΗ                                       ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="summary">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">📋</div>
+    <h2>Συνοπτικός Οδηγός Εξετάσεων</h2>
+  </div>
+
+  <h3>Σύγκριση Μεθόδων Αναπαράστασης Γνώσης</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Μέθοδος</th><th>Έτος</th><th>Δομή</th><th>Δυνατά</th><th>Αδυναμίες</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Σημασιολογικά Δίκτυα</td><td>1968</td><td>Γράφος</td><td>Οπτικά, οικεία</td><td>Έλλειψη τυπικής σημασιολογίας</td></tr>
+      <tr><td>Πλαίσια (Frames)</td><td>1974</td><td>Slot/value</td><td>Procedural attachment</td><td>Λίγο τυπική</td></tr>
+      <tr><td>Datalog</td><td>1980s</td><td>Λογικοί κανόνες</td><td>Τυπική, αποδοτική</td><td>Όχι συναρτησιακά</td></tr>
+      <tr><td>RDF/RDFS</td><td>1999</td><td>Τριάδες</td><td>Διασύνδεση Web</td><td>Περιορισμένη εκφραστικότητα</td></tr>
+      <tr><td>OWL DL</td><td>2004</td><td>Description Logic</td><td>Αυτόματη συλλογιστική</td><td>Υπολογιστική πολυπλοκότητα</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Σύμβολα DL που πρέπει να ξέρετε</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Σύμβολο</th><th>Όνομα</th><th>Παράδειγμα Χρήσης</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>⊓</td><td>Τομή (And)</td><td><code>Person ⊓ Doctor</code> = γιατροί</td></tr>
+      <tr><td>⊔</td><td>Ένωση (Or)</td><td><code>Man ⊔ Woman</code> = ενήλικες</td></tr>
+      <tr><td>¬</td><td>Άρνηση</td><td><code>¬Doctor</code> = όχι γιατροί</td></tr>
+      <tr><td>∃R.C</td><td>Υπαρξιακή</td><td><code>∃hasChild.Person</code> = έχει παιδί</td></tr>
+      <tr><td>∀R.C</td><td>Καθολική</td><td><code>∀hasChild.Doctor</code> = όλα τα παιδιά γιατροί</td></tr>
+      <tr><td>⊑</td><td>Υπαγωγή</td><td><code>Doctor ⊑ Person</code></td></tr>
+      <tr><td>≡</td><td>Ισοδυναμία</td><td><code>Bachelor ≡ Man ⊓ ¬Married</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Τελικές Συμβουλές</h3>
+  <ol class="steps">
+    <li><strong>Σημασιολογικά δίκτυα</strong>: σχεδίαζε με κόμβους κλάσεων και ακμές με ετικέτες (isa, ιδιότητα). Στη Prolog: <code>isa/2</code> + γενικευμένη κληρονομικότητα μέσω <code>=..</code>.</li>
+    <li><strong>Πλαίσια</strong>: σχεδίαζε ως κάρτες με slot-value. Στη Prolog: γεγονότα τύπου <code>frame_name(slot_name, value)</code>.</li>
+    <li><strong>RDF τριάδες</strong>: σκέψου τες ως μικρές προτάσεις S-P-O.</li>
+    <li><strong>OWL/DL</strong>: ξεχώρισε TBox (ορισμοί) από ABox (γεγονότα).</li>
+    <li><strong>OWA vs CWA</strong>: στον Σημαντικό Ιστό η απουσία γεγονότος <em>δεν</em> σημαίνει ψεύδος!</li>
+  </ol>
+
+  <div class="exam">
+    <div class="hd">📚 Σύνδεση με τις Εργασίες</div>
+    <p>Οι τρεις εργασίες δεν τεστάρουν άμεσα το περιεχόμενο του Κεφαλαίου 6 — αλλά οι έννοιες είναι σημαντικές για τις <strong>εξετάσεις</strong>. Συνηθισμένες ερωτήσεις:</p>
+    <ul style="margin:0">
+      <li>Δοθέντος ενός σημασιολογικού δικτύου, υλοποίησέ το σε Prolog (γεγονότα + γενική κληρονομικότητα)</li>
+      <li>Μετάφραση κανόνα από φυσική γλώσσα σε σύνταξη DL με χρήση ⊓, ⊔, ¬, ∃, ∀</li>
+      <li>Διαχωρισμός μιας οντολογίας σε TBox και ABox</li>
+      <li>Σύγκριση OWA-CWA σε δεδομένο παράδειγμα</li>
+    </ul>
+  </div>
+
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 6 · Αναπαράσταση Γνώσης &amp; Σημαντικός Ιστός</div>
+</body>
+</html>

@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 5 · Προηγμένος Προγραμματισμός</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cyan-rgb:57,212,200;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--cdim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'=..';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1rem,3vw,2.2rem);
+  color:rgba(57,212,200,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10;padding:16px;border-radius:8px;border:1px solid var(--border);overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.55;margin:12px 0}
+.cb code{display:block;white-space:pre}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.nm{color:var(--purple)}
+.cm{color:var(--dim);font-style:italic}
+.str{color:var(--green)}
+.op{color:var(--orange)}
+
+/* Notes / warnings / tips / mnemonics — exam-prep boxes */
+.note,.warn,.tip-box,.mnemo,.exam{
+  border-left:4px solid;padding:14px 18px;margin:18px 0;border-radius:6px;
+  background:var(--surf);position:relative;
+}
+.note{border-color:var(--blue);background:linear-gradient(90deg,rgba(88,166,255,.07),transparent 60%)}
+.warn{border-color:var(--red);background:linear-gradient(90deg,rgba(248,81,73,.07),transparent 60%)}
+.tip-box{border-color:var(--green);background:linear-gradient(90deg,rgba(63,185,80,.07),transparent 60%)}
+.mnemo{border-color:var(--yellow);background:linear-gradient(90deg,rgba(227,179,65,.07),transparent 60%)}
+.exam{border-color:var(--purple);background:linear-gradient(90deg,rgba(188,140,255,.08),transparent 60%)}
+.note .hd,.warn .hd,.tip-box .hd,.mnemo .hd,.exam .hd{
+  font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;
+}
+.note .hd{color:var(--blue)}
+.warn .hd{color:var(--red)}
+.tip-box .hd{color:var(--green)}
+.mnemo .hd{color:var(--yellow)}
+.exam .hd{color:var(--purple)}
+.note p:last-child,.warn p:last-child,.tip-box p:last-child,.mnemo p:last-child,.exam p:last-child{margin-bottom:0}
+
+/* Line-by-line code commentary */
+.line-by-line{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  font-family:'JetBrains Mono',monospace;font-size:0.83rem;
+}
+.line-by-line .lcode{
+  background:#060a10;padding:8px 12px;border-bottom:1px solid var(--border);
+  white-space:pre;color:var(--txt);
+}
+.line-by-line .lexpl{
+  background:var(--surf);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:0.9rem;color:var(--muted);
+}
+.line-by-line>div:nth-last-child(-n+2){border-bottom:none}
+
+/* Comparison cells */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+@media (max-width:720px){.compare-grid{grid-template-columns:1fr}}
+.compare-cell{padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--surf)}
+.compare-cell.bad{border-color:var(--red);background:linear-gradient(180deg,rgba(248,81,73,.06),transparent)}
+.compare-cell.good{border-color:var(--green);background:linear-gradient(180deg,rgba(63,185,80,.06),transparent)}
+.compare-cell .ctag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.compare-cell.bad .ctag{background:var(--rdim);color:var(--red)}
+.compare-cell.good .ctag{background:var(--gdim);color:var(--green)}
+
+/* Summary table */
+.summary-tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.88rem}
+.summary-tbl th,.summary-tbl td{padding:10px 12px;border:1px solid var(--border);text-align:left;vertical-align:top}
+.summary-tbl th{background:var(--surf);color:var(--cyan);font-weight:600}
+.summary-tbl tr:nth-child(even) td{background:var(--surf)}
+.summary-tbl code{background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:0.85em}
+
+/* Decomposition diagram for =.. */
+.decomp{
+  display:flex;gap:18px;align-items:center;padding:16px;
+  background:var(--surf);border-radius:8px;border:1px solid var(--border);
+  margin:14px 0;flex-wrap:wrap;justify-content:center;
+}
+.decomp-term{
+  padding:8px 14px;background:var(--bdim);color:var(--blue);
+  border:2px solid var(--blue);border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:700;
+}
+.decomp-arrow{color:var(--purple);font-size:1.8rem;font-weight:700}
+.decomp-list{
+  display:flex;gap:0;padding:0;background:var(--bg);border-radius:6px;
+  border:1px solid var(--border);overflow:hidden;
+}
+.decomp-list span{
+  padding:8px 12px;border-right:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;font-weight:700;
+}
+.decomp-list span:last-child{border-right:none}
+.decomp-list .functor{background:var(--ydim);color:var(--yellow)}
+.decomp-list .arg{background:var(--gdim);color:var(--green)}
+
+/* Steps */
+.steps{counter-reset:step;list-style:none;padding-left:0;margin:14px 0}
+.steps li{counter-increment:step;position:relative;padding:8px 0 8px 44px;margin-bottom:4px;border-left:1px solid var(--border);margin-left:16px}
+.steps li::before{
+  content:counter(step);position:absolute;left:-16px;top:8px;
+  width:32px;height:32px;border-radius:50%;background:var(--cdim);
+  color:var(--cyan);font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--cyan);font-family:'JetBrains Mono',monospace;
+}
+
+/* Truth table */
+.truth-tbl{border-collapse:collapse;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.88rem}
+.truth-tbl th,.truth-tbl td{padding:6px 14px;border:1px solid var(--border);text-align:center}
+.truth-tbl th{background:var(--surf);color:var(--cyan)}
+.truth-tbl td.t{color:var(--green);font-weight:700}
+.truth-tbl td.f{color:var(--red);font-weight:700}
+
+/* And-Or graph for expert system */
+.aog{
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px;background:var(--surf);border-radius:10px;border:1px solid var(--border);
+  margin:14px 0;overflow-x:auto;
+}
+.aog svg{max-width:100%}
+.aog-node{fill:var(--surf2);stroke:var(--cyan);stroke-width:2}
+.aog-node.fact{stroke:var(--green);fill:var(--gdim)}
+.aog-node.goal{stroke:var(--yellow);fill:var(--ydim);stroke-width:3}
+.aog-edge{stroke:var(--purple);stroke-width:1.5;fill:none;marker-end:url(#arrowhead)}
+.aog-text{fill:var(--txt);font-family:'JetBrains Mono',monospace;font-size:11px;text-anchor:middle;dominant-baseline:central;font-weight:600}
+
+/* Solution table */
+.sol-tbl{width:100%;border-collapse:collapse;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:0.85rem}
+.sol-tbl th,.sol-tbl td{padding:8px 12px;border:1px solid var(--border);text-align:left}
+.sol-tbl th{background:var(--surf);color:var(--yellow)}
+.sol-tbl .pred{color:var(--cyan);font-weight:700}
+
+/* Chip-style flags for findall comparison */
+.flag{display:inline-block;padding:1px 8px;border-radius:3px;font-size:0.75rem;font-weight:700}
+.flag-y{background:var(--gdim);color:var(--green)}
+.flag-n{background:var(--rdim);color:var(--red)}
+.flag-mid{background:var(--ydim);color:var(--yellow)}
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 5</div>
+  <h1>Προηγμένος <em>Programming</em></h1>
+  <p>Μέτα-προγραμματισμός, δυναμική βάση γνώσης, εμπειρα συστήματα. Όλα όσα κάνουν την Prolog πραγματικά ισχυρή — και χρειάζονται για την Εργασία 3 (job-shop).</p>
+  <div class="chips">
+    <span class="chip">Term Manipulation</span>
+    <span class="chip">Dynamic DB</span>
+    <span class="chip">findall/bagof/setof</span>
+    <span class="chip">Meta-Interpreters</span>
+    <span class="chip">Expert Systems</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#io">1. I/O &amp; Αρχεία</a>
+  <a href="#term">2. Χειρισμός Όρων</a>
+  <a href="#dyn">3. Δυναμική Βάση</a>
+  <a href="#ctrl">4. Έλεγχος Ροής</a>
+  <a href="#collect">5. Συλλογή Λύσεων</a>
+  <a href="#meta">6. Μετα-Προγραμματισμός</a>
+  <a href="#expert">7. Έμπειρα Συστήματα</a>
+  <a href="#good">8. Καλός Προγραμματισμός</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Στο κεφάλαιο αυτό η Prolog εμφανίζεται με τη <strong>πλήρη της δυναμική</strong>. Θα δούμε πώς ένα πρόγραμμα μπορεί να επεξεργαστεί <em>τα ίδια του τα κατηγορήματα ως δεδομένα</em>, να αλλάξει δυναμικά τη βάση γνώσης, να συλλέξει όλες τις λύσεις ενός στόχου, και να υλοποιήσει έναν "διερμηνέα μέσα σε διερμηνέα" (meta-interpreter).</p>
+  <p>Αυτές οι τεχνικές αποτελούν τη γέφυρα μεταξύ τυπικής Prolog και πραγματικών εφαρμογών Τεχνητής Νοημοσύνης — από <strong>συμβολική παραγώγηση</strong> μέχρι <strong>εμπειρα συστήματα</strong>.</p>
+
+  <div class="exam">
+    <div class="hd">📚 Τι θα χρειαστείς για τις εξετάσεις &amp; την Εργασία 3</div>
+    <ul style="margin:0">
+      <li>Το <strong>πλήρες σύστημα findall/bagof/setof</strong> με τον τελεστή <code>^</code> (Εργασία 3 χρησιμοποιεί <code>findall</code> για να μετρά λύσεις)</li>
+      <li>Τους τελεστές χειρισμού όρων: <code>=..</code>, <code>functor/3</code>, <code>arg/3</code>, <code>call/1</code></li>
+      <li>Το πρότυπο <code>assert</code>/<code>retract</code> για memoization</li>
+      <li>Πώς γράφουμε <strong>meta-interpreter</strong> για ένα γλώσσα κανόνων (έμπειρα συστήματα)</li>
+      <li>Διαφορά <strong>backward</strong> vs <strong>forward chaining</strong></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  SECTION 1 · I/O & ΑΡΧΕΙΑ                     ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="io">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🖥️</div>
+    <h2>1. Είσοδος, Έξοδος και Αρχεία</h2>
+  </div>
+
+  <h3>1.1 Βασικά Κατηγορήματα Εξόδου</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Κατηγόρημα</th><th>Σκοπός</th><th>Παράδειγμα</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>write(Term)</code></td><td>Τυπώνει με βάση τους τελεστές</td><td><code>write(1+2)</code> → <code>1+2</code></td></tr>
+      <tr><td><code>display(Term)</code></td><td>Τυπώνει σε πρόθεμη μορφή</td><td><code>display(1+2)</code> → <code>+(1,2)</code></td></tr>
+      <tr><td><code>nl</code></td><td>Νέα γραμμή</td><td>—</td></tr>
+      <tr><td><code>put(Char)</code></td><td>Τυπώνει χαρακτήρα (κωδικός ASCII)</td><td><code>put(65)</code> → <code>A</code></td></tr>
+      <tr><td><code>tab(N)</code></td><td>Τυπώνει N κενά</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.2 Βασικά Κατηγορήματα Εισόδου</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Κατηγόρημα</th><th>Σκοπός</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>read(Term)</code></td><td>Διαβάζει έναν Prolog όρο από την είσοδο (τερματίζεται με τελεία)</td></tr>
+      <tr><td><code>get0(Char)</code></td><td>Διαβάζει <strong>έναν χαρακτήρα</strong> ως κωδικό ASCII (ακόμα και whitespace)</td></tr>
+      <tr><td><code>get(Char)</code></td><td>Διαβάζει επόμενο μη-whitespace χαρακτήρα</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.3 Διαχείριση Αρχείων</h3>
+
+  <p>Ανακατευθύνουμε ροές I/O προς/από αρχεία:</p>
+
+  <div class="cb"><code><span class="cm">% Άνοιγμα/κλείσιμο εξόδου</span>
+?<span class="kw">-</span> <span class="fn">tell</span>(<span class="str">'output.txt'</span>).
+?<span class="kw">-</span> <span class="fn">write</span>(hello), <span class="fn">nl</span>.
+?<span class="kw">-</span> <span class="fn">told</span>.
+
+<span class="cm">% Άνοιγμα/κλείσιμο εισόδου</span>
+?<span class="kw">-</span> <span class="fn">see</span>(<span class="str">'input.txt'</span>).
+?<span class="kw">-</span> <span class="fn">read</span>(X).
+?<span class="kw">-</span> <span class="fn">seen</span>.</code></div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Μνημονικός Κανόνας</div>
+    <p><strong>See</strong> = <em>Source</em> (Είσοδος), <strong>Tell</strong> = <em>Target</em> (Έξοδος).<br>
+    Ένδειξη κλεισίματος: <code>seen</code> (η αλεπού "είδαμε") και <code>told</code> ("είπαμε").</p>
+  </div>
+
+  <div class="section-quiz" data-topic="advanced_programming" data-section="io"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 2 · ΧΕΙΡΙΣΜΟΣ ΟΡΩΝ                       ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="term">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🔧</div>
+    <h2>2. Χειρισμός Όρων (Term Manipulation)</h2>
+  </div>
+
+  <p>Η Prolog μας επιτρέπει να <strong>αναλύσουμε και να συνθέσουμε όρους δυναμικά</strong>. Αυτό είναι το θεμέλιο του μετα-προγραμματισμού: ένα πρόγραμμα που γράφει/τροποποιεί άλλα προγράμματα.</p>
+
+  <h3>2.1 Ο Τελεστής "Universe": <code>=..</code></h3>
+
+  <p>Ο <strong>univ</strong> (<code>=..</code>) μετατρέπει έναν όρο σε λίστα <code>[Functor | Args]</code> και αντιστρόφως:</p>
+
+  <div class="decomp">
+    <div class="decomp-term">date(1, may, 1983)</div>
+    <span class="decomp-arrow">⇔</span>
+    <div class="decomp-list">
+      <span class="functor">date</span><span class="arg">1</span><span class="arg">may</span><span class="arg">1983</span>
+    </div>
+  </div>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">date</span>(1, may, 1983) <span class="op">=..</span> L.
+L = [date, 1, may, 1983]
+
+?<span class="kw">-</span> T <span class="op">=..</span> [parent, tom, bob].
+T = parent(tom, bob)</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Κλασική Χρήση: Δυναμική Δημιουργία Στόχου</div>
+    <p>Συνδυάζοντας με το <code>call/1</code>, μπορούμε να φτιάξουμε στόχους από κομμάτια:</p>
+    <div class="cb"><code><span class="cm">% Καλέσε δυναμικά κατηγόρημα Rel με ορίσματα Arg1, Arg2</span>
+<span class="fn">invoke</span>(Rel, Arg1, Arg2) <span class="kw">:-</span>
+    Goal <span class="op">=..</span> [Rel, Arg1, Arg2],
+    <span class="fn">call</span>(Goal).
+
+?<span class="kw">-</span> <span class="fn">invoke</span>(parent, tom, X).
+X = bob</code></div>
+  </div>
+
+  <h3>2.2 <code>functor/3</code> — Όνομα και Αριθμός Ορισμάτων</h3>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">functor</span>(<span class="fn">date</span>(1,may,1983), F, N).
+F = date, N = 3
+
+?<span class="kw">-</span> <span class="fn">functor</span>(T, parent, 2).
+T = <span class="fn">parent</span>(_<span class="nm">G123</span>, _<span class="nm">G124</span>)    <span class="cm">% κενός όρος με σωστή δομή!</span></code></div>
+
+  <p>Το <code>functor/3</code> χρησιμεύει για δύο σκοπούς:</p>
+  <ol>
+    <li><strong>Ανάλυση:</strong> "δώσε μου το όνομα και την αριθμότητα ενός όρου"</li>
+    <li><strong>Σύνθεση:</strong> "φτιάξε έναν κενό όρο με δεδομένο όνομα και αριθμό ορισμάτων"</li>
+  </ol>
+
+  <h3>2.3 <code>arg/3</code> — Πρόσβαση σε Ορίσματα</h3>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">arg</span>(1, <span class="fn">date</span>(1,may,1983), X).
+X = 1
+
+?<span class="kw">-</span> <span class="fn">arg</span>(2, <span class="fn">parent</span>(tom, bob), Y).
+Y = bob</code></div>
+
+  <h3>2.4 <code>call/1</code> — Εκτέλεση Δυναμικού Στόχου</h3>
+
+  <p>Το <code>call(Goal)</code> εκτελεί τον στόχο που υπολογίστηκε δυναμικά:</p>
+
+  <div class="cb"><code><span class="fn">happy</span>(tom).
+<span class="fn">happy</span>(ann).
+
+?<span class="kw">-</span> X = <span class="fn">happy</span>(tom), <span class="fn">call</span>(X).
+yes</code></div>
+
+  <h3>2.5 Σύνθεση: <code>maplist/3</code></h3>
+
+  <p>Ο κλασικός τρόπος υλοποίησης του <em>map</em> (εφαρμογή κατηγορήματος σε κάθε στοιχείο λίστας) χρησιμοποιεί όλα τα παραπάνω:</p>
+
+  <div class="cb"><code><span class="fn">maplist</span>([], _, []).
+<span class="fn">maplist</span>([X<span class="op">|</span>Tail], F, [NewX<span class="op">|</span>NewTail]) <span class="kw">:-</span>
+    G <span class="op">=..</span> [F, X, NewX],   <span class="cm">% φτιάξε στόχο F(X, NewX)</span>
+    <span class="fn">call</span>(G),               <span class="cm">% εκτέλεσέ τον</span>
+    <span class="fn">maplist</span>(Tail, F, NewTail).</code></div>
+
+  <div class="cb"><code><span class="fn">square</span>(X, Y) <span class="kw">:-</span> Y <span class="kw">is</span> X<span class="op">*</span>X.
+
+?<span class="kw">-</span> <span class="fn">maplist</span>([1,2,3,4], square, L).
+L = [1, 4, 9, 16]</code></div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Διάγραμμα Σύνδεσης Term ↔ List</div>
+    <p>Σκέψου το <code>=..</code> ως "ζίπερ" που ανοίγει/κλείνει τη δομή. <code>functor</code> = "πάρε όνομα + arity". <code>arg(N, T, X)</code> = "δάκτυλο που δείχνει στο N-οστό όρισμα". <code>call</code> = "ναι, εκτέλεσέ το τώρα".</p>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Προσοχή στις Μεταβλητές</div>
+    <p>Το <code>=..</code> απαιτεί <em>τουλάχιστον</em> ένα από τα δύο μέλη να είναι αρκετά καθορισμένο. <code>X =.. Y</code> με δύο άγνωστα δίνει σφάλμα.</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 3 · ΔΥΝΑΜΙΚΗ ΒΑΣΗ                       ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="dyn">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">⚡</div>
+    <h2>3. Δυναμική Βάση Δεδομένων</h2>
+  </div>
+
+  <p>Η Prolog επιτρέπει <strong>αλλαγή της βάσης γνώσης κατά τη διάρκεια εκτέλεσης</strong>: προσθήκη και διαγραφή προτάσεων. Αυτό είναι ισχυρό αλλά και επικίνδυνο.</p>
+
+  <h3>3.1 Τα Κατηγορήματα Αλλαγής</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Κατηγόρημα</th><th>Λειτουργία</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>assert(P)</code></td><td>Προσθήκη πρότασης P (συνήθως == <code>assertz</code>)</td></tr>
+      <tr><td><code>asserta(P)</code></td><td>Προσθήκη <strong>στην αρχή</strong> της βάσης</td></tr>
+      <tr><td><code>assertz(P)</code></td><td>Προσθήκη <strong>στο τέλος</strong> της βάσης</td></tr>
+      <tr><td><code>retract(P)</code></td><td>Αφαίρεση πρώτης πρότασης που ταιριάζει με P</td></tr>
+      <tr><td><code>abolish(F/N)</code></td><td>Διαγραφή <em>όλων</em> των προτάσεων με όνομα F και arity N</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 Παράδειγμα</h3>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">assert</span>(<span class="fn">p</span>(1)).
+yes
+?<span class="kw">-</span> <span class="fn">assert</span>(<span class="fn">p</span>(2)).
+yes
+?<span class="kw">-</span> <span class="fn">p</span>(X).
+X = 1 <span class="kw">-&gt;</span> ;
+X = 2 <span class="kw">-&gt;</span> ;
+no
+
+?<span class="kw">-</span> <span class="fn">retract</span>(<span class="fn">p</span>(X)).
+X = 1 <span class="kw">-&gt;</span> ;
+X = 2 <span class="kw">-&gt;</span> ;
+no
+?<span class="kw">-</span> <span class="fn">p</span>(X).
+no</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Δήλωση <code>dynamic</code></div>
+    <p>Στη SWI-Prolog (και άλλες σύγχρονες), κάθε κατηγόρημα που θα τροποποιηθεί δυναμικά πρέπει να δηλωθεί:</p>
+    <div class="cb"><code><span class="kw">:-</span> <span class="fn">dynamic</span> p/1.</code></div>
+    <p>Αλλιώς το <code>assert(p(1))</code> θα αποτύχει με σφάλμα <em>"static procedure"</em>.</p>
+  </div>
+
+  <h3>3.3 Παράδειγμα: Memoization Fibonacci</h3>
+
+  <p>Η αναδρομική Fibonacci έχει <span class="cplx" style="background:var(--rdim);color:var(--red);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:700;border:1px solid var(--red)">O(2ⁿ)</span> πολυπλοκότητα γιατί υπολογίζει τα ίδια fib ξανά και ξανά. Με <strong>memoization</strong> την κάνουμε γραμμική:</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">dynamic</span> memo_fib/2.
+
+<span class="fn">fib</span>(N, V) <span class="kw">:-</span>
+    <span class="fn">memo_fib</span>(N, V), <span class="kw">!</span>.        <span class="cm">% Έχουμε ήδη υπολογίσει; επέστρεψε</span>
+<span class="fn">fib</span>(0, 0) <span class="kw">:-</span> <span class="kw">!</span>, <span class="fn">assertz</span>(<span class="fn">memo_fib</span>(0, 0)).
+<span class="fn">fib</span>(1, 1) <span class="kw">:-</span> <span class="kw">!</span>, <span class="fn">assertz</span>(<span class="fn">memo_fib</span>(1, 1)).
+<span class="fn">fib</span>(N, V) <span class="kw">:-</span>
+    N1 <span class="kw">is</span> N <span class="op">-</span> 1,
+    N2 <span class="kw">is</span> N <span class="op">-</span> 2,
+    <span class="fn">fib</span>(N1, V1),
+    <span class="fn">fib</span>(N2, V2),
+    V <span class="kw">is</span> V1 <span class="op">+</span> V2,
+    <span class="fn">assertz</span>(<span class="fn">memo_fib</span>(N, V)).      <span class="cm">% αποθήκευσε για μελλοντική χρήση</span></code></div>
+
+  <h3>3.4 Ο Συνδυασμός <code>repeat-fail</code> και Συλλογή Λύσεων</h3>
+
+  <p>Πιθανώς εκπληκτικό: το <code>findall/3</code> μπορεί να οριστεί μέσω <code>assert</code>/<code>retract</code>:</p>
+
+  <div class="cb"><code><span class="fn">findall</span>(X, Goal, Xlist) <span class="kw">:-</span>
+    <span class="fn">call</span>(Goal),
+    <span class="fn">assert</span>(<span class="fn">queue</span>(X)),
+    <span class="fn">fail</span>
+  ;
+    <span class="fn">assert</span>(<span class="fn">queue</span>(bottom)),
+    <span class="fn">collect</span>(Xlist).
+
+<span class="fn">collect</span>(L) <span class="kw">:-</span>
+    <span class="fn">retract</span>(<span class="fn">queue</span>(X)), <span class="kw">!</span>,
+    (X <span class="op">==</span> bottom, <span class="kw">!</span>, L<span class="op">=</span>[]
+    ;
+     L<span class="op">=</span>[X<span class="op">|</span>Rest], <span class="fn">collect</span>(Rest)).</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Σοβαρή Προειδοποίηση</div>
+    <p>Τα <code>assert</code>/<code>retract</code> <strong>βλάπτουν σοβαρά</strong> τη δηλωτικότητα ενός προγράμματος Prolog. Πρέπει να χρησιμοποιούνται <em>μόνο σε εξειδικευμένες περιπτώσεις</em> (memoization, δυναμικές βάσεις γνώσης). Σε νόρμα προγραμματισμό, είναι σαν το <code>GOTO</code> των διαδικαστικών γλωσσών.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="advanced_programming" data-section="dynamic"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 4 · ΕΛΕΓΧΟΣ ΡΟΗΣ                        ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="ctrl">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🔄</div>
+    <h2>4. Έλεγχος Ροής: <code>repeat/0</code></h2>
+  </div>
+
+  <h3>4.1 Το <code>repeat/0</code> Πρωτογενές</h3>
+
+  <p>Το <code>repeat/0</code> είναι ένα προεγκατεστημένο κατηγόρημα που <strong>πάντα πετυχαίνει</strong>, και με backtracking μπορεί να επανεκτελεστεί άπειρες φορές:</p>
+
+  <div class="cb"><code><span class="fn">repeat</span>.
+<span class="fn">repeat</span> <span class="kw">:-</span> <span class="fn">repeat</span>.
+
+?<span class="kw">-</span> <span class="fn">repeat</span>.
+yes <span class="kw">-&gt;</span> ; yes <span class="kw">-&gt;</span> ; yes <span class="kw">-&gt;</span> ; ... (άπειρες φορές)</code></div>
+
+  <h3>4.2 Το Σχήμα <code>repeat-fail</code></h3>
+
+  <p>Συνδυάζεται με <code>fail</code> για να δημιουργήσει βρόχο επανάληψης μέχρι κάποια συνθήκη:</p>
+
+  <div class="cb"><code><span class="fn">dosquares</span> <span class="kw">:-</span>
+    <span class="fn">repeat</span>,
+    <span class="fn">read</span>(X),
+    (X <span class="op">=</span> stop, <span class="kw">!</span>     <span class="cm">% Αν stop, δέσμευσε και τέλος</span>
+    ;
+     Y <span class="kw">is</span> X <span class="op">*</span> X,
+     <span class="fn">write</span>(Y), <span class="fn">nl</span>,
+     <span class="fn">fail</span>).               <span class="cm">% αλλιώς fail → ξαναπροσπάθησε</span></code></div>
+
+  <p><strong>Παράδειγμα εκτέλεσης:</strong></p>
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">dosquares</span>.
+<span class="op">|:</span> 7.
+49
+<span class="op">|:</span> 10.
+100
+<span class="op">|:</span> 3.
+9
+<span class="op">|:</span> stop.
+yes</code></div>
+
+  <div class="line-by-line">
+    <div class="lcode">repeat,</div>
+    <div class="lexpl">Δημιουργεί <em>επιλογή σημείο</em> (choice point). Με κάθε αποτυχία (fail), επιστρέφει εδώ.</div>
+    <div class="lcode">read(X),</div>
+    <div class="lexpl">Διαβάζει είσοδο.</div>
+    <div class="lcode">(X = stop, !</div>
+    <div class="lexpl">Αν X είναι "stop", το cut κόβει όλα τα choice points και ολοκληρώνει.</div>
+    <div class="lcode">; ... fail).</div>
+    <div class="lexpl">Αλλιώς, υπολόγισε, γράψε, και <strong>επιβολή fail</strong>: η Prolog θα επιστρέψει στο <code>repeat</code> και θα ξαναξεκινήσει.</div>
+  </div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πότε χρησιμοποιείται</div>
+    <p>Το <code>repeat-fail</code> είναι χρήσιμο για <strong>επαναληπτικές διαδικασίες με παρενέργειες</strong> (Ι/Ο, ανάγνωση αρχείου, αλληλεπίδραση). Σε καθαρά δηλωτικό κώδικα, προτιμάμε αναδρομή!</p>
+  </div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Πάντα χρειάζεσαι έξοδο</div>
+    <p>Πρέπει να υπάρχει <code>!</code> (cut) στη συνθήκη εξόδου, αλλιώς ο βρόχος δεν τερματίζει ποτέ.</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║          SECTION 5 · ΣΥΛΛΟΓΗ ΛΥΣΕΩΝ (findall κλπ)            ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="collect">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">📦</div>
+    <h2>5. Κατηγορήματα Συλλογής Λύσεων</h2>
+  </div>
+
+  <p>Η αναζήτηση στην Prolog μέσω backtracking δίνει <em>μία λύση κάθε φορά</em>. Αλλά συχνά θέλουμε <strong>όλες τις λύσεις μαζί σε λίστα</strong>. Για αυτό υπάρχουν τα <code>findall/3</code>, <code>bagof/3</code>, <code>setof/3</code>.</p>
+
+  <h3>5.1 Συγκριτικός Πίνακας</h3>
+
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Κατηγόρημα</th><th>Ταξινόμηση</th><th>Διπλότυπα</th><th>Σε αποτυχία</th><th>Ομαδοποίηση</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>findall/3</code></td><td><span class="flag flag-n">Όχι</span></td><td><span class="flag flag-y">Διατηρεί</span></td><td>Επιστρέφει <code>[]</code></td><td><span class="flag flag-n">Καμία</span></td></tr>
+      <tr><td><code>bagof/3</code></td><td><span class="flag flag-n">Όχι</span></td><td><span class="flag flag-y">Διατηρεί</span></td><td><span class="flag flag-mid">Αποτυχία (no)</span></td><td><span class="flag flag-y">Ναι (με <code>^</code>)</span></td></tr>
+      <tr><td><code>setof/3</code></td><td><span class="flag flag-y">Ναι</span></td><td><span class="flag flag-n">Αφαιρεί</span></td><td><span class="flag flag-mid">Αποτυχία (no)</span></td><td><span class="flag flag-y">Ναι (με <code>^</code>)</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 Παράδειγμα Βάσης</h3>
+
+  <div class="cb"><code><span class="fn">age</span>(peter, 7).
+<span class="fn">age</span>(ann, 5).
+<span class="fn">age</span>(pat, 8).
+<span class="fn">age</span>(tom, 5).</code></div>
+
+  <h3>5.3 <code>findall/3</code></h3>
+
+  <p>"Δώσε μου τη λίστα όλων των X που ικανοποιούν τον στόχο":</p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">findall</span>(Child, <span class="fn">age</span>(Child, Age), List).
+List = [peter, ann, pat, tom]
+
+?<span class="kw">-</span> <span class="fn">findall</span>(Child, <span class="fn">age</span>(Child, 5), List).
+List = [ann, tom]
+
+?<span class="kw">-</span> <span class="fn">findall</span>(X, <span class="fn">bla</span>(X), L).   <span class="cm">% bla δεν υπάρχει</span>
+L = []                          <span class="cm">% σιωπηρά επιστρέφει κενή</span></code></div>
+
+  <h3>5.4 <code>bagof/3</code> και <code>setof/3</code></h3>
+
+  <p>Η σημαντική διαφορά είναι ότι <code>bagof</code> και <code>setof</code> <strong>αποτυγχάνουν</strong> αν δεν υπάρχουν λύσεις:</p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">bagof</span>(Child, <span class="fn">age</span>(Child, 5), List).
+List = [ann, tom]
+
+?<span class="kw">-</span> <span class="fn">bagof</span>(X, <span class="fn">bla</span>(X), L).
+no                              <span class="cm">% αποτυγχάνει αντί να δώσει []</span></code></div>
+
+  <p><strong>Επιπλέον, ομαδοποιούν αυτόματα ανά ελεύθερες μεταβλητές του στόχου!</strong></p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">bagof</span>(Child, <span class="fn">age</span>(Child, Age), List).
+Age = 5, List = [ann, tom]  <span class="kw">-&gt;</span> ;
+Age = 7, List = [peter]     <span class="kw">-&gt;</span> ;
+Age = 8, List = [pat]       <span class="kw">-&gt;</span> ;
+no</code></div>
+
+  <div class="note">
+    <div class="hd">📝 Γιατί αυτό συμβαίνει</div>
+    <p>Το <code>Age</code> είναι ελεύθερη μεταβλητή στον στόχο <code>age(Child, Age)</code>. Το <code>bagof</code> ομαδοποιεί τα αποτελέσματα ξεχωριστά για κάθε τιμή του <code>Age</code> — σαν να κάνει "GROUP BY Age" σε SQL!</p>
+  </div>
+
+  <h3>5.5 Ο Τελεστής <code>^</code> (Existential Quantification)</h3>
+
+  <p>Αν θέλουμε να <strong>αγνοήσουμε</strong> την ομαδοποίηση κατά μια μεταβλητή, χρησιμοποιούμε το <code>^</code>:</p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">bagof</span>(Child, Age<span class="op">^</span><span class="fn">age</span>(Child, Age), List).
+List = [peter, ann, pat, tom]   <span class="cm">% όλα μαζί!</span>
+
+?<span class="kw">-</span> <span class="fn">bagof</span>(Age, Child<span class="op">^</span><span class="fn">age</span>(Child, Age), List).
+List = [7, 5, 8, 5]              <span class="cm">% όλες οι ηλικίες</span></code></div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Διάβασε το <code>Age^Goal</code> ως: "για κάποιο Age, ο στόχος αληθεύει"</div>
+    <p>Στα μαθηματικά: <strong>∃Age. Goal</strong>. Δηλαδή, μην ομαδοποιείς ανά Age — απλώς δώσε μου ό,τι ικανοποιεί τον στόχο για οποιοδήποτε Age.</p>
+  </div>
+
+  <h3>5.6 <code>setof/3</code> — Ταξινομημένο, χωρίς διπλότυπα</h3>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">setof</span>(Age, Child<span class="op">^</span><span class="fn">age</span>(Child, Age), AgeList).
+AgeList = [5, 7, 8]              <span class="cm">% ταξινομημένο, χωρίς διπλότυπα</span>
+
+?<span class="kw">-</span> <span class="fn">setof</span>(Child, Age<span class="op">^</span><span class="fn">age</span>(Child, Age), ChildList).
+ChildList = [ann, pat, peter, tom]   <span class="cm">% αλφαβητικά</span></code></div>
+
+  <h3>5.7 Σύνθετα Παραδείγματα με Ζευγάρια</h3>
+
+  <p>Μπορούμε να συλλέξουμε <em>δομές</em>:</p>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">setof</span>(Age<span class="op">/</span>Child, <span class="fn">age</span>(Child, Age), List).
+List = [5/ann, 5/tom, 7/peter, 8/pat]</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Επειδή ταξινομεί κατά πρώτο στοιχείο</div>
+    <p>Συλλέγοντας ζευγάρια <code>Age/Child</code>, το αποτέλεσμα είναι ταξινομημένο πρώτα κατά Age και μετά κατά Child — χρήσιμο "two-key sort" δωρεάν!</p>
+  </div>
+
+  <h3>5.8 Σχέση με την Εργασία 3 (job-shop)</h3>
+
+  <div class="exam">
+    <div class="hd">📚 Για την Εργασία 3</div>
+    <p>Η εργασία ζητάει χρήση του <code>findall</code> για να μετρηθούν όλες οι λύσεις:</p>
+    <div class="cb"><code>?<span class="kw">-</span> <span class="fn">findall</span>(S, <span class="fn">jobshop</span>(S), L), <span class="fn">length</span>(L, N).
+N = 9136</code></div>
+    <p>Το <code>findall</code> πρακτικά εξαναγκάζει την Prolog να αντισκευάσει όλες τις λύσεις μέσω backtracking, και τις συλλέγει σε μία λίστα. Η <code>length</code> μετράει.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="advanced_programming" data-section="sorting_sets"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║          SECTION 6 · ΜΕΤΑ-ΠΡΟΓΡΑΜΜΑΤΙΣΜΟΣ                    ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="meta">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🧬</div>
+    <h2>6. Μετα-Προγραμματισμός &amp; Κλασικές Εφαρμογές</h2>
+  </div>
+
+  <p>Στον μετα-προγραμματισμό, γράφουμε προγράμματα Prolog <strong>για να επεξεργαστούν άλλα προγράμματα Prolog</strong>. Είναι μια από τις πιο εκπληκτικές δυνατότητες της γλώσσας.</p>
+
+  <h3>6.1 Ένας Διερμηνέας Prolog σε Prolog</h3>
+
+  <p>Με ~5 γραμμές κώδικα μπορούμε να γράψουμε διερμηνέα της Prolog μέσα στην ίδια την Prolog:</p>
+
+  <div class="cb"><code><span class="cm">% Αναπαριστώμε προτάσεις ως cl(Head, Body) όπου Body είναι λίστα στόχων</span>
+<span class="fn">cl</span>(<span class="fn">member</span>(X, [X<span class="op">|</span>_]), []).
+<span class="fn">cl</span>(<span class="fn">member</span>(X, [_<span class="op">|</span>L]), [<span class="fn">member</span>(X, L)]).
+
+<span class="cm">% Ο διερμηνέας</span>
+<span class="fn">execute</span>([]).
+<span class="fn">execute</span>([Goal<span class="op">|</span>Goals]) <span class="kw">:-</span>
+    <span class="fn">cl</span>(Goal, Body),
+    <span class="fn">append</span>(Body, Goals, NewGoals),
+    <span class="fn">execute</span>(NewGoals).
+
+?<span class="kw">-</span> <span class="fn">execute</span>([<span class="fn">member</span>(X, [1,2,3]), <span class="fn">member</span>(X, [2,3,4])]).
+X = 2 <span class="kw">-&gt;</span> ;
+X = 3
+yes</code></div>
+
+  <div class="note">
+    <div class="hd">📝 Γιατί μετράει αυτό</div>
+    <p>Έχοντας έλεγχο πάνω στον "διερμηνέα", μπορούμε να τον <strong>τροποποιήσουμε</strong>. Π.χ. να καταγράφει αποδεικτικά μονοπάτια ("γιατί", "πώς"), να χειρίζεται αβέβαιη πληροφορία (βαθμοί βεβαιότητας), ή να υλοποιεί διαφορετική στρατηγική αναζήτησης (BFS αντί DFS).</p>
+  </div>
+
+  <h3>6.2 Συμβολική Παραγώγηση</h3>
+
+  <p>Το παρακάτω πρόγραμμα μπορεί να παραγωγίσει αυτόματα οποιαδήποτε αλγεβρική έκφραση:</p>
+
+  <div class="cb"><code><span class="cm">% diff(Expression, Variable, Derivative)</span>
+
+<span class="fn">diff</span>(C, X, 0) <span class="kw">:-</span> <span class="fn">integer</span>(C).        <span class="cm">% d(c)/dx = 0</span>
+<span class="fn">diff</span>(X, X, 1).                          <span class="cm">% d(x)/dx = 1</span>
+
+<span class="fn">diff</span>(U <span class="op">+</span> V, X, DU <span class="op">+</span> DV) <span class="kw">:-</span>
+    <span class="fn">diff</span>(U, X, DU), <span class="fn">diff</span>(V, X, DV).
+
+<span class="fn">diff</span>(<span class="op">-</span>U, X, <span class="op">-</span>DU) <span class="kw">:-</span> <span class="fn">diff</span>(U, X, DU).
+
+<span class="fn">diff</span>(U <span class="op">-</span> V, X, DU <span class="op">-</span> DV) <span class="kw">:-</span>
+    <span class="fn">diff</span>(U, X, DU), <span class="fn">diff</span>(V, X, DV).
+
+<span class="fn">diff</span>(C <span class="op">*</span> U, X, C <span class="op">*</span> DU) <span class="kw">:-</span>
+    <span class="fn">integer</span>(C), <span class="fn">diff</span>(U, X, DU).
+
+<span class="fn">diff</span>(U <span class="op">*</span> V, X, U <span class="op">*</span> DV <span class="op">+</span> V <span class="op">*</span> DU) <span class="kw">:-</span>
+    <span class="fn">diff</span>(U, X, DU), <span class="fn">diff</span>(V, X, DV).
+
+<span class="fn">diff</span>(U <span class="op">/</span> V, X, (V<span class="op">*</span>DU <span class="op">-</span> U<span class="op">*</span>DV) <span class="op">/</span> V<span class="op">^</span>2) <span class="kw">:-</span>
+    <span class="fn">diff</span>(U, X, DU), <span class="fn">diff</span>(V, X, DV).
+
+<span class="fn">diff</span>(U<span class="op">^</span>C, X, C<span class="op">*</span>U<span class="op">^</span>(C<span class="op">-</span>1)<span class="op">*</span>DU) <span class="kw">:-</span>
+    <span class="fn">integer</span>(C), <span class="fn">diff</span>(U, X, DU).
+
+<span class="fn">diff</span>(<span class="fn">sin</span>(U), X, <span class="fn">cos</span>(U) <span class="op">*</span> DU) <span class="kw">:-</span>
+    <span class="fn">diff</span>(U, X, DU).</code></div>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">diff</span>(3<span class="op">*</span>x<span class="op">^</span>2 <span class="op">+</span> <span class="fn">sin</span>(x), x, D).
+D = 3<span class="op">*</span>(2<span class="op">*</span>x<span class="op">^</span>1<span class="op">*</span>1) <span class="op">+</span> <span class="fn">cos</span>(x)<span class="op">*</span>1</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πώς δουλεύει</div>
+    <p>Κάθε <strong>μαθηματικός κανόνας παραγώγησης</strong> γίνεται μια πρόταση Prolog. Η Prolog τους εφαρμόζει αναδρομικά μέχρι να καταλήξει σε αριθμούς. Το αποτέλεσμα είναι μη απλοποιημένο — απλοποίηση είναι ξεχωριστή άσκηση.</p>
+  </div>
+
+  <h3>6.3 Προσομοίωση Λογικών Κυκλωμάτων</h3>
+
+  <p>Δίνεται ένα κύκλωμα ως όρος, π.χ.:</p>
+  <div class="cb"><code><span class="fn">circuit</span>(c1, <span class="fn">nor</span>(<span class="fn">and</span>(<span class="fn">nt</span>(X), Y),
+              <span class="fn">nand</span>(<span class="fn">or</span>(X, Y), Z)),
+             [X, Y, Z]).</code></div>
+
+  <p>Μπορούμε να υπολογίσουμε την έξοδό του:</p>
+
+  <div class="cb"><code><span class="fn">circ</span>(1, 1) <span class="kw">:-</span> <span class="kw">!</span>.
+<span class="fn">circ</span>(0, 0) <span class="kw">:-</span> <span class="kw">!</span>.
+
+<span class="fn">circ</span>(<span class="fn">and</span>(X, Y), 1) <span class="kw">:-</span> <span class="fn">circ</span>(X, 1), <span class="fn">circ</span>(Y, 1).
+<span class="fn">circ</span>(<span class="fn">and</span>(X, Y), 0) <span class="kw">:-</span> <span class="fn">circ</span>(X, 1), <span class="fn">circ</span>(Y, 0).
+<span class="fn">circ</span>(<span class="fn">and</span>(X, Y), 0) <span class="kw">:-</span> <span class="fn">circ</span>(X, 0), <span class="fn">circ</span>(Y, 1).
+<span class="fn">circ</span>(<span class="fn">and</span>(X, Y), 0) <span class="kw">:-</span> <span class="fn">circ</span>(X, 0), <span class="fn">circ</span>(Y, 0).
+
+<span class="fn">circ</span>(<span class="fn">or</span>(X, Y), 1) <span class="kw">:-</span> <span class="fn">circ</span>(X, 1), <span class="fn">circ</span>(Y, 1).
+<span class="fn">circ</span>(<span class="fn">or</span>(X, Y), 1) <span class="kw">:-</span> <span class="fn">circ</span>(X, 1), <span class="fn">circ</span>(Y, 0).
+<span class="fn">circ</span>(<span class="fn">or</span>(X, Y), 1) <span class="kw">:-</span> <span class="fn">circ</span>(X, 0), <span class="fn">circ</span>(Y, 1).
+<span class="fn">circ</span>(<span class="fn">or</span>(X, Y), 0) <span class="kw">:-</span> <span class="fn">circ</span>(X, 0), <span class="fn">circ</span>(Y, 0).
+
+<span class="fn">circ</span>(<span class="fn">nt</span>(X), 1) <span class="kw">:-</span> <span class="fn">circ</span>(X, 0).
+<span class="fn">circ</span>(<span class="fn">nt</span>(X), 0) <span class="kw">:-</span> <span class="fn">circ</span>(X, 1).
+
+<span class="fn">circ</span>(<span class="fn">nand</span>(X, Y), Z) <span class="kw">:-</span> <span class="fn">circ</span>(<span class="fn">nt</span>(<span class="fn">and</span>(X, Y)), Z).
+<span class="fn">circ</span>(<span class="fn">nor</span>(X, Y), Z) <span class="kw">:-</span> <span class="fn">circ</span>(<span class="fn">nt</span>(<span class="fn">or</span>(X, Y)), Z).</code></div>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">circuit</span>(c1, C, [1, 0, 1]), <span class="fn">circ</span>(C, Out).
+Out = 0
+
+<span class="cm">% Αντίστροφα: για ποιες εισόδους Out = 1;</span>
+?<span class="kw">-</span> <span class="fn">circuit</span>(c1, C, Inputs), <span class="fn">circ</span>(C, 1).
+Inputs = [...]</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Πανίσχυρο</div>
+    <p>Επειδή ο κώδικας είναι αμφίδρομος, μπορούμε να ρωτήσουμε <em>"για ποιες εισόδους η έξοδος είναι 1;"</em> — η Prolog θα δοκιμάσει όλους τους συνδυασμούς και θα μας πει.</p>
+  </div>
+
+  <h3>6.4 Κατανόηση Φυσικής Γλώσσας (NL Parsing)</h3>
+
+  <p>Δηλωτικός parser που μετατρέπει αγγλικές προτάσεις σε λογικούς τύπους:</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(190, yfx, :).
+<span class="kw">:-</span> <span class="fn">op</span>(180, yfx, ==>).
+<span class="kw">:-</span> <span class="fn">op</span>(170, yfx, <span class="op">&amp;</span>).
+
+<span class="fn">sentence</span>(L, P) <span class="kw">:-</span> <span class="fn">sentence</span>(L, [], P).
+<span class="fn">sentence</span>(L1, L3, P) <span class="kw">:-</span>
+    <span class="fn">noun_phrase</span>(L1, L2, X, P1, P),
+    <span class="fn">verb_phrase</span>(L2, L3, X, P1).
+
+<span class="fn">noun_phrase</span>(L1, L2, X, P, P) <span class="kw">:-</span> <span class="fn">name</span>(L1, L2, X).
+<span class="fn">verb_phrase</span>(L1, L2, X, P) <span class="kw">:-</span> <span class="fn">intrans_verb</span>(L1, L2, X, P).
+
+<span class="fn">determiner</span>([every<span class="op">|</span>L], L, X, P1, P2, <span class="fn">all</span>(X)<span class="op">:</span>(P1==>P2)).
+<span class="fn">determiner</span>([a<span class="op">|</span>L], L, X, P1, P2, <span class="fn">exists</span>(X)<span class="op">:</span>(P1<span class="op">&amp;</span>P2)).
+
+<span class="fn">noun</span>([man<span class="op">|</span>L], L, X, <span class="fn">man</span>(X)).
+<span class="fn">name</span>([john<span class="op">|</span>L], L, john).
+<span class="fn">intrans_verb</span>([lives<span class="op">|</span>L], L, X, <span class="fn">lives</span>(X)).</code></div>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">sentence</span>([john, lives], P).
+P = <span class="fn">lives</span>(john)
+
+?<span class="kw">-</span> <span class="fn">sentence</span>([every, man, that, loves, john, hates, every, woman], P).
+P = <span class="fn">all</span>(<span class="nm">_X</span>)<span class="op">:</span>((<span class="fn">man</span>(<span class="nm">_X</span>) <span class="op">&amp;</span> <span class="fn">loves</span>(<span class="nm">_X</span>, john)) ==> ...)</code></div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 7 · ΕΜΠΕΙΡΑ ΣΥΣΤΗΜΑΤΑ                  ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="expert">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">🩺</div>
+    <h2>7. Έμπειρα Συστήματα (Expert Systems)</h2>
+  </div>
+
+  <p>Ένα <strong>έμπειρο σύστημα</strong> προσομοιώνει τη συμπεριφορά ειδικού σε περιορισμένο γνωστικό πεδίο (π.χ. ιατρική διάγνωση, μηχανικές βλάβες). Είναι κλασικό παράδειγμα <em>knowledge-based system</em>.</p>
+
+  <h3>7.1 Δομή Έμπειρου Συστήματος</h3>
+
+  <div class="aog">
+    <svg width="500" height="120" viewBox="0 0 500 120">
+      <rect x="10" y="40" width="120" height="50" class="aog-node fact" rx="6"/>
+      <text class="aog-text" x="70" y="65">Knowledge</text>
+      <text class="aog-text" x="70" y="80">Base</text>
+      <rect x="180" y="40" width="140" height="50" class="aog-node" rx="6"/>
+      <text class="aog-text" x="250" y="65">Inference</text>
+      <text class="aog-text" x="250" y="80">Engine</text>
+      <rect x="370" y="40" width="120" height="50" class="aog-node goal" rx="6"/>
+      <text class="aog-text" x="430" y="65">User</text>
+      <text class="aog-text" x="430" y="80">Interface</text>
+      <line x1="130" y1="65" x2="180" y2="65" class="aog-edge"/>
+      <line x1="320" y1="65" x2="370" y2="65" class="aog-edge"/>
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="var(--purple)"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <p>Η γνώση αναπαρίσταται με <strong>κανόνες παραγωγής (production rules)</strong> τύπου <code>IF condition THEN conclusion</code>.</p>
+
+  <h3>7.2 Το Πρόβλημα Διάγνωσης: Διαρροή Νερού</h3>
+
+  <p>Διαγνωστικό σύστημα για διαρροές σε κατοικία:</p>
+
+  <div class="aog">
+    <svg width="560" height="240" viewBox="0 0 560 240">
+      <!-- Facts -->
+      <rect x="10" y="20" width="120" height="30" class="aog-node fact" rx="4"/>
+      <text class="aog-text" x="70" y="35">kitchen_dry</text>
+      <rect x="10" y="60" width="120" height="30" class="aog-node fact" rx="4"/>
+      <text class="aog-text" x="70" y="75">hall_wet</text>
+      <rect x="10" y="100" width="120" height="30" class="aog-node fact" rx="4"/>
+      <text class="aog-text" x="70" y="115">bathroom_dry</text>
+      <rect x="10" y="140" width="120" height="30" class="aog-node fact" rx="4"/>
+      <text class="aog-text" x="70" y="155">window_closed</text>
+      <rect x="10" y="180" width="120" height="30" class="aog-node fact" rx="4"/>
+      <text class="aog-text" x="70" y="195">no_rain</text>
+      <!-- Intermediate -->
+      <rect x="200" y="40" width="140" height="30" class="aog-node" rx="4"/>
+      <text class="aog-text" x="270" y="55">leak_in_bathroom</text>
+      <rect x="200" y="100" width="140" height="30" class="aog-node" rx="4"/>
+      <text class="aog-text" x="270" y="115">problem_in_kitchen</text>
+      <rect x="200" y="160" width="140" height="30" class="aog-node" rx="4"/>
+      <text class="aog-text" x="270" y="175">no_water_from_outside</text>
+      <!-- Goal -->
+      <rect x="400" y="115" width="140" height="40" class="aog-node goal" rx="6"/>
+      <text class="aog-text" x="470" y="135">leak_in_kitchen</text>
+      <!-- Edges -->
+      <line x1="130" y1="35" x2="200" y2="55" class="aog-edge"/>
+      <line x1="130" y1="75" x2="200" y2="55" class="aog-edge"/>
+      <line x1="130" y1="75" x2="200" y2="115" class="aog-edge"/>
+      <line x1="130" y1="115" x2="200" y2="115" class="aog-edge"/>
+      <line x1="130" y1="155" x2="200" y2="175" class="aog-edge"/>
+      <line x1="130" y1="195" x2="200" y2="175" class="aog-edge"/>
+      <line x1="340" y1="115" x2="400" y2="130" class="aog-edge"/>
+      <line x1="340" y1="175" x2="400" y2="140" class="aog-edge"/>
+    </svg>
+  </div>
+
+  <p>Οι κανόνες σε φυσική γλώσσα:</p>
+  <ul>
+    <li><code>IF kitchen_dry AND hall_wet THEN leak_in_bathroom</code></li>
+    <li><code>IF hall_wet AND bathroom_dry THEN problem_in_kitchen</code></li>
+    <li><code>IF window_closed OR no_rain THEN no_water_from_outside</code></li>
+    <li><code>IF problem_in_kitchen AND no_water_from_outside THEN leak_in_kitchen</code></li>
+  </ul>
+
+  <h3>7.3 Προσέγγιση Α': Απλή Prolog (Backward Chaining)</h3>
+
+  <p>Η <strong>πιο απλή λύση</strong>: γράψε τους κανόνες ως κανόνες Prolog. Η ενσωματωμένη μηχανή resolution κάνει τη δουλειά:</p>
+
+  <div class="cb"><code><span class="fn">leak_in_bathroom</span> <span class="kw">:-</span> <span class="fn">kitchen_dry</span>, <span class="fn">hall_wet</span>.
+<span class="fn">problem_in_kitchen</span> <span class="kw">:-</span> <span class="fn">hall_wet</span>, <span class="fn">bathroom_dry</span>.
+<span class="fn">no_water_from_outside</span> <span class="kw">:-</span> <span class="fn">window_closed</span> ; <span class="fn">no_rain</span>.
+<span class="fn">leak_in_kitchen</span> <span class="kw">:-</span>
+    <span class="fn">problem_in_kitchen</span>,
+    <span class="fn">no_water_from_outside</span>.
+
+<span class="fn">hall_wet</span>.
+<span class="fn">bathroom_dry</span>.
+<span class="fn">window_closed</span>.
+
+?<span class="kw">-</span> <span class="fn">leak_in_kitchen</span>.
+yes</code></div>
+
+  <div class="warn">
+    <div class="hd">⚠️ Περιορισμός</div>
+    <p>Δεν προσφέρει <strong>εξηγήσεις</strong> ή <strong>βεβαιότητα</strong>. Επίσης, δεν διαχωρίζει τη γνώση από τη μηχανή συμπερασμού.</p>
+  </div>
+
+  <h3>7.4 Προσέγγιση Β': Backward Chaining Meta-Interpreter</h3>
+
+  <p>Διαχωρίζουμε τους κανόνες ("γνώση") από τη μηχανή συμπερασμού ("inference engine"):</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(800, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(700, xfx, then).
+<span class="kw">:-</span> <span class="fn">op</span>(300, xfy, or).
+<span class="kw">:-</span> <span class="fn">op</span>(200, xfy, and).
+
+<span class="cm">% --- Knowledge base με συντακτικό φυσικότερο ---</span>
+<span class="fn">if</span> <span class="fn">kitchen_dry</span> <span class="kw">and</span> <span class="fn">hall_wet</span>
+    <span class="kw">then</span> <span class="fn">leak_in_bathroom</span>.
+
+<span class="fn">if</span> <span class="fn">window_closed</span> <span class="kw">or</span> <span class="fn">no_rain</span>
+    <span class="kw">then</span> <span class="fn">no_water_from_outside</span>.
+<span class="cm">% ...</span>
+
+<span class="fn">fact</span>(<span class="fn">hall_wet</span>).
+<span class="fn">fact</span>(<span class="fn">bathroom_dry</span>).
+<span class="fn">fact</span>(<span class="fn">window_closed</span>).
+
+<span class="cm">% --- Inference Engine: backward chaining ---</span>
+<span class="fn">is_true</span>(P) <span class="kw">:-</span> <span class="fn">fact</span>(P).
+<span class="fn">is_true</span>(P) <span class="kw">:-</span>
+    <span class="fn">if</span> Condition <span class="kw">then</span> P,        <span class="cm">% βρες κανόνα με συμπέρασμα P</span>
+    <span class="fn">is_true</span>(Condition).            <span class="cm">% αναδρομικά απόδειξε τη συνθήκη</span>
+<span class="fn">is_true</span>(P1 <span class="kw">and</span> P2) <span class="kw">:-</span>
+    <span class="fn">is_true</span>(P1), <span class="fn">is_true</span>(P2).
+<span class="fn">is_true</span>(P1 <span class="kw">or</span> P2) <span class="kw">:-</span>
+    <span class="fn">is_true</span>(P1) ; <span class="fn">is_true</span>(P2).
+
+?<span class="kw">-</span> <span class="fn">is_true</span>(<span class="fn">leak_in_kitchen</span>).
+yes</code></div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Backward Chaining = Goal-Driven</div>
+    <p>"Ξεκινάω από <em>αυτό που θέλω να αποδείξω</em>, και ψάχνω προς τα πίσω για κανόνες/γεγονότα που το στηρίζουν." Είναι η <em>φυσική φορά της Prolog</em>.</p>
+  </div>
+
+  <h3>7.5 Προσέγγιση Γ': Forward Chaining Meta-Interpreter</h3>
+
+  <p>Αντίθετα, ξεκινάμε από τα γεγονότα και προχωράμε προς συμπεράσματα:</p>
+
+  <div class="cb"><code><span class="fn">forward</span> <span class="kw">:-</span>
+    <span class="fn">new_derived_fact</span>(P), <span class="kw">!</span>,
+    <span class="fn">write</span>(<span class="str">'Derived: '</span>), <span class="fn">write</span>(P), <span class="fn">nl</span>,
+    <span class="fn">assert</span>(<span class="fn">fact</span>(P)),
+    <span class="fn">forward</span>.                       <span class="cm">% αναζήτησε επόμενο</span>
+<span class="fn">forward</span> <span class="kw">:-</span>
+    <span class="fn">write</span>(<span class="str">'No more facts'</span>).
+
+<span class="fn">new_derived_fact</span>(Concl) <span class="kw">:-</span>
+    <span class="fn">if</span> Cond <span class="kw">then</span> Concl,           <span class="cm">% βρες κανόνα</span>
+    <span class="kw">not</span> <span class="fn">fact</span>(Concl),            <span class="cm">% του οποίου το συμπέρασμα δεν ξέρουμε ήδη</span>
+    <span class="fn">composed_fact</span>(Cond).         <span class="cm">% και του οποίου οι συνθήκες είναι αληθείς</span>
+
+<span class="fn">composed_fact</span>(Cond) <span class="kw">:-</span> <span class="fn">fact</span>(Cond).
+<span class="fn">composed_fact</span>(C1 <span class="kw">and</span> C2) <span class="kw">:-</span>
+    <span class="fn">composed_fact</span>(C1), <span class="fn">composed_fact</span>(C2).
+<span class="fn">composed_fact</span>(C1 <span class="kw">or</span> C2) <span class="kw">:-</span>
+    <span class="fn">composed_fact</span>(C1) ; <span class="fn">composed_fact</span>(C2).
+
+?<span class="kw">-</span> <span class="fn">forward</span>.
+Derived: problem_in_kitchen
+Derived: no_water_from_outside
+Derived: leak_in_kitchen
+No more facts</code></div>
+
+  <h3>7.6 Backward vs Forward: Πότε Ποιο;</h3>
+
+  <div class="compare-grid">
+    <div class="compare-cell">
+      <span class="ctag" style="background:var(--bdim);color:var(--blue)">Backward</span>
+      <strong>Goal-Driven</strong>
+      <p style="font-size:0.88rem"><strong>Πότε:</strong> Έχουμε <em>συγκεκριμένο στόχο</em> ("πάσχει ο ασθενής από Χ;"). Λίγοι τελικοί στόχοι, πολλά πιθανά γεγονότα.</p>
+      <p style="font-size:0.88rem;color:var(--muted)">Παραδείγματα: ιατρική διάγνωση, νομικά συμπεράσματα.</p>
+    </div>
+    <div class="compare-cell">
+      <span class="ctag" style="background:var(--gdim);color:var(--green)">Forward</span>
+      <strong>Data-Driven</strong>
+      <p style="font-size:0.88rem"><strong>Πότε:</strong> Έχουμε <em>πολλά γεγονότα</em> και θέλουμε να δούμε <em>τι συμπεράσματα</em> προκύπτουν. Λίγα αρχικά γεγονότα, πολλοί δυνατοί στόχοι.</p>
+      <p style="font-size:0.88rem;color:var(--muted)">Παραδείγματα: monitoring/alarm systems, εφαρμογές διάγνωσης σε real-time.</p>
+    </div>
+  </div>
+
+  <h3>7.7 Επέκταση: Παροχή Εξηγήσεων</h3>
+
+  <p>Επεκτείνουμε τον meta-interpreter ώστε να καταγράφει <em>πώς</em> αποδείχθηκε κάτι:</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(800, xfx, <span class="op">&lt;=</span>).
+
+<span class="fn">is_true</span>(P, P) <span class="kw">:-</span> <span class="fn">fact</span>(P).
+<span class="fn">is_true</span>(P, P <span class="op">&lt;=</span> CondProof) <span class="kw">:-</span>
+    <span class="fn">if</span> Cond <span class="kw">then</span> P,
+    <span class="fn">is_true</span>(Cond, CondProof).
+<span class="fn">is_true</span>(P1 <span class="kw">and</span> P2, Proof1 <span class="kw">and</span> Proof2) <span class="kw">:-</span>
+    <span class="fn">is_true</span>(P1, Proof1),
+    <span class="fn">is_true</span>(P2, Proof2).
+<span class="fn">is_true</span>(P1 <span class="kw">or</span> P2, Proof) <span class="kw">:-</span>
+    <span class="fn">is_true</span>(P1, Proof) ; <span class="fn">is_true</span>(P2, Proof).</code></div>
+
+  <h3>7.8 Χειρισμός Αβέβαιης Πληροφορίας</h3>
+
+  <p>Σε πραγματικά συστήματα, η γνώση δεν είναι 100% σίγουρη. Εισάγουμε <strong>συντελεστές βεβαιότητας (certainty factors)</strong> 0 ≤ c ≤ 1:</p>
+
+  <div class="cb"><code><span class="fn">given</span>(<span class="fn">hall_wet</span>, 1).
+<span class="fn">given</span>(<span class="fn">bathroom_dry</span>, 1).
+<span class="fn">given</span>(<span class="fn">kitchen_dry</span>, 0).
+<span class="fn">given</span>(<span class="fn">no_rain</span>, 0.8).         <span class="cm">% δεν είμαστε σίγουροι</span>
+<span class="fn">given</span>(<span class="fn">window_closed</span>, 0).
+
+<span class="cm">% Κανόνες με συντελεστές</span>
+<span class="fn">if</span> <span class="fn">hall_wet</span> <span class="kw">and</span> <span class="fn">bathroom_dry</span>
+    <span class="kw">then</span> <span class="fn">problem_in_kitchen</span>     <span class="op">:</span> 0.9.
+<span class="fn">if</span> <span class="fn">window_closed</span> <span class="kw">or</span> <span class="fn">no_rain</span>
+    <span class="kw">then</span> <span class="fn">no_water_from_outside</span>  <span class="op">:</span> 1.
+
+<span class="cm">% Κανόνες σύνθεσης συντελεστών:</span>
+<span class="cm">% c(P1 and P2) = min(c(P1), c(P2))</span>
+<span class="cm">% c(P1 or P2)  = max(c(P1), c(P2))</span>
+<span class="cm">% c(P) = c(P1) * c        αν "if P1 then P : c"</span>
+
+<span class="fn">certainty</span>(P, Cert) <span class="kw">:-</span> <span class="fn">given</span>(P, Cert).
+<span class="fn">certainty</span>(P1 <span class="kw">and</span> P2, Cert) <span class="kw">:-</span>
+    <span class="fn">certainty</span>(P1, C1), <span class="fn">certainty</span>(P2, C2),
+    <span class="fn">minimum</span>(C1, C2, Cert).
+<span class="fn">certainty</span>(P1 <span class="kw">or</span> P2, Cert) <span class="kw">:-</span>
+    <span class="fn">certainty</span>(P1, C1), <span class="fn">certainty</span>(P2, C2),
+    <span class="fn">maximum</span>(C1, C2, Cert).
+<span class="fn">certainty</span>(P, Cert) <span class="kw">:-</span>
+    <span class="fn">if</span> Cond <span class="kw">then</span> P <span class="op">:</span> C1,
+    <span class="fn">certainty</span>(Cond, C2),
+    Cert <span class="kw">is</span> C1 <span class="op">*</span> C2.
+
+?<span class="kw">-</span> <span class="fn">certainty</span>(<span class="fn">leak_in_kitchen</span>, C).
+C = 0.8</code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Κλασικό σύστημα: MYCIN</div>
+    <p>Το <strong>MYCIN</strong> (Buchanan &amp; Shortliffe, 1975-85) ήταν το πρώτο σημαντικό έμπειρο σύστημα. Διέγνωσκε μολυσματικές ασθένειες και πρότεινε θεραπεία. Χρησιμοποιούσε ακριβώς τέτοιους συντελεστές βεβαιότητας.</p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║              SECTION 8 · ΚΑΛΟΣ ΠΡΟΓΡΑΜΜΑΤΙΣΜΟΣ                ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="good">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">✨</div>
+    <h2>8. Αρχές Καλού Προγραμματισμού σε Prolog</h2>
+  </div>
+
+  <p>Ένα <em>καλό</em> πρόγραμμα — ανεξάρτητα γλώσσας — πρέπει να είναι:</p>
+  <ul>
+    <li><strong>Σωστό</strong> — δίνει τις σωστές απαντήσεις</li>
+    <li><strong>Αποδοτικό</strong> — μνήμη και χρόνος υπό έλεγχο</li>
+    <li><strong>Ευανάγνωστο</strong> — άλλος προγραμματιστής το καταλαβαίνει</li>
+    <li><strong>Εύκολα τροποποιήσιμο</strong> — προστίθεται/αλλάζει χαρακτηριστικό χωρίς να σπάσει</li>
+    <li><strong>Εύρωστο</strong> — αντέχει σε λανθασμένη χρήση</li>
+    <li><strong>Τεκμηριωμένο</strong> — έχει σχόλια εκεί που χρειάζονται</li>
+  </ul>
+
+  <h3>8.1 Σταδιακή Εκλέπτυνση (Stepwise Refinement)</h3>
+
+  <p>Ξεκίνα από <em>γενικό</em> και πήγαινε σε <em>ειδικό</em>. Π.χ. αν θέλεις λύτη "8 βασιλισσών", πρώτα ορίζεις <code>nqueens(Pos, N)</code> για γενικό N, και μετά:</p>
+
+  <div class="cb"><code><span class="fn">eightqueens</span>(Pos) <span class="kw">:-</span> <span class="fn">nqueens</span>(Pos, 8).</code></div>
+
+  <p>Πιο εύκολο να σχεδιαστεί η γενική περίπτωση από τη συγκεκριμένη.</p>
+
+  <h3>8.2 Προτιμάτε Αναδρομή από <code>repeat-fail</code></h3>
+
+  <div class="compare-grid">
+    <div class="compare-cell bad">
+      <span class="ctag">Κακή</span>
+      <div class="cb" style="margin:0;font-size:0.78rem"><code><span class="fn">main</span> <span class="kw">:-</span>
+    <span class="fn">repeat</span>,
+    <span class="fn">read</span>(X),
+    <span class="fn">process</span>(X),
+    X <span class="op">=</span> stop, <span class="kw">!</span>.</code></div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-top:8px">Δύσκολο να ακολουθηθεί η ροή</p>
+    </div>
+    <div class="compare-cell good">
+      <span class="ctag">Καλή</span>
+      <div class="cb" style="margin:0;font-size:0.78rem"><code><span class="fn">main</span> <span class="kw">:-</span>
+    <span class="fn">read</span>(X),
+    <span class="fn">main</span>(X).
+<span class="fn">main</span>(stop) <span class="kw">:-</span> <span class="kw">!</span>.
+<span class="fn">main</span>(X) <span class="kw">:-</span>
+    <span class="fn">process</span>(X),
+    <span class="fn">main</span>.</code></div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-top:8px">Καθαρή αναδρομή, αναγνωρίσιμη δομή</p>
+    </div>
+  </div>
+
+  <h3>8.3 Δέκα Κανόνες Σωστής Prolog</h3>
+
+  <ol class="steps">
+    <li><strong>Μικρές προτάσεις</strong> — με λίγους στόχους ανά πρόταση</li>
+    <li><strong>Μνημονικά ονόματα</strong> — <code>parent_of</code> καλύτερο από <code>p</code></li>
+    <li><strong>Διαρρύθμιση</strong> — στοίχιση, κενές γραμμές, σωστή εμφάνιση</li>
+    <li><strong>Ομαδοποίηση</strong> — προτάσεις του ίδιου κατηγορήματος μαζί</li>
+    <li><strong>Προσοχή στο <code>!</code></strong> — προτίμα πράσινα cuts</li>
+    <li><strong>Συνείδηση του <code>not</code></strong> — δεν είναι λογικό-όχι, είναι NAF</li>
+    <li><strong>Αποφυγή <code>assert/retract</code></strong> εκτός εξειδικευμένων περιπτώσεων</li>
+    <li><strong>Όχι κατάχρηση διάζευξης (<code>;</code>)</strong> μέσα σε προτάσεις — προτίμα ξεχωριστές</li>
+    <li><strong>Ικανοποιητική τεκμηρίωση</strong> — τι κάνει κάθε κατηγόρημα</li>
+    <li><strong>Test-driven</strong> — γράφε ερωτήσεις/queries που τεστάρουν κάθε πρόταση</li>
+  </ol>
+
+  <h3>8.4 Όταν δεν Δουλεύει</h3>
+
+  <ul>
+    <li><strong>Σταδιακός έλεγχος</strong>: από κάτω-προς-τα-πάνω (κάθε υπο-κατηγόρημα) ή από επάνω-προς-τα-κάτω (από το main)</li>
+    <li><strong>Tracing</strong>: τα περισσότερα συστήματα Prolog παρέχουν <code>trace/0</code> ή <code>spy(name/arity)</code></li>
+    <li><strong>Γραπτή εκτέλεση SLD δέντρου</strong> — βοηθάει στο να καταλάβουμε ποια πρόταση επιλέγεται</li>
+  </ul>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- ║                  SECTION · ΣΥΝΟΨΗ                            ║ -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="summary">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--cdim)">📋</div>
+    <h2>Συνοπτικός Οδηγός Εξετάσεων</h2>
+  </div>
+
+  <h3>Πίνακας Εργαλείων</h3>
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Εργαλείο</th><th>Όνομα</th><th>Σκοπός</th><th>Παράδειγμα</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Term ↔ List</td><td><code>=..</code></td><td>Αμφίδρομη μετατροπή</td><td><code>p(a,b) =.. [p,a,b]</code></td></tr>
+      <tr><td>Functor lookup</td><td><code>functor/3</code></td><td>Όνομα + arity</td><td><code>functor(p(a,b), F, N)</code></td></tr>
+      <tr><td>Argument access</td><td><code>arg/3</code></td><td>N-οστό όρισμα</td><td><code>arg(1, p(a,b), X)</code></td></tr>
+      <tr><td>Dynamic call</td><td><code>call/1</code></td><td>Εκτέλεση όρου ως στόχου</td><td><code>call(p(a,b))</code></td></tr>
+      <tr><td>Add fact</td><td><code>assert/1</code></td><td>Δυναμική πρόσθεση</td><td><code>assert(p(1))</code></td></tr>
+      <tr><td>Remove fact</td><td><code>retract/1</code></td><td>Δυναμική αφαίρεση</td><td><code>retract(p(X))</code></td></tr>
+      <tr><td>All solutions</td><td><code>findall/3</code></td><td>Λίστα όλων, <code>[]</code> σε αποτυχία</td><td><code>findall(X, p(X), L)</code></td></tr>
+      <tr><td>Grouped solutions</td><td><code>bagof/3</code></td><td>Ομαδοποίηση, αποτυχία σε κενό</td><td><code>bagof(X, Y^p(X,Y), L)</code></td></tr>
+      <tr><td>Set solutions</td><td><code>setof/3</code></td><td>Ταξινομημένο σύνολο</td><td><code>setof(X, p(X), L)</code></td></tr>
+      <tr><td>Infinite loop</td><td><code>repeat/0</code></td><td>Πάντα true για backtracking</td><td><code>repeat, read(X), ..., fail</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Πίνακας: Backward vs Forward Chaining</h3>
+  <table class="summary-tbl">
+    <thead>
+      <tr><th>Χαρακτηριστικό</th><th>Backward</th><th>Forward</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Κατεύθυνση</td><td>Από στόχο προς γεγονότα</td><td>Από γεγονότα προς στόχους</td></tr>
+      <tr><td>Οδηγείται από</td><td>Goal (στόχο)</td><td>Data (δεδομένα)</td></tr>
+      <tr><td>Φυσική για</td><td>Prolog (έρχεται δωρεάν)</td><td>Production systems, expert systems</td></tr>
+      <tr><td>Καλή όταν</td><td>Λίγοι στόχοι, πολλά γεγονότα</td><td>Πολλά γεγονότα, λίγοι στόχοι</td></tr>
+      <tr><td>Εφαρμογές</td><td>Διάγνωση, νομικά συμπεράσματα</td><td>Monitoring, alarm systems</td></tr>
+    </tbody>
+  </table>
+
+  <div class="exam">
+    <div class="hd">📚 Συνδέσεις με την Εργασία 3 (job-shop)</div>
+    <p>Η Εργασία 3 είναι ένα <strong>πρόβλημα ικανοποίησης περιορισμών</strong> που τεστάρει:</p>
+    <ul style="margin:0">
+      <li>Σχεδιασμό προγραμμάτων εκτέλεσης με <code>findall/3</code> για μέτρηση λύσεων</li>
+      <li>Αναπαράσταση γνώσης σε μορφή <code>execs(machine, [tasks])</code></li>
+      <li>Διαχείριση πεπερασμένων πόρων (μηχανές + άνθρωποι)</li>
+      <li>Αναδρομικός υπολογισμός χρονικών δεσμεύσεων</li>
+    </ul>
+    <p>Η κρίσιμη συμβουλή: <strong>constrain-and-generate</strong>! Εφάρμοσε τους περιορισμούς (deadline, διαθεσιμότητα μηχανής, διαθεσιμότητα προσωπικού) όσο το δυνατόν νωρίτερα στην αναζήτηση.</p>
+  </div>
+
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 5 · Προηγμένος Προγραμματισμός</div>
+</body>
+</html>

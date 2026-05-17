@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Κεφάλαιο 2 · Λίστες, Αριθμητική & Cut</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<style>
+:root{
+  --bg:#0d1117;--bg-rgb:13,17,23;--surf:#161b22;--surf2:#1c2230;--border:#30363d;
+  --blue:#58a6ff;--blue-rgb:88,166,255;--bdim:#0d1f40;
+  --green:#3fb950;--green-rgb:63,185,80;--gdim:#0d2218;
+  --yellow:#e3b341;--ydim:#2d2208;
+  --red:#f85149;--rdim:#2d1010;
+  --cyan:#39d4c8;--cdim:#0a2422;
+  --purple:#bc8cff;--purple-rgb:188,140,255;--pdim:#1a1040;
+  --orange:#f0883e;--orange-rgb:240,136,62;--odim:#2d1800;
+  --txt:#e6edf3;--muted:#8b949e;--dim:#6e7681;
+}
+
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--gdim) 55%,#0d1117 100%)}
+.hero::after{
+  content:'[H|T]';
+  position:absolute;right:32px;bottom:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1rem,3vw,2.2rem);
+  color:rgba(63,185,80,.06);
+  pointer-events:none;font-weight:700;
+}
+
+.cb{background:#060a10}
+.kw{color:var(--blue);font-weight:600}
+.fn{color:var(--yellow);font-weight:600}
+.st{color:var(--orange)}
+.cm{color:var(--dim);font-style:italic}
+.nm{color:var(--purple)}
+
+.op-table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+.op-table th, .op-table td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+.op-table th { background: var(--surf); color: var(--blue); font-family: 'Syne', sans-serif; }
+
+.list-viz { background: var(--surf2); padding: 16px; border-radius: 10px; margin: 14px 0; font-family: 'JetBrains Mono', monospace; }
+.list-viz pre { color: var(--cyan); line-height: 1.5; font-size: 0.9rem; overflow-x: auto; }
+
+.deep-dive { background: var(--gdim); border: 1px dashed var(--green); padding: 18px 22px; border-radius: 12px; margin: 20px 0; }
+.deep-dive .dd-title { color: var(--green); font-family: 'Syne', sans-serif; font-weight: 800; margin-bottom: 10px; font-size: 1rem; }
+
+.pitfall { background: var(--rdim); border-left: 4px solid var(--red); padding: 14px 18px; border-radius: 8px; margin: 14px 0; }
+.pitfall .pt-title { color: var(--red); font-weight: 700; font-family: 'Syne', sans-serif; margin-bottom: 6px; }
+
+.exer { background: var(--surf2); border: 1px solid var(--purple); padding: 16px 20px; border-radius: 10px; margin: 16px 0; }
+.exer .exer-num { color: var(--purple); font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+.example-block { background: var(--surf); border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 8px; margin: 16px 0; }
+.example-block .ex-title { color: var(--blue); font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+details { background: var(--surf); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 10px 0; }
+details summary { cursor: pointer; color: var(--cyan); font-weight: 600; font-family: 'Syne', sans-serif; }
+details[open] summary { margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+.cut-box { background: linear-gradient(135deg, var(--rdim) 0%, var(--ydim) 100%); border: 2px solid var(--red); padding: 18px 22px; border-radius: 12px; margin: 20px 0; }
+.cut-box .cut-title { color: var(--red); font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; }
+
+.q-arrow { color: var(--orange); font-weight: 700; }
+
+.trace-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+.trace-table th, .trace-table td { padding: 8px 12px; border: 1px solid var(--border); }
+.trace-table th { background: var(--surf2); color: var(--cyan); }
+
+/* Line-by-line code commentary */
+.line-by-line{
+  display:grid;grid-template-columns:auto 1fr;gap:0;
+  margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  font-family:'JetBrains Mono',monospace;font-size:0.83rem;
+}
+.line-by-line .lcode{
+  background:#060a10;padding:8px 12px;border-bottom:1px solid var(--border);
+  white-space:pre;color:var(--txt);
+}
+.line-by-line .lexpl{
+  background:var(--surf);padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:0.9rem;color:var(--muted);
+}
+.line-by-line>div:nth-last-child(-n+2){border-bottom:none}
+</style>
+<script src="../js/nav.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Λογικός Προγραμματισμός · Κεφάλαιο 2</div>
+  <h1>Λίστες, Αριθμητική & <em>Cut</em></h1>
+  <p>Η βασική δομή δεδομένων της Prolog, ο μηχανισμός αξιολόγησης αριθμητικών εκφράσεων, και ο διαβόητος τελεστής που ελέγχει το backtracking.</p>
+  <div class="chips">
+    <span class="chip">Lists</span>
+    <span class="chip">Operators</span>
+    <span class="chip">Arithmetic</span>
+    <span class="chip">The Cut (!)</span>
+    <span class="chip">Negation as Failure</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#lists">1. Εισαγωγή στις Λίστες</a>
+  <a href="#listops">2. Βασικές Λειτουργίες</a>
+  <a href="#advanced">3. Προηγμένη Επεξεργασία</a>
+  <a href="#difflists">4. Λίστες Διαφορών</a>
+  <a href="#operators">5. Τελεστές</a>
+  <a href="#arithmetic">6. Αριθμητική</a>
+  <a href="#equality">7. Είδη Ισότητας</a>
+  <a href="#procedural">8. Διαδικαστική Σημασία</a>
+  <a href="#cut">9. Ο Τελεστής Cut (!)</a>
+  <a href="#negation">10. Άρνηση ως Αποτυχία</a>
+</nav>
+
+<div class="wrap">
+
+<section class="intro-text">
+  <p>Στο προηγούμενο κεφάλαιο γνωρίσαμε την Prolog «στατικά» — προτάσεις, κανόνες, ένα οικογενειακό δέντρο. Σε αυτό το κεφάλαιο θα της δώσουμε <strong>τη βασική δομή δεδομένων που λείπει</strong>: τις λίστες. Θα μάθουμε να τις σπάμε, να τις χτίζουμε, να τις αντιστρέφουμε — και θα διαπιστώσουμε ότι, παρά την απλότητά τους, καλύπτουν σχεδόν κάθε εφαρμογή.</p>
+  <p>Στο τέλος του κεφαλαίου θα συναντήσουμε τον πιο <em>αμφιλεγόμενο</em> τελεστή της Prolog: το <strong>cut</strong> (<code>!</code>). Είναι ο τρόπος μας να «παρέμβουμε» στον αυτόματο μηχανισμό αναζήτησης — δίνει δύναμη αλλά εύκολα καταστρέφει τη δηλωτική καθαρότητα.</p>
+</section>
+
+<!-- ======================= SECTION 1: LISTS ======================= -->
+<section id="lists">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">📋</div>
+    <h2>1. Λίστες: Δομή και Σημειογραφία</h2>
+  </div>
+
+  <p>Μια <strong>λίστα</strong> είναι μια διατεταγμένη ακολουθία στοιχείων μεταβλητού μήκους. Στην Prolog δεν υπάρχει «ειδικός τύπος» λίστας — οι λίστες είναι απλώς σύνθετοι όροι που ακολουθούν ένα <strong>αναδρομικό</strong> ορισμό:</p>
+
+  <div class="def-list">
+    <dl>
+      <dt>Ορισμός λίστας:</dt>
+      <dd>Είτε η <strong>κενή λίστα</strong> (συμβολίζεται με <code>[]</code>),</dd>
+      <dd>Είτε ένας σύνθετος όρος με <strong>functor την τελεία (<code>.</code>)</strong> και δύο ορίσματα: μια <em>κεφαλή</em> (πρώτο στοιχείο) και μια <em>ουρά</em> (μια λίστα).</dd>
+    </dl>
+  </div>
+
+  <h3>Δύο Συντακτικοί Τρόποι Γραφής</h3>
+  <p>Η Prolog δίνει δύο ισοδύναμες σημειογραφίες. Η μία αποκαλύπτει τη δομή, η άλλη είναι ευανάγνωστη:</p>
+
+  <table class="op-table">
+    <thead>
+      <tr>
+        <th>Επίσημη (Dot Functor)</th>
+        <th>Πρακτική (Αγκύλες)</th>
+        <th>Σημασία</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>[]</code></td>
+        <td><code>[]</code></td>
+        <td>Η κενή λίστα — απλώς ένα άτομο</td>
+      </tr>
+      <tr>
+        <td><code>.(a, [])</code></td>
+        <td><code>[a]</code></td>
+        <td>Λίστα ενός στοιχείου</td>
+      </tr>
+      <tr>
+        <td><code>.(a, .(b, []))</code></td>
+        <td><code>[a, b]</code></td>
+        <td>Λίστα δύο στοιχείων</td>
+      </tr>
+      <tr>
+        <td><code>.(a, .(b, .(c, [])))</code></td>
+        <td><code>[a, b, c]</code></td>
+        <td>Λίστα τριών στοιχείων</td>
+      </tr>
+      <tr>
+        <td><code>.(Head, Tail)</code></td>
+        <td><code>[Head | Tail]</code></td>
+        <td>Διαχωρισμός κεφαλής/ουράς</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Δεντρική Παράσταση</h3>
+  <p>Η λίστα <code>[ann, tom, bob, pat]</code> είναι στην πραγματικότητα ένα δέντρο:</p>
+  <div class="tree-vis" style="margin:20px auto; max-width:400px">
+    <svg width="340" height="230" viewBox="0 0 340 230" style="display:block; margin:0 auto">
+      <!-- Levels lines -->
+      <!-- Level 1 -->
+      <line class="tree-edge-l" x1="170" y1="25" x2="90" y2="75"/>
+      <line class="tree-edge-l" x1="170" y1="25" x2="250" y2="75"/>
+      
+      <!-- Level 2 -->
+      <line class="tree-edge-l" x1="250" y1="75" x2="180" y2="125"/>
+      <line class="tree-edge-l" x1="250" y1="75" x2="300" y2="125"/>
+      
+      <!-- Level 3 -->
+      <line class="tree-edge-l" x1="300" y1="125" x2="230" y2="175"/>
+      <line class="tree-edge-l" x1="300" y1="125" x2="330" y2="175"/>
+      
+      <!-- Level 4 -->
+      <line class="tree-edge-l" x1="330" y1="175" x2="275" y2="215"/>
+      <line class="tree-edge-l" x1="330" y1="175" x2="335" y2="215"/>
+      
+      <!-- Nodes -->
+      <!-- Level 1 -->
+      <circle class="tree-node-c root-c" cx="170" cy="25" r="14"/>
+      <text class="tree-text root-t" x="170" y="25">.</text>
+      
+      <circle class="tree-node-c" cx="90" cy="75" r="20" style="stroke:var(--green)"/>
+      <text class="tree-text" x="90" y="75" style="fill:var(--green); font-weight:bold">ann</text>
+      
+      <!-- Level 2 -->
+      <circle class="tree-node-c" cx="250" cy="75" r="14"/>
+      <text class="tree-text" x="250" y="75">.</text>
+      
+      <circle class="tree-node-c" cx="180" cy="125" r="20" style="stroke:var(--green)"/>
+      <text class="tree-text" x="180" y="125" style="fill:var(--green); font-weight:bold">tom</text>
+      
+      <!-- Level 3 -->
+      <circle class="tree-node-c" cx="300" cy="125" r="14"/>
+      <text class="tree-text" x="300" y="125">.</text>
+      
+      <circle class="tree-node-c" cx="230" cy="175" r="20" style="stroke:var(--green)"/>
+      <text class="tree-text" x="230" y="175" style="fill:var(--green); font-weight:bold">bob</text>
+      
+      <!-- Level 4 -->
+      <circle class="tree-node-c" cx="330" cy="175" r="14"/>
+      <text class="tree-text" x="330" y="175">.</text>
+      
+      <circle class="tree-node-c" cx="275" cy="215" r="20" style="stroke:var(--green)"/>
+      <text class="tree-text" x="275" y="215" style="fill:var(--green); font-weight:bold">pat</text>
+      
+      <circle class="tree-node-c nil-c" cx="335" cy="215" r="12"/>
+      <text class="tree-text" x="335" y="215">[]</text>
+    </svg>
+  </div>
+
+  <h3>Πολλαπλές Ισοδύναμες Γραφές</h3>
+  <p>Η ευελιξία της σημειογραφίας <code>|</code> επιτρέπει διάφορες ισοδύναμες μορφές της ίδιας λίστας. Όλες οι παρακάτω αναπαριστούν την ίδια λίστα <code>[ann, tom, bob, pat]</code>:</p>
+  <div class="cb"><code>[ann, tom, bob, pat]
+[ann | [tom, bob, pat]]
+[ann, tom | [bob, pat]]
+[ann | [tom | [bob, pat]]]
+[ann | [tom | [bob | [pat]]]]
+[ann | [tom | [bob | [pat | []]]]]
+[ann, tom, bob, pat | []]</code></div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Γιατί τόσοι ισοδύναμοι τρόποι;</div>
+    <p>Η σημασιολογία του <code>[H | T]</code> είναι <em>«κεφαλή το H, ουρά το T»</em> και το <code>T</code> πρέπει να είναι λίστα. Όταν μέσα στο <code>|</code> έχουμε ξανά λίστα με αγκύλες, ο μεταγλωττιστής τις «ανοίγει» αυτόματα. Έτσι, η Prolog δεν διαχωρίζει αυτές τις γραφές — είναι όλες ο ίδιος όρος στο εσωτερικό.</p>
+  </div>
+
+  <h3>Παραδείγματα Λιστών με Διαφορετικά Στοιχεία</h3>
+  <p>Τα στοιχεία μιας λίστας μπορούν να είναι <strong>οτιδήποτε</strong> — άτομα, αριθμοί, μεταβλητές, σύνθετοι όροι, ακόμα και άλλες λίστες:</p>
+
+  <div class="cb"><code>[a]                        <span class="cm">% ένα στοιχείο</span>
+[X]                        <span class="cm">% μία ελεύθερη μεταβλητή</span>
+[X, Y]                     <span class="cm">% δύο μεταβλητές</span>
+[X | Y]                    <span class="cm">% Head=X, Tail=Y (Y είναι λίστα)</span>
+[[]]                       <span class="cm">% λίστα με ένα στοιχείο: την κενή λίστα</span>
+[2, 3 | L]                 <span class="cm">% αρχίζει με 2,3 και συνεχίζει με τη λίστα L</span>
+[p(1, 3) | R]              <span class="cm">% Head=ένας σύνθετος όρος</span>
+[[1, 2], [3, 4, 5], [], [6]] <span class="cm">% λίστα από λίστες</span>
+[A, B | [e, f, g]]         <span class="cm">% δύο στοιχεία + γνωστή ουρά</span>
+[q([2, 7]), r([[4]])]      <span class="cm">% σύνθετα στοιχεία</span>
+[[a, b] | [c, d]]          <span class="cm">% Head=[a,b], Tail=[c,d]</span>
+[_ | _]                    <span class="cm">% οποιαδήποτε μη κενή λίστα</span></code></div>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Παγίδα: <code>[]</code> vs <code>[[]]</code></div>
+    <p>Το <code>[]</code> είναι <em>η κενή λίστα</em>. Το <code>[[]]</code> είναι μια <em>λίστα μήκους 1 που περιέχει την κενή λίστα</em>. Εντελώς διαφορετικά πράγματα! Το πρώτο έχει length 0, το δεύτερο έχει length 1.</p>
+  </div>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="lists"></div>
+</section>
+
+<!-- ======================= SECTION 2: LIST OPERATIONS ======================= -->
+<section id="listops">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">🛠️</div>
+    <h2>2. Βασικές Λειτουργίες στις Λίστες</h2>
+  </div>
+
+  <p>Όλες οι λειτουργίες σε λίστες της Prolog ακολουθούν ένα συγκεκριμένο μοτίβο: <strong>βάση = κενή λίστα ή λίστα ενός στοιχείου · αναδρομικό βήμα = επεξεργασία κεφαλής + αναδρομή στην ουρά</strong>. Αν εμπεδώσετε αυτό το μοτίβο, θα μπορείτε να γράφετε νέα κατηγορήματα μόνοι σας.</p>
+
+  <h3>2.1 Έλεγχος Μέλους: <code>member/2</code></h3>
+  <p>Το <code>member(X, L)</code> αληθεύει αν το X είναι μέλος της λίστας L. Δύο περιπτώσεις:</p>
+  <ul>
+    <li>Το X είναι μέλος αν είναι <strong>η κεφαλή</strong> της L.</li>
+    <li>Το X είναι μέλος αν είναι μέλος <strong>της ουράς</strong> της L.</li>
+  </ul>
+
+  <div class="cb"><code><span class="fn">member</span>(X, [X | _]).              <span class="cm">% βάση: ο X είναι η κεφαλή</span>
+<span class="fn">member</span>(X, [_ | Tail]) <span class="kw">:-</span>
+    <span class="fn">member</span>(X, Tail).             <span class="cm">% αναδρομή: ψάξε στην ουρά</span></code></div>
+
+  <div class="example-block">
+    <div class="ex-title">Παραδείγματα Εκτέλεσης</div>
+    <div class="cb"><code>?- <span class="fn">member</span>(b, [a, b, c]).
+   yes
+
+?- <span class="fn">member</span>(b, [a, [b, c]]).
+   no                    <span class="cm">% το b ΔΕΝ είναι μέλος, αλλά το [b,c] είναι</span>
+
+?- <span class="fn">member</span>([b, c], [a, [b, c]]).
+   yes
+
+?- <span class="fn">member</span>(X, [1, 2, 3]).
+   X = 1  -&gt; ;
+   X = 2  -&gt; ;
+   X = 3
+   yes                   <span class="cm">% με backtracking παράγει όλα τα μέλη</span></code></div>
+  </div>
+
+  <h3>2.2 Συνένωση: <code>append/3</code></h3>
+  <p>Το <code>append(L1, L2, L3)</code> αληθεύει όταν η L3 είναι η συνένωση των L1 και L2.</p>
+
+  <div class="cb"><code><span class="fn">append</span>([], L, L).                          <span class="cm">% βάση: [] ++ L = L</span>
+<span class="fn">append</span>([X | L1], L2, [X | L3]) <span class="kw">:-</span>
+    <span class="fn">append</span>(L1, L2, L3).                    <span class="cm">% αναδρομή: η κεφαλή «μετακινείται» στην έξοδο</span></code></div>
+
+  <div class="list-viz" style="padding: 24px; border: 1px solid var(--border); border-radius: 12px; margin: 18px 0; background: var(--surf2)">
+    <div style="display:flex; align-items:center; justify-content:center; gap:20px; font-family:'Syne', sans-serif; font-size:1.1rem; flex-wrap:wrap">
+      <div style="background:var(--gdim); border:1.5px dashed var(--green); padding:12px 18px; border-radius:8px; text-align:center; min-width:110px">
+        <div style="font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--green)">[X | L1]</div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:4px">Πρώτη Λίστα</div>
+      </div>
+      <div style="color:var(--cyan); font-weight:bold; font-size:1.4rem">++</div>
+      <div style="background:var(--bdim); border:1.5px dashed var(--blue); padding:12px 18px; border-radius:8px; text-align:center; min-width:110px">
+        <div style="font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--blue)">L2</div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:4px">Δεύτερη Λίστα</div>
+      </div>
+      <div style="color:var(--cyan); font-weight:bold; font-size:1.4rem">=</div>
+      <div style="background:var(--pdim); border:1.5px dashed var(--purple); padding:12px 18px; border-radius:8px; text-align:center; min-width:110px">
+        <div style="font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--purple)">[X | L3]</div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:4px">Αποτέλεσμα</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:16px; font-size:0.92rem; color:var(--muted); line-height:1.6">
+      🔄 <strong>Αναδρομικό βήμα:</strong> Το στοιχείο <code style="color:var(--green)">X</code> της πρώτης λίστας μεταφέρεται απευθείας στην κεφαλή του αποτελέσματος. Καλούμε αναδρομικά το <code>append(L1, L2, L3)</code>.
+    </div>
+  </div>
+
+  <h3>Πολυκατευθυντικότητα του <code>append</code></h3>
+  <p>Επειδή ο μηχανισμός είναι η ενοποίηση, το <code>append</code> δουλεύει με <em>οποιαδήποτε</em> ορίσματα ελεύθερα. Αυτό είναι μια κλασική <em>αποκάλυψη</em> για όσους έρχονται από διαδικαστικές γλώσσες.</p>
+
+  <details open>
+    <summary>Συνένωση (κλασική χρήση)</summary>
+    <div class="cb" style="margin-top:8px"><code>?- <span class="fn">append</span>([a, b], [c, d, e], L).
+   L = [a, b, c, d, e]
+   yes</code></div>
+  </details>
+
+  <details>
+    <summary>Διαχωρισμός: όλες οι πιθανές «κοπές»</summary>
+    <div class="cb" style="margin-top:8px"><code>?- <span class="fn">append</span>(L1, L2, [a, b, c]).
+   L1 = [],         L2 = [a, b, c]   -&gt; ;
+   L1 = [a],        L2 = [b, c]      -&gt; ;
+   L1 = [a, b],     L2 = [c]         -&gt; ;
+   L1 = [a, b, c],  L2 = []
+   yes</code></div>
+  </details>
+
+  <details>
+    <summary>Εύρεση «πριν» και «μετά» στόχου</summary>
+    <p>Για να βρω τι έρχεται πριν και μετά τον μήνα Μάιο σε λίστα μηνών:</p>
+    <div class="cb"><code>?- <span class="fn">append</span>(Before, [may | After],
+        [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]).
+   Before = [jan, feb, mar, apr]
+   After  = [jun, jul, aug, sep, oct, nov, dec]
+   yes</code></div>
+    <p>Ή για να βρω <strong>γείτονες</strong> ενός στοιχείου:</p>
+    <div class="cb"><code>?- <span class="fn">append</span>(_, [Month1, may, Month2 | _],
+        [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]).
+   Month1 = apr
+   Month2 = jun
+   yes</code></div>
+  </details>
+
+  <h3>Εναλλακτικός ορισμός του <code>member</code> μέσω <code>append</code></h3>
+  <div class="cb"><code><span class="fn">member1</span>(X, L) <span class="kw">:-</span>
+    <span class="fn">append</span>(_, [X | _], L).</code></div>
+  <p>Διαβάζεται: «το X είναι μέλος της L αν υπάρχει διάσπαση της L όπου το X είναι πρώτο στοιχείο του δεξιού μέρους». Λιγότερο αποδοτικό αλλά πολύ κομψό!</p>
+
+  <h3>2.3 Διαγραφή και Εισαγωγή: <code>del/3</code>, <code>insert/3</code></h3>
+
+  <div class="cb"><code><span class="cm">% del(X, L, L1): η L1 προκύπτει αν αφαιρέσουμε ΜΙΑ εμφάνιση του X από την L</span>
+<span class="fn">del</span>(X, [X | Tail], Tail).               <span class="cm">% βάση: το X είναι η κεφαλή</span>
+<span class="fn">del</span>(X, [Y | Tail], [Y | Tail1]) <span class="kw">:-</span>
+    <span class="fn">del</span>(X, Tail, Tail1).                 <span class="cm">% αναδρομή στην ουρά</span></code></div>
+
+  <div class="cb"><code><span class="cm">% Με backtracking, διαγράφει διαφορετικές εμφανίσεις</span>
+?- <span class="fn">del</span>(a, [a, b, a, a], L).
+   L = [b, a, a]  -&gt; ;
+   L = [a, b, a]  -&gt; ;
+   L = [a, b, a]
+   yes
+
+<span class="cm">% Και ως «διαχωριστής» — βρίσκει όλες τις θέσεις του X</span>
+?- <span class="fn">del</span>(a, L, [1, 2, 3]).
+   L = [a, 1, 2, 3]  -&gt; ;
+   L = [1, a, 2, 3]  -&gt; ;
+   L = [1, 2, a, 3]  -&gt; ;
+   L = [1, 2, 3, a]
+   yes</code></div>
+
+  <p>Η εισαγωγή ορίζεται κομψά ως η <em>αντίστροφη</em> πράξη της διαγραφής:</p>
+  <div class="cb"><code><span class="fn">insert</span>(X, List, BiggerList) <span class="kw">:-</span>
+    <span class="fn">del</span>(X, BiggerList, List).</code></div>
+
+  <p>Και ένας άλλος ορισμός του <code>member</code>, μέσω <code>del</code>:</p>
+  <div class="cb"><code><span class="fn">member2</span>(X, List) <span class="kw">:-</span>
+    <span class="fn">del</span>(X, List, _).</code></div>
+
+  <h3>2.4 Προσθήκη στην Αρχή: <code>add/3</code></h3>
+  <div class="cb"><code><span class="fn">add</span>(X, L, [X | L]).</code></div>
+  <p>Πραγματικά είναι τόσο απλό: ένα γεγονός! Η ενοποίηση κάνει όλη τη δουλειά.</p>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 2.1</span> Ορίστε:</p>
+    <ul>
+      <li><code>last(Item, List)</code> ώστε να αληθεύει αν το <code>Item</code> είναι το τελευταίο στοιχείο της <code>List</code>:
+        <ol><li>μέσω <code>append</code>,</li><li>χωρίς <code>append</code> (με ευθεία αναδρομή).</li></ol>
+      </li>
+      <li>Από μια λίστα <code>L</code>, διαγράψτε τα τρία τελευταία στοιχεία (μέσω <code>append</code>).</li>
+      <li>Διαγράψτε τα τρία πρώτα και τα τρία τελευταία στοιχεία της <code>L</code>.</li>
+    </ul>
+    <details>
+      <summary>Υποδείξεις</summary>
+      <div class="cb"><code><span class="cm">% (1a) μέσω append</span>
+<span class="fn">last</span>(Item, List) <span class="kw">:-</span> <span class="fn">append</span>(_, [Item], List).
+
+<span class="cm">% (1b) χωρίς append</span>
+<span class="fn">last</span>(Item, [Item]).
+<span class="fn">last</span>(Item, [_ | Tail]) <span class="kw">:-</span> <span class="fn">last</span>(Item, Tail).
+
+<span class="cm">% (2) Διαγραφή 3 τελευταίων</span>
+<span class="fn">drop_last3</span>(L, L1) <span class="kw">:-</span> <span class="fn">append</span>(L1, [_, _, _], L).
+
+<span class="cm">% (3) Διαγραφή 3 πρώτων ΚΑΙ 3 τελευταίων</span>
+<span class="fn">drop_3_3</span>(L, L2) <span class="kw">:-</span>
+    <span class="fn">append</span>([_,_,_], Middle, L),
+    <span class="fn">append</span>(L2, [_,_,_], Middle).</code></div>
+    </details>
+  </div>
+</section>
+
+<!-- ======================= SECTION 3: ADVANCED ======================= -->
+<section id="advanced">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">🚀</div>
+    <h2>3. Προηγμένη Επεξεργασία: sublist, permutation, reverse</h2>
+  </div>
+
+  <h3>3.1 Υπολίστες (Διαδοχικά Στοιχεία)</h3>
+  <p>Μια <strong>υπολίστα</strong> είναι μια ακολουθία <em>διαδοχικών</em> στοιχείων μιας λίστας. Π.χ. το <code>[c, d, e]</code> είναι υπολίστα του <code>[a, b, c, d, e, f]</code>, αλλά το <code>[c, e]</code> <em>δεν είναι</em>.</p>
+
+  <div class="cb"><code><span class="fn">sublist</span>(S, L) <span class="kw">:-</span>
+    <span class="fn">append</span>(L1, L2, L),
+    <span class="fn">append</span>(S, L3, L2).</code></div>
+
+  <div class="list-viz" style="padding: 24px; border: 1px solid var(--border); border-radius: 12px; margin: 18px 0; background: var(--surf2)">
+    <!-- Main List L Container -->
+    <div style="text-align:center; font-family:'Syne', sans-serif; font-weight:800; color:var(--txt); margin-bottom:10px; font-size:1.1rem">
+      Ολόκληρη Λίστα L
+    </div>
+    
+    <!-- Segments row -->
+    <div style="display:flex; border:2px solid var(--border); border-radius:10px; overflow:hidden; font-family:'JetBrains Mono', monospace; font-size:1rem; height:50px; text-align:center; align-items:stretch">
+      <div style="flex:1; background:var(--surf); border-right:2px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted)">
+        L1 (Πρόθεμα)
+      </div>
+      <div style="flex:1.5; background:var(--gdim); border-right:2px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--green); font-weight:700">
+        S (Υπολίστα)
+      </div>
+      <div style="flex:1; background:var(--surf); display:flex; align-items:center; justify-content:center; color:var(--muted)">
+        L3 (Επίθεμα)
+      </div>
+    </div>
+    
+    <!-- L2 brace row -->
+    <div style="display:flex; margin-top:10px; font-family:'Syne', sans-serif; font-size:0.9rem; text-align:center">
+      <div style="flex:1"></div>
+      <div style="flex:2.5; border:2px solid var(--cyan); border-top:none; border-radius:0 0 10px 10px; height:20px; position:relative; display:flex; align-items:center; justify-content:center; margin-top:-2px">
+        <span style="background:var(--surf); border:1px solid var(--border); border-radius:15px; padding:2px 12px; color:var(--cyan); font-weight:700; position:absolute; bottom:-12px; font-size:0.8rem">
+          L2 = S + L3
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top:10px">Διαβάζεται: <em>«η S είναι υπολίστα της L αν η L μπορεί να σπάσει σε L1 και L2, και η L2 μπορεί να σπάσει σε S και L3»</em>. Δηλαδή το S «κάθεται κάπου» μέσα στην L.</p>
+
+  <div class="cb"><code>?- <span class="fn">sublist</span>(S, [a, b, c]).
+   S = []     -&gt; ;
+   S = [a]    -&gt; ;
+   S = [a, b] -&gt; ;
+   S = [a, b, c] -&gt; ;
+   S = []     -&gt; ;
+   S = [b]    -&gt; ;
+   ...</code></div>
+
+  <h3>3.2 Μεταθέσεις (Permutations)</h3>
+  <p>Όλες οι πιθανές διατάξεις των στοιχείων μιας λίστας. Δύο κομψοί ορισμοί:</p>
+
+  <div class="grid2">
+    <div class="card">
+      <strong>Με <code>insert</code></strong>
+      <div class="cb" style="font-size:0.83rem"><code><span class="fn">permutation</span>([], []).
+<span class="fn">permutation</span>([X | L], P) <span class="kw">:-</span>
+    <span class="fn">permutation</span>(L, L1),
+    <span class="fn">insert</span>(X, L1, P).</code></div>
+    </div>
+    <div class="card">
+      <strong>Με <code>del</code></strong>
+      <div class="cb" style="font-size:0.83rem"><code><span class="fn">permutation2</span>([], []).
+<span class="fn">permutation2</span>(L, [X | P]) <span class="kw">:-</span>
+    <span class="fn">del</span>(X, L, L1),
+    <span class="fn">permutation2</span>(L1, P).</code></div>
+    </div>
+  </div>
+
+  <div class="cb"><code>?- <span class="fn">permutation2</span>([red, blue, green], P).
+   P = [red, blue, green]  -&gt; ;
+   P = [red, green, blue]  -&gt; ;
+   P = [blue, red, green]  -&gt; ;
+   P = [blue, green, red]  -&gt; ;
+   P = [green, red, blue]  -&gt; ;
+   P = [green, blue, red]
+   yes      <span class="cm">% 3! = 6 μεταθέσεις</span></code></div>
+
+  <h3>3.3 Αντιστροφή Λίστας: Naive vs Accumulator</h3>
+  <p>Η αντιστροφή είναι το αρχέτυπο για να καταλάβετε <em>γιατί</em> η αναδρομή με συσσωρευτή είναι αποδοτικότερη.</p>
+
+  <h4>Naive Reverse</h4>
+  <div class="cb"><code><span class="fn">reverse</span>([], []).
+<span class="fn">reverse</span>([First | Rest], Reversed) <span class="kw">:-</span>
+    <span class="fn">reverse</span>(Rest, ReversedRest),
+    <span class="fn">append</span>(ReversedRest, [First], Reversed).</code></div>
+
+  <p>Διαβάζεται καλά: «αντιστρέφω την ουρά, μετά κολλάω την κεφαλή στο τέλος». <strong>Αλλά:</strong> κάθε <code>append(ReversedRest, [First], _)</code> κοστίζει O(N) γιατί διασχίζει το <code>ReversedRest</code>. Άρα συνολικά O(N²).</p>
+
+  <h4>Accumulator Reverse (O(N))</h4>
+  <div class="cb"><code><span class="fn">reverse1</span>(List1, List2) <span class="kw">:-</span>
+    <span class="fn">rev_app</span>(List1, [], List2).
+
+<span class="fn">rev_app</span>([], Acc, Acc).
+<span class="fn">rev_app</span>([X | List1], Acc, Result) <span class="kw">:-</span>
+    <span class="fn">rev_app</span>(List1, [X | Acc], Result).</code></div>
+
+  <p>Πώς δουλεύει; Φανταστείτε ότι ξεφορτώνετε στοιχεία από μια στοίβα και τα τοποθετείτε σε άλλη στοίβα — η σειρά αντιστρέφεται φυσικά:</p>
+  <div class="list-viz" style="padding: 24px; border: 1px solid var(--border); border-radius: 12px; margin: 18px 0; background: var(--surf2)">
+    <div style="font-family:'Syne', sans-serif; font-weight:700; text-align:center; margin-bottom:18px; color:var(--txt); font-size:1.05rem">
+      🔄 Βήμα-Προς-Βήμα Tracing Αντιστροφής με Συσσωρευτή (Accumulator)
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:10px; font-family:'JetBrains Mono', monospace; font-size:0.9rem">
+      <!-- Step 1 -->
+      <div style="display:flex; align-items:center; background:var(--surf); border:1px solid var(--border); border-radius:8px; padding:10px 14px; justify-content:space-between">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="background:var(--purple); color:#ffffff; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:bold">Βήμα 1</span>
+          <span>List = <code style="color:var(--cyan)">[a, b, c, d]</code></span>
+        </div>
+        <div style="color:var(--muted)">➔</div>
+        <span>Acc = <code style="color:var(--orange)">[]</code></span>
+      </div>
+      
+      <!-- Step 2 -->
+      <div style="display:flex; align-items:center; background:var(--surf); border:1px solid var(--border); border-radius:8px; padding:10px 14px; justify-content:space-between">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="background:var(--purple); color:#ffffff; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:bold">Βήμα 2</span>
+          <span>List = <code style="color:var(--cyan)">[b, c, d]</code></span>
+        </div>
+        <div style="color:var(--muted)">➔</div>
+        <span>Acc = <code style="color:var(--orange)">[a]</code></span>
+      </div>
+      
+      <!-- Step 3 -->
+      <div style="display:flex; align-items:center; background:var(--surf); border:1px solid var(--border); border-radius:8px; padding:10px 14px; justify-content:space-between">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="background:var(--purple); color:#ffffff; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:bold">Βήμα 3</span>
+          <span>List = <code style="color:var(--cyan)">[c, d]</code></span>
+        </div>
+        <div style="color:var(--muted)">➔</div>
+        <span>Acc = <code style="color:var(--orange)">[b, a]</code></span>
+      </div>
+      
+      <!-- Step 4 -->
+      <div style="display:flex; align-items:center; background:var(--surf); border:1px solid var(--border); border-radius:8px; padding:10px 14px; justify-content:space-between">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="background:var(--purple); color:#ffffff; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:bold">Βήμα 4</span>
+          <span>List = <code style="color:var(--cyan)">[d]</code></span>
+        </div>
+        <div style="color:var(--muted)">➔</div>
+        <span>Acc = <code style="color:var(--orange)">[c, b, a]</code></span>
+      </div>
+      
+      <!-- Step 5 -->
+      <div style="display:flex; align-items:center; background:var(--gdim); border:1px solid var(--green); border-radius:8px; padding:10px 14px; justify-content:space-between">
+        <div style="display:flex; gap:10px; align-items:center">
+          <span style="background:var(--green); color:#ffffff; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:bold">Τέλος</span>
+          <span>List = <code style="color:var(--muted)">[]</code></span>
+        </div>
+        <div style="color:var(--green)">➔</div>
+        <span>Result = <code style="color:var(--green); font-weight:bold">[d, c, b, a]</code></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Γιατί O(N) αντί για O(N²);</div>
+    <p>Στο naive, σε κάθε επίπεδο αναδρομής το <code>append</code> διασχίζει όλο τον ήδη-αντεστραμμένο πίνακα. Έτσι: 1ο βήμα διασχίζει 0 στοιχεία, 2ο βήμα 1, ..., Νο βήμα N-1. Σύνολο: 0+1+...+N-1 = N(N-1)/2 = O(N²).</p>
+    <p>Στο accumulator, σε κάθε βήμα κάνουμε μόνο <code>[X | Acc]</code> — προσθήκη στην αρχή, O(1). Επί N βήματα = O(N).</p>
+    <p><strong>Trade-off:</strong> η accumulator έκδοση είναι λιγότερο «δηλωτική» (απαιτεί τρίτο όρισμα) αλλά πολύ αποδοτικότερη — και πιο φιλική στη <em>tail recursion</em>.</p>
+  </div>
+
+  <h3>3.4 Μέσο (translate) μέσω αναδρομής</h3>
+  <p>Παράδειγμα μετάφρασης ψηφίων σε αγγλικές λέξεις:</p>
+  <div class="cb"><code><span class="fn">means</span>(0, zero).   <span class="fn">means</span>(1, one).    <span class="fn">means</span>(2, two).
+<span class="fn">means</span>(3, three).  <span class="fn">means</span>(4, four).   <span class="fn">means</span>(5, five).
+<span class="fn">means</span>(6, six).    <span class="fn">means</span>(7, seven).  <span class="fn">means</span>(8, eight).  <span class="fn">means</span>(9, nine).
+
+<span class="fn">translate</span>([], []).
+<span class="fn">translate</span>([X | L1], [Y | L2]) <span class="kw">:-</span>
+    <span class="fn">means</span>(X, Y),
+    <span class="fn">translate</span>(L1, L2).
+
+?- <span class="fn">translate</span>([3, 5, 1, 3], List).
+   List = [three, five, one, three]
+   yes</code></div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 2.2</span> Ορίστε τα παρακάτω. Όλα μέσω αναδρομής και χωρίς ενσωματωμένα κατηγορήματα:</p>
+    <ol>
+      <li><code>evenlength(List)</code>, <code>oddlength(List)</code>: αληθεύουν αν η L έχει άρτιο/περιττό μήκος.</li>
+      <li><code>palindrome(List)</code>: αληθεύει αν η λίστα είναι ίδια διαβαζόμενη ανάποδα.</li>
+      <li><code>shift(List1, List2)</code>: παίρνει την πρώτη και τη βάζει τελευταία. Π.χ. <code>shift([1,2,3,4,5], L1)</code> δίνει <code>L1 = [2,3,4,5,1]</code>.</li>
+      <li><code>subset(Set, SubSet)</code>: παράγει όλα τα υποσύνολα της Set (όχι μόνο υπολίστες).</li>
+      <li><code>dividelist(List, List1, List2)</code>: χωρίζει εναλλάξ τα στοιχεία της L σε δύο λίστες.</li>
+      <li><code>flatten(List, FlatList)</code>: «ισιώνει» μια εμφωλιασμένη λίστα. Π.χ. <code>[a, b, [c, d], [], [[e]], f] → [a, b, c, d, e, f]</code>.</li>
+    </ol>
+  </div>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="list_ops"></div>
+</section>
+
+<!-- ======================= SECTION 4: DIFFERENCE LISTS ======================= -->
+<section id="difflists">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">⚡</div>
+    <h2>4. Λίστες Διαφορών (Difference Lists)</h2>
+  </div>
+
+  <p>Μια κλασική τεχνική για να γράφουμε <strong>αποδοτικότερη Prolog</strong>. Η μέθοδος βασίζεται σε μια έξυπνη παρατήρηση: αντί να μεταβιβάζουμε μια λίστα <code>L</code>, μεταβιβάζουμε ένα <em>ζευγάρι λιστών</em> <code>L1-L2</code> όπου η "πραγματική" λίστα είναι η διαφορά τους.</p>
+
+  <h3>4.1 Η Ιδέα</h3>
+
+  <p>Η λίστα <code>[a, b, c]</code> μπορεί να αναπαρασταθεί ως <em>"ό,τι λείπει"</em> με πολλούς τρόπους:</p>
+
+  <div style="background:var(--surf);padding:14px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:0.9rem;margin:14px 0">
+    <div>[a, b, c]  ≡  [a, b, c] − []</div>
+    <div>[a, b, c]  ≡  [a, b, c, d, e] − [d, e]</div>
+    <div>[a, b, c]  ≡  [a, b, c, d, e | T] − [d, e | T]</div>
+    <div>[a, b, c]  ≡  [a, b, c | T] − T</div>
+  </div>
+
+  <p>Αυτή η τελευταία μορφή είναι κρίσιμη: <strong><code>[a, b, c | T] − T</code></strong>. Η Prolog το γράφει ως <code>[a,b,c|T]-T</code>.</p>
+
+  <h3>4.2 Το Τέχνασμα: <code>append</code> σε O(1)!</h3>
+
+  <p>Με λίστες διαφορών, η συνένωση γίνεται <strong>χωρίς αναδρομή</strong> — απλά ενοποίηση μεταβλητών:</p>
+
+  <div class="cb"><code><span class="fn">new_append</span>(A1<span class="op">-</span>Z1, Z1<span class="op">-</span>Z2, A1<span class="op">-</span>Z2).</code></div>
+
+  <div class="line-by-line">
+    <div class="lcode">new_append(A1-Z1, ...)</div>
+    <div class="lexpl">Πρώτη λίστα: A1-Z1 (από A1 ξεκινάει, μέχρι Z1 πάει).</div>
+    <div class="lcode">..., Z1-Z2, ...</div>
+    <div class="lexpl">Δεύτερη λίστα: η ουρά της πρώτης (Z1) ενοποιείται με την αρχή της δεύτερης. Έτσι "συγκολλώνται"!</div>
+    <div class="lcode">..., A1-Z2)</div>
+    <div class="lexpl">Αποτέλεσμα: από την αρχή της πρώτης (A1) μέχρι το τέλος της δεύτερης (Z2).</div>
+  </div>
+
+  <div class="cb"><code>?<span class="kw">-</span> <span class="fn">new_append</span>([a,b,c<span class="op">|</span>T1]<span class="op">-</span>T1, [d,e<span class="op">|</span>T2]<span class="op">-</span>T2, L).
+T1 = [d, e | <span class="nm">_0084</span>]
+T2 = <span class="nm">_0084</span>
+L = [a, b, c, d, e | <span class="nm">_0084</span>] - <span class="nm">_0084</span></code></div>
+
+  <div class="tip-box">
+    <div class="hd">💡 Γιατί O(1);</div>
+    <p>Το παραδοσιακό <code>append</code> έχει πολυπλοκότητα O(n) γιατί πρέπει να "διασχίσει" όλη την πρώτη λίστα. Με λίστες διαφορών, η συγκόλληση γίνεται με <strong>μία απλή ενοποίηση μεταβλητής</strong> (Z1 με Z2) — άρα O(1)!</p>
+  </div>
+
+  <h3>4.3 Παράδειγμα Εφαρμογής: <code>add_at_end</code></h3>
+
+  <p>Πώς προσθέτουμε στο <em>τέλος</em> μιας λίστας; Με κανονικές λίστες χρειάζεται O(n). Με διαφορών:</p>
+
+  <div class="cb"><code><span class="fn">add_at_end</span>(L<span class="op">-</span>[Item<span class="op">|</span>Z], Item, L<span class="op">-</span>Z).</code></div>
+
+  <p>Πάλι O(1)! Η ουρά Z της λίστας διαφορών "ενοιγμένη" αντικαθίσταται με την κενή Z μετά το Item.</p>
+
+  <h3>4.4 Αποδοτική Αντιστροφή Λίστας με Λίστες Διαφορών</h3>
+
+  <p>Στην ενότητα §3 είδαμε ότι η αναδρομική <code>reverse/2</code> έχει πολυπλοκότητα O(n²). Με λίστες διαφορών μπορούμε να φτιάξουμε O(n):</p>
+
+  <div class="cb"><code><span class="fn">reverse_dl</span>(List, Reversed) <span class="kw">:-</span>
+    <span class="fn">reverse_dl</span>(List, Reversed<span class="op">-</span>[]).
+
+<span class="fn">reverse_dl</span>([], Z<span class="op">-</span>Z).
+<span class="fn">reverse_dl</span>([H<span class="op">|</span>T], R<span class="op">-</span>Z) <span class="kw">:-</span>
+    <span class="fn">reverse_dl</span>(T, R<span class="op">-</span>[H<span class="op">|</span>Z]).</code></div>
+
+  <h3>4.5 Πότε Χρησιμοποιούμε Λίστες Διαφορών;</h3>
+
+  <ul>
+    <li>Όταν χρειάζεται <strong>συχνή συνένωση/προσθήκη στο τέλος</strong></li>
+    <li>Σε <strong>quicksort</strong> για O(n log n) πραγματικό</li>
+    <li>Σε <strong>DCG (Definite Clause Grammars)</strong> για NL parsing — η Prolog τις χρησιμοποιεί αυτόματα</li>
+    <li>Σε <strong>συντακτικούς αναλυτές</strong> γενικότερα</li>
+  </ul>
+
+  <div class="warn">
+    <div class="hd">⚠️ Δυσκολία Ανάγνωσης</div>
+    <p>Ο κώδικας με λίστες διαφορών είναι <strong>δυσανάγνωστος</strong> για αρχάριους. Συνιστάται να γράφεις πρώτα την έκδοση με κανονικές λίστες, και μετά να μετατρέπεις σε λίστες διαφορών αν χρειάζεται αποδοτικότητα.</p>
+  </div>
+
+  <h3>4.6 Εναλλακτικές Αναπαραστάσεις Λιστών</h3>
+
+  <p>Η Prolog δεν μας δεσμεύει στο σύμβολο <code>[...]</code> για λίστες. Μπορούμε να ορίσουμε δικό μας:</p>
+
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(500, xfy, then).
+
+<span class="cm">% Η λίστα enter, sit, eat γράφεται:</span>
+<span class="cm">% enter then sit then eat then donothing</span>
+
+<span class="fn">appendl</span>(donothing, L, L).
+<span class="fn">appendl</span>(X <span class="kw">then</span> L1, L2, X <span class="kw">then</span> L3) <span class="kw">:-</span>
+    <span class="fn">appendl</span>(L1, L2, L3).</code></div>
+
+  <p>Όπου <code>donothing</code> παίζει το ρόλο της κενής λίστας <code>[]</code>, και <code>then</code> τον ρόλο του <code>|</code>.</p>
+
+  <div class="tip-box">
+    <div class="hd">💡 Άσκηση Εξετάσεων</div>
+    <p>Συνηθισμένη άσκηση: να γραφεί <code>convert/2</code> που μετατρέπει από <code>[a, b, c]</code> σε <code>a then b then c then donothing</code>. Λύση:</p>
+    <div class="cb"><code><span class="fn">convert</span>([], donothing).
+<span class="fn">convert</span>([X<span class="op">|</span>Xs], X <span class="kw">then</span> Rest) <span class="kw">:-</span>
+    <span class="fn">convert</span>(Xs, Rest).</code></div>
+  </div>
+
+</section>
+
+<!-- ======================= SECTION 5: OPERATORS ======================= -->
+<section id="operators">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">➕</div>
+    <h2>5. Τελεστές (Operators)</h2>
+  </div>
+
+  <p>Όταν γράφετε <code>2 * a + b * c</code>, βλέπετε μια αριθμητική έκφραση. Όταν η Prolog την βλέπει, βλέπει τον σύνθετο όρο <code>+(*(2, a), *(b, c))</code>. Οι <strong>τελεστές</strong> είναι απλώς <em>συντακτική ζάχαρη</em>: σας επιτρέπουν να γράφετε γνώριμες εκφράσεις, αλλά κάτω από το καπό η Prolog εξακολουθεί να βλέπει σύνθετους όρους.</p>
+
+  <h3>Ορισμός Τελεστών</h3>
+  <p>Ορίζονται με την οδηγία:</p>
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(Precedence, Type, Name).</code></div>
+
+  <ul>
+    <li><strong>Precedence:</strong> Ακέραιος από 0 έως 1200. <em>Μεγαλύτερη τιμή = «πιο έξω» στο δέντρο, χαμηλότερη ισχύς σύνδεσης</em>.</li>
+    <li><strong>Type:</strong> Ένα από τα <code>xfx, xfy, yfx, fx, fy, xf, yf</code> (εξηγούνται παρακάτω).</li>
+    <li><strong>Name:</strong> Το όνομα του τελεστή (άτομο).</li>
+  </ul>
+
+  <h3>Είδη Τελεστών</h3>
+  <p>Το όνομα του τύπου κωδικοποιεί τη θέση του τελεστή σχετικά με τα ορίσματα και την προσεταιριστικότητα. Η <strong>f</strong> δηλώνει τη θέση του τελεστή· τα <strong>x</strong>, <strong>y</strong> δηλώνουν τις θέσεις των ορισμάτων και ποια προτεραιότητα επιτρέπουν.</p>
+
+  <table class="op-table">
+    <thead>
+      <tr><th>Τύπος</th><th>Θέση</th><th>Προσεταιριστικότητα</th><th>Παράδειγμα</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>xfx</code></td><td>Infix</td><td>Μη προσεταιριστικός</td><td><code>:-</code>, <code>=</code>, <code>is</code></td></tr>
+      <tr><td><code>yfx</code></td><td>Infix</td><td>Αριστερά προσεταιριστικός</td><td><code>+</code>, <code>-</code></td></tr>
+      <tr><td><code>xfy</code></td><td>Infix</td><td>Δεξιά προσεταιριστικός</td><td><code>,</code>, <code>;</code></td></tr>
+      <tr><td><code>fx</code></td><td>Prefix</td><td>Χωρίς επανάληψη</td><td><code>:-</code> (ως οδηγία)</td></tr>
+      <tr><td><code>fy</code></td><td>Prefix</td><td>Με επανάληψη</td><td><code>not</code>, <code>-</code> (πρόσημο)</td></tr>
+      <tr><td><code>xf</code></td><td>Postfix</td><td>Χωρίς επανάληψη</td><td><em>σπάνιο</em></td></tr>
+      <tr><td><code>yf</code></td><td>Postfix</td><td>Με επανάληψη</td><td><em>σπάνιο</em></td></tr>
+    </tbody>
+  </table>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Τι ακριβώς σημαίνει x και y;</div>
+    <p>Σε ένα ορισμό <code>op(P, ?f?, _)</code>:</p>
+    <ul>
+      <li>Η θέση που σημαδεύεται με <strong><code>x</code></strong> δέχεται όρισμα με προτεραιότητα <em>αυστηρά μικρότερη</em> του P.</li>
+      <li>Η θέση που σημαδεύεται με <strong><code>y</code></strong> δέχεται όρισμα με προτεραιότητα <em>μικρότερη ή ίση</em> του P.</li>
+    </ul>
+    <p>Πρακτικά, αυτό καθορίζει την προσεταιριστικότητα. Επειδή το <code>-</code> είναι <code>yfx</code> (αριστερό όρισμα ίδιας προτεραιότητας επιτρέπεται), το <code>a - b - c</code> διαβάζεται ως <code>(a-b)-c</code>. Αντίθετα, αν ήταν <code>xfy</code>, θα διαβαζόταν ως <code>a-(b-c)</code>!</p>
+  </div>
+
+  <h3>Παράδειγμα Δικού μας Τελεστή</h3>
+  <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">600</span>, xfx, has).
+<span class="fn">has</span>(peter, information).      <span class="cm">% κανονική κλήση</span>
+peter has information.        <span class="cm">% συντακτικά ισοδύναμη χρήση</span>
+
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">650</span>, xfx, supports).
+floor supports table.</code></code></div>
+
+  <h3>Προκαθορισμένοι Τελεστές της Prolog</h3>
+  <table class="op-table">
+    <thead><tr><th>Prec</th><th>Type</th><th>Operators</th></tr></thead>
+    <tbody>
+      <tr><td>1200</td><td>xfx</td><td><code>:-</code></td></tr>
+      <tr><td>1200</td><td>fx</td><td><code>:-</code>, <code>?-</code></td></tr>
+      <tr><td>1100</td><td>xfy</td><td><code>;</code></td></tr>
+      <tr><td>1000</td><td>xfy</td><td><code>,</code></td></tr>
+      <tr><td>900</td><td>fy</td><td><code>not</code></td></tr>
+      <tr><td>700</td><td>xfx</td><td><code>=</code>, <code>is</code>, <code>&lt;</code>, <code>&gt;</code>, <code>=&lt;</code>, <code>&gt;=</code>, <code>==</code>, <code>=\=</code>, <code>=:=</code></td></tr>
+      <tr><td>500</td><td>yfx</td><td><code>+</code>, <code>-</code></td></tr>
+      <tr><td>400</td><td>yfx</td><td><code>*</code>, <code>/</code>, <code>div</code></td></tr>
+      <tr><td>300</td><td>xfx</td><td><code>mod</code></td></tr>
+      <tr><td>200</td><td>fy</td><td><code>+</code>, <code>-</code> (πρόσημα)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ ΟΙ ΤΕΛΕΣΤΕΣ ΔΕΝ ΥΠΟΛΟΓΙΖΟΥΝ ΑΥΤΟΜΑΤΑ!</div>
+    <p>Παρά την ονομασία τους («τελεστές»), <strong>δεν τελούν τίποτα</strong> στα ορίσματά τους. Είναι μόνο συντακτική ζάχαρη. Το <code>1+2</code> ΔΕΝ είναι ο αριθμός 3 — είναι ο όρος <code>+(1,2)</code>. Αν θέλετε υπολογισμό, χρειάζεστε τον τελεστή <code>is</code> (επόμενη ενότητα).</p>
+  </div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 2.3</span> Με τους τελεστές:</p>
+    <div class="cb"><code><span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">300</span>, xfx, plays).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">200</span>, xfy, and).</code></div>
+    <p>Σε ποιους όρους «μεταφράζονται» οι παρακάτω;</p>
+    <ul>
+      <li><code>jimmy plays football and squash</code></li>
+      <li><code>susan plays tennis and basketball and volleyball</code></li>
+    </ul>
+    <details>
+      <summary>Λύση</summary>
+      <p><code>jimmy plays football and squash</code> → <code>plays(jimmy, and(football, squash))</code></p>
+      <p><code>susan plays tennis and basketball and volleyball</code> → <code>plays(susan, and(tennis, and(basketball, volleyball)))</code> (γιατί <code>and</code> είναι <code>xfy</code>, δηλαδή δεξιά προσεταιριστικός)</p>
+    </details>
+  </div>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="operators"></div>
+</section>
+
+<!-- ======================= SECTION 5: ARITHMETIC ======================= -->
+<section id="arithmetic">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">🔢</div>
+    <h2>6. Αριθμητική και Αξιολόγηση</h2>
+  </div>
+
+  <p>Στην Prolog υπάρχει μια θεμελιώδης διάκριση που ταράζει αρχάριους:</p>
+  <ul>
+    <li>Το <code>=</code> είναι <strong>ενοποίηση</strong> — δεν υπολογίζει τίποτα.</li>
+    <li>Το <code>is</code> είναι <strong>αριθμητική αξιολόγηση</strong> — υπολογίζει και αναθέτει.</li>
+  </ul>
+
+  <div class="cb"><code>?- X <span class="kw">=</span>  <span class="nm">1</span> + <span class="nm">2</span>.
+   X = 1 + 2          <span class="cm">% Η X πήρε τον όρο +(1,2)</span>
+   yes
+
+?- X <span class="kw">is</span> <span class="nm">1</span> + <span class="nm">2</span>.
+   X = 3              <span class="cm">% Η X πήρε τον αριθμό 3</span>
+   yes</code></div>
+
+  <h3>Αριθμητικοί Τελεστές</h3>
+  <p>Αξιολογούνται όταν εμφανίζονται στο <em>δεξί</em> μέλος του <code>is</code> (ή σε αριθμητική σύγκριση): <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> (ακέραιη διαίρεση), <code>mod</code>.</p>
+
+  <h3>Τελεστές Σύγκρισης</h3>
+  <p>Αξιολογούν <em>και</em> τα δύο μέλη πριν συγκρίνουν:</p>
+  <ul>
+    <li><code>X &lt; Y</code> · <code>X &gt; Y</code> · <code>X =&lt; Y</code> · <code>X &gt;= Y</code></li>
+    <li><code>X =:= Y</code>: «αριθμητικά ίσα» (μετά αξιολόγηση)</li>
+    <li><code>X =\= Y</code>: «αριθμητικά διαφορετικά»</li>
+  </ul>
+
+  <div class="cb"><code>?- <span class="nm">12</span> * <span class="nm">7</span> &gt; <span class="nm">50</span>.       yes
+?- <span class="nm">1</span> + <span class="nm">2</span> =:= <span class="nm">2</span> + <span class="nm">1</span>.    yes   <span class="cm">% αριθμητική σύγκριση</span>
+?- <span class="nm">1</span> + <span class="nm">2</span> = <span class="nm">2</span> + <span class="nm">1</span>.      no    <span class="cm">% συντακτική σύγκριση — δομές διαφορετικές</span>
+?- <span class="nm">1</span> + A = B + <span class="nm">2</span>.        A = 2, B = 1, yes   <span class="cm">% ενοποίηση δομών</span></code></div>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Το <code>is</code> Απαιτεί Πλήρως Αποτιμημένο Δεξί Μέλος</div>
+    <p>Το <code>X is Y + 1</code> θα <strong>αποτύχει</strong> αν η Y δεν έχει πάρει αριθμητική τιμή ήδη. Δεν είναι σαν εξίσωση που λύνεται· είναι αλγόριθμος που υπολογίζει.</p>
+    <div class="cb"><code>?- X <span class="kw">is</span> Y + <span class="nm">1</span>.
+   ERROR: Arguments are not sufficiently instantiated</code></div>
+  </div>
+
+  <h3>Παράδειγμα: Μήκος Λίστας (Τρεις Εκδόσεις)</h3>
+
+  <div class="cb"><code><span class="cm">% Έκδοση 1: Απλή αναδρομή</span>
+<span class="fn">length</span>([], <span class="nm">0</span>).
+<span class="fn">length</span>([_ | Tail], N) <span class="kw">:-</span>
+    <span class="fn">length</span>(Tail, N1),
+    N <span class="kw">is</span> <span class="nm">1</span> + N1.
+
+?- <span class="fn">length</span>([a, b, [c, d], e], N).
+   N = 4
+   yes</code></div>
+
+  <div class="cb"><code><span class="cm">% Έκδοση 2: Με accumulator (tail recursive)</span>
+<span class="fn">length1</span>(List, N) <span class="kw">:-</span>
+    <span class="fn">length2</span>(List, <span class="nm">0</span>, N).
+
+<span class="fn">length2</span>([], N, N).
+<span class="fn">length2</span>([_ | Tail], N1, N) <span class="kw">:-</span>
+    N2 <span class="kw">is</span> <span class="nm">1</span> + N1,
+    <span class="fn">length2</span>(Tail, N2, N).</code></div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Έκδοση 3: «Άπληστη» έκφραση μήκους</div>
+    <p>Αν παραλείψουμε εντελώς το <code>is</code>, παίρνουμε μια αριθμητική έκφραση αντί για αριθμό:</p>
+    <div class="cb"><code><span class="fn">length3</span>([], <span class="nm">0</span>).
+<span class="fn">length3</span>([_ | Tail], <span class="nm">1</span> + N) <span class="kw">:-</span>
+    <span class="fn">length3</span>(Tail, N).
+
+?- <span class="fn">length3</span>([a, b, c], N).
+   N = 1 + (1 + (1 + 0))      <span class="cm">% δομή, όχι αριθμός</span>
+   yes
+
+?- <span class="fn">length3</span>([a, b, c], N), Length <span class="kw">is</span> N.
+   Length = 3                  <span class="cm">% τώρα υπολογίζεται</span></code></div>
+  </div>
+
+  <h3>Παράδειγμα: ΜΚΔ (gcd)</h3>
+  <div class="cb"><code><span class="fn">gcd</span>(X, X, X).
+<span class="fn">gcd</span>(X, Y, D) <span class="kw">:-</span> X &lt; Y, Y1 <span class="kw">is</span> Y - X, <span class="fn">gcd</span>(X, Y1, D).
+<span class="fn">gcd</span>(X, Y, D) <span class="kw">:-</span> Y &lt; X, <span class="fn">gcd</span>(Y, X, D).
+
+?- <span class="fn">gcd</span>(<span class="nm">20</span>, <span class="nm">25</span>, D).
+   D = 5
+   yes</code></div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 2.4</span> Ορίστε:</p>
+    <ol>
+      <li><code>max(X, Y, Max)</code>: ο Max είναι ο μεγαλύτερος.</li>
+      <li><code>maxlist(List, Max)</code>: το μέγιστο στοιχείο μιας λίστας.</li>
+      <li><code>sumlist(List, Sum)</code>: άθροισμα μιας λίστας αριθμών.</li>
+      <li><code>ordered(List)</code>: αληθεύει αν η λίστα είναι ταξινομημένη σε αύξουσα σειρά.</li>
+      <li><code>between(N1, N2, X)</code>: παράγει με backtracking όλες τις τιμές X από N1 έως N2.</li>
+      <li><code>subsum(Set, Sum, SubSet)</code>: επιστρέφει όλα τα υποσύνολα της Set με δοσμένο άθροισμα.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= SECTION 6: EQUALITY ======================= -->
+<section id="equality">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">⚖️</div>
+    <h2>7. Είδη Ισότητας στην Prolog</h2>
+  </div>
+
+  <p>Η Prolog έχει <strong>τέσσερα διαφορετικά είδη «ισότητας»</strong>. Αυτό μπερδεύει τους αρχάριους, αλλά καθένα έχει διακριτό ρόλο.</p>
+
+  <table class="op-table">
+    <thead>
+      <tr><th>Τελεστής</th><th>Είδος</th><th>Παράδειγμα</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>X = Y</code></td>
+        <td>«Ισότητα» ενοποίησης</td>
+        <td><code>f(a, b) = f(a, X)</code> → X=b · <code>1+2 = 2+1</code> → no</td>
+      </tr>
+      <tr>
+        <td><code>X \= Y</code></td>
+        <td>Δεν ενοποιούνται</td>
+        <td><code>f(a) \= g(b)</code> → yes</td>
+      </tr>
+      <tr>
+        <td><code>X is E</code></td>
+        <td>«Ισότητα» αξιολόγησης αριθμητικής</td>
+        <td><code>X is 1+2</code> → X=3</td>
+      </tr>
+      <tr>
+        <td><code>E1 =:= E2</code></td>
+        <td>Αριθμητικά ίσες τιμές</td>
+        <td><code>1+2 =:= 2+1</code> → yes</td>
+      </tr>
+      <tr>
+        <td><code>T1 == T2</code></td>
+        <td>«Ισότητα» κατά λέξη (συντακτική ταυτότητα)</td>
+        <td><code>f(a,X) == f(a,X)</code> → yes · <code>f(a,X) == f(a,Y)</code> → no</td>
+      </tr>
+      <tr>
+        <td><code>T1 \== T2</code></td>
+        <td>Διαφορετικοί όροι κατά λέξη</td>
+        <td><code>X \== Y</code> → yes (αν είναι διαφορετικές μεταβλητές)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="example-block">
+    <div class="ex-title">Διακριτικά Παραδείγματα</div>
+    <div class="cb"><code>?- f(a, b) == f(a, b).      yes
+?- f(a, X) == f(a, Y).      no       <span class="cm">% X και Y είναι διαφορετικές μεταβλητές</span>
+?- f(a, X) == f(a, X).      yes      <span class="cm">% ίδια μεταβλητή X</span>
+?- t(X, f(a, Y)) == t(X, f(a, Y)).   yes</code></div>
+    <p>Διαφορά κρίσιμη: το <code>==</code> ελέγχει αν δύο όροι είναι <em>συντακτικά ταυτόσημοι ως έχουν τώρα</em>, χωρίς να κάνει ενοποίηση. Άρα δύο ξεχωριστές ελεύθερες μεταβλητές <code>X</code> και <code>Y</code> δεν είναι ίδιες με <code>==</code>, παρόλο που <code>=</code> θα τις ενοποιούσε.</p>
+  </div>
+
+  <div class="deep-dive">
+    <div class="dd-title">🔎 Παράδειγμα: count (πόσες φορές εμφανίζεται όρος;)</div>
+    <p>Το <code>==</code> είναι χρήσιμο όταν θέλουμε αυστηρή σύγκριση χωρίς παρενέργειες ενοποίησης:</p>
+    <div class="cb"><code><span class="fn">count</span>(_, [], <span class="nm">0</span>).
+<span class="fn">count</span>(Term, [Head | Tail], N) <span class="kw">:-</span>
+    Term <span class="kw">==</span> Head, !,
+    <span class="fn">count</span>(Term, Tail, N1),
+    N <span class="kw">is</span> N1 + <span class="nm">1</span>
+    ;
+    <span class="fn">count</span>(Term, Tail, N).
+
+?- <span class="fn">count</span>(a, [a, b, X, a], N).
+   X = _0090, N = 2
+   yes                  <span class="cm">% Δεν ενοποιεί το X με a — επειδή χρησιμοποιούμε ==</span></code></div>
+  </div>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="arithmetic"></div>
+</section>
+
+<!-- ======================= SECTION 7: PROCEDURAL ======================= -->
+<section id="procedural">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--gdim)">⚙️</div>
+    <h2>8. Διαδικαστική Σημασία & Μηχανισμός Εκτέλεσης</h2>
+  </div>
+
+  <p>Ας θυμηθούμε σε λίγο μεγαλύτερη ακρίβεια τον αλγόριθμο εκτέλεσης. Δεδομένης λίστας στόχων <code>G1, G2, ..., Gm</code>:</p>
+
+  <ol>
+    <li>Εύρεση πρώτης πρότασης <code>C : H :- B1, ..., Bn</code> με την κεφαλή H να ενοποιείται με τον <code>G1</code>.</li>
+    <li>Χρήση παραλλαγής <code>C'</code> με «φρέσκα» ονόματα μεταβλητών (δεν χρησιμοποιεί τα ίδια ονόματα με τα <code>G1, ..., Gm</code>).</li>
+    <li>Αντικατάσταση του <code>G1</code> με <code>B1', ..., Bn'</code> και εφαρμογή των αποτιμήσεων που προέκυψαν από την ενοποίηση.</li>
+    <li>Αν δεν βρεθεί πρόταση, <strong>οπισθοδρόμηση</strong> στην τελευταία επιλογή.</li>
+    <li>Όταν εξαντληθεί η λίστα στόχων → <strong>επιτυχία</strong>.</li>
+  </ol>
+
+  <h3>Ατέρμονες Ανακυκλώσεις</h3>
+  <p>Δύο κλασικά παραδείγματα που φέρνουν την Prolog σε αδιέξοδο:</p>
+  <div class="cb"><code><span class="cm">% 1. Αυτοαναφορά</span>
+<span class="fn">p</span> <span class="kw">:-</span> <span class="fn">p</span>.
+
+?- <span class="fn">p</span>.   <span class="cm">% Stack overflow — άπειρη αναδρομή</span>
+
+<span class="cm">% 2. Πίθηκος και μπανάνα με λάθος σειρά:</span>
+<span class="cm">% Σειρά grasp, climb, push, walk → η Prolog εγκλωβίζεται σε walk-walk-walk-...</span></code></div>
+
+  <h3>Συμπέρασμα</h3>
+  <div class="wbox" style="border-color:var(--yellow)">
+    <div class="lbl" style="color:var(--yellow)">⚖️ Δύο Σημασίες, Μια Γλώσσα</div>
+    <p style="font-style:italic; text-align:center">«Ένα πρόγραμμα Prolog δηλωτικά σωστό μπορεί να είναι διαδικαστικά λάθος.»</p>
+    <p>Είναι ευθύνη του προγραμματιστή να εξασφαλίσει και τις δύο διαστάσεις. Η <strong>μεθοδολογία της σταδιακής εκλέπτυνσης</strong> (stepwise refinement) και η <strong>χρήση αναδρομής</strong> είναι τα βασικά εργαλεία ανάπτυξης.</p>
+  </div>
+</section>
+
+<!-- ======================= SECTION 8: CUT ======================= -->
+<section id="cut">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--rdim)">✂️</div>
+    <h2>9. Ο Τελεστής Cut (<code>!</code>)</h2>
+  </div>
+
+  <div class="cut-box">
+    <div class="cut-title">🚨 Τι Κάνει το Cut</div>
+    <p>Το <code>!</code> είναι ένας <em>side-effect</em> τελεστής. Πετυχαίνει πάντα την πρώτη φορά που εκτελείται, ΑΛΛΑ <strong>δεσμεύει</strong> την Prolog: μετά το <code>!</code>, η Prolog ΔΕΝ μπορεί να κάνει backtracking πέρα από το σημείο εκείνο. Συγκεκριμένα:</p>
+    <ul>
+      <li>Αγνοούνται τυχόν εναλλακτικοί τρόποι ικανοποίησης των στόχων <em>αριστερά</em> του <code>!</code> μέσα στο τρέχον σώμα κανόνα.</li>
+      <li>Αγνοούνται τυχόν άλλες <em>προτάσεις</em> για το ίδιο κατηγόρημα.</li>
+      <li>Η οπισθοδρόμηση επιτρέπεται μόνο στους στόχους <em>δεξιά</em> του <code>!</code>.</li>
+    </ul>
+  </div>
+
+  <h3>Παράδειγμα Κίνητρου: Έλεγχος Backtracking</h3>
+  <p>Έστω η συνάρτηση:</p>
+  <div class="cb"><code><span class="fn">f</span>(X, <span class="nm">0</span>) <span class="kw">:-</span> X &lt; <span class="nm">3</span>.
+<span class="fn">f</span>(X, <span class="nm">2</span>) <span class="kw">:-</span> <span class="nm">3</span> =&lt; X, X &lt; <span class="nm">6</span>.
+<span class="fn">f</span>(X, <span class="nm">4</span>) <span class="kw">:-</span> <span class="nm">6</span> =&lt; X.</code></div>
+
+  <p>Σκεφτείτε γραφικά:</p>
+  <div class="list-viz">
+<pre>Y
+4 ........ ←─────
+2 .... ←────
+0 ←─
+  0   3    6   X</pre>
+  </div>
+
+  <p>Για το ερώτημα <code>?- f(1, Y), 2 &lt; Y.</code>:</p>
+  <ol>
+    <li>Η Prolog δοκιμάζει την 1η πρόταση: <code>X=1 &lt; 3</code> ✓, άρα <code>Y=0</code>.</li>
+    <li>Στόχος <code>2 &lt; 0</code>: αποτυχία.</li>
+    <li>Backtrack στην 1η πρόταση: δεν έχει άλλες επιλογές.</li>
+    <li>Δοκιμάζει 2η: <code>3 =&lt; 1</code> αποτυχία.</li>
+    <li>Δοκιμάζει 3η: <code>6 =&lt; 1</code> αποτυχία.</li>
+    <li>Συνολικό fail.</li>
+  </ol>
+  <p>Η Prolog <strong>περιττά</strong> δοκίμασε την 2η και 3η πρόταση παρόλο που είναι αδύνατο να αληθεύουν αφού η X=1 ικανοποιεί το <code>X&lt;3</code>. Με το <code>!</code> μπορούμε να της πούμε «μόλις πετύχει η πρώτη συνθήκη, μη ξαναδοκιμάσεις τις άλλες».</p>
+
+  <h3>2ος Ορισμός: Με Πράσινα Cuts (Green Cuts)</h3>
+  <div class="cb"><code><span class="fn">f</span>(X, <span class="nm">0</span>) <span class="kw">:-</span> X &lt; <span class="nm">3</span>, !.
+<span class="fn">f</span>(X, <span class="nm">2</span>) <span class="kw">:-</span> <span class="nm">3</span> =&lt; X, X &lt; <span class="nm">6</span>, !.
+<span class="fn">f</span>(X, <span class="nm">4</span>) <span class="kw">:-</span> <span class="nm">6</span> =&lt; X.</code></div>
+  <p>Εδώ τα <code>!</code> λένε: «Αν η συνθήκη της 1ης πρότασης πέρασε, μην κοιτάς πλέον άλλες προτάσεις». <strong>Η δηλωτική σημασία διατηρείται!</strong> Το πρόγραμμα γίνεται ταχύτερο χωρίς αλλαγή νοήματος. Αυτά λέγονται <em>πράσινα cuts</em>.</p>
+
+  <h3>3ος Ορισμός: Με Κόκκινα Cuts (Red Cuts)</h3>
+  <div class="cb"><code><span class="fn">f</span>(X, <span class="nm">0</span>) <span class="kw">:-</span> X &lt; <span class="nm">3</span>, !.
+<span class="fn">f</span>(X, <span class="nm">2</span>) <span class="kw">:-</span> X &lt; <span class="nm">6</span>, !.      <span class="cm">% παραλείπει την κάτω συνθήκη 3 =< X</span>
+<span class="fn">f</span>(X, <span class="nm">4</span>).                       <span class="cm">% χωρίς συνθήκη!</span></code></code></div>
+
+  <p>Εδώ τα <code>!</code> είναι <strong>απαραίτητα για την ορθότητα</strong>. Αν τα αφαιρέσουμε, το πρόγραμμα δίνει λάθος αποτελέσματα: π.χ. το <code>f(1, 2)</code> θα γίνει αληθές γιατί <code>1 &lt; 6</code>!</p>
+
+  <table class="op-table">
+    <thead>
+      <tr><th>Είδος Cut</th><th>Επίδραση στη Δηλωτική Σημασία</th><th>Ασφάλεια</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color:var(--green)">Πράσινο (Green)</strong></td>
+        <td>Δεν αλλάζει — μόνο επιτάχυνση</td>
+        <td>Ακίνδυνο, μπορεί να αφαιρεθεί</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--red)">Κόκκινο (Red)</strong></td>
+        <td>Αλλάζει — το πρόγραμμα δουλεύει μόνο με αυτό</td>
+        <td>Επικίνδυνο, χρειάζεται προσοχή</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Επίσημη Συμπεριφορά του Cut</h3>
+  <p>Για τον κανόνα:</p>
+  <div class="cb"><code>C <span class="kw">:-</span> P, Q, R, !, S, T, U.
+C <span class="kw">:-</span> V.
+A <span class="kw">:-</span> B, C, D.
+?- A.</code></div>
+
+  <p>Όταν εκτελείται ο C και περάσει το <code>!</code>:</p>
+  <ul>
+    <li>Αγνοούνται τυχόν εναλλακτικοί τρόποι για τα <code>P, Q, R</code>.</li>
+    <li>Αγνοείται η δεύτερη πρόταση <code>C :- V</code>.</li>
+    <li>Backtracking <em>επιτρέπεται μόνο μεταξύ των S, T, U</em>.</li>
+    <li>Σε επόμενες αποτυχίες, backtracking μπορεί να γίνει στο <code>B</code> (επιστρέφοντας έξω από το C).</li>
+  </ul>
+
+  <h3>Κλασικά Παραδείγματα Χρήσης</h3>
+
+  <details open>
+    <summary>Παράδειγμα 1: Maximum δύο αριθμών</summary>
+    <div class="cb"><code><span class="cm">% Χωρίς cut: σαφές, δηλωτικό, αλλά κάνει περιττό έλεγχο</span>
+<span class="fn">max</span>(X, Y, X) <span class="kw">:-</span> X &gt;= Y.
+<span class="fn">max</span>(X, Y, Y) <span class="kw">:-</span> X &lt; Y.
+
+<span class="cm">% Με cut (πράσινο, καλύτερο)</span>
+<span class="fn">max</span>(X, Y, X) <span class="kw">:-</span> X &gt;= Y, !.
+<span class="fn">max</span>(_, Y, Y).</code></div>
+  </details>
+
+  <details>
+    <summary>Παράδειγμα 2: Member ντετερμινιστικός (μόνο 1η εμφάνιση)</summary>
+    <div class="cb"><code><span class="fn">member</span>(X, [X | _]) <span class="kw">:-</span> !.
+<span class="fn">member</span>(X, [_ | L]) <span class="kw">:-</span> <span class="fn">member</span>(X, L).
+
+?- <span class="fn">member</span>(f(Z), [g(a), f(b), g(c), f(d)]).
+   Z = b      <span class="cm">% χωρίς cut θα έδινε και το Z=d με backtracking</span>
+   yes</code></div>
+  </details>
+
+  <details>
+    <summary>Παράδειγμα 3: Προσθήκη χωρίς διπλοτυπία</summary>
+    <div class="cb"><code><span class="fn">add</span>(X, L, L) <span class="kw">:-</span> <span class="fn">member</span>(X, L), !.
+<span class="fn">add</span>(X, L, [X | L]).
+
+?- <span class="fn">add</span>(a, [b, c], L).      L = [a, b, c]    <span class="cm">% δεν υπήρχε — προστέθηκε</span>
+?- <span class="fn">add</span>(b, [a, b, c], L).   L = [a, b, c]    <span class="cm">% υπήρχε — αμετάβλητη</span></code></div>
+  </details>
+
+  <details>
+    <summary>Παράδειγμα 4: Class — κλασικό σφάλμα με cut</summary>
+    <div class="cb"><code><span class="fn">beat</span>(tom, jim). <span class="fn">beat</span>(ann, tom). <span class="fn">beat</span>(pat, jim).
+
+<span class="cm">% Κατάταξη παικτών</span>
+<span class="fn">class</span>(X, fighter)   <span class="kw">:-</span> <span class="fn">beat</span>(X, _), <span class="fn">beat</span>(_, X), !.
+<span class="fn">class</span>(X, winner)    <span class="kw">:-</span> <span class="fn">beat</span>(X, _), !.
+<span class="fn">class</span>(X, sportsman) <span class="kw">:-</span> <span class="fn">beat</span>(_, X).
+
+?- <span class="fn">class</span>(tom, C).      C = fighter, yes
+?- <span class="fn">class</span>(jim, C).      C = sportsman, yes
+?- <span class="fn">class</span>(tom, sportsman).   yes  <span class="cm">!!! Λάθος !!!</span></code></div>
+    <p>Το τελευταίο είναι θεωρητικά λάθος: ο tom είναι fighter, όχι sportsman. <strong>Συμβαίνει</strong> γιατί η Prolog με το ορισμένο όρισμα <code>sportsman</code> πηγαίνει κατευθείαν στην 3η πρόταση, παρακάμπτοντας τα προηγούμενα cuts. Συμπέρασμα: τα προγράμματα με cut συχνά «προϋποθέτουν» συγκεκριμένο τρόπο κλήσης (π.χ. <code>class(&lt;Atom&gt;, &lt;Variable&gt;)</code>).</p>
+  </details>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="cut"></div>
+</section>
+
+<!-- ======================= SECTION 9: NEGATION ======================= -->
+<section id="negation">
+  <div class="sh">
+    <div class="sh-icon" style="background:var(--rdim)">🚫</div>
+    <h2>10. Άρνηση ως Αποτυχία</h2>
+  </div>
+
+  <p>Η Prolog δεν διαθέτει «πραγματική» λογική άρνηση. Αντί αυτής, έχει την <strong>άρνηση ως αποτυχία (Negation as Failure, NAF)</strong>: αν ο στόχος <code>G</code> δεν μπορεί να αποδειχθεί, τότε <code>not G</code> πετυχαίνει.</p>
+
+  <h3>Ορισμός του <code>not</code> μέσω cut + fail</h3>
+  <div class="cb"><code><span class="fn">not</span>(Goal) <span class="kw">:-</span>
+    <span class="fn">call</span>(Goal), !, <span class="fn">fail</span>.
+<span class="fn">not</span>(_).</code></div>
+
+  <p>Διαβάζεται: «Δοκίμασε να αποδείξεις τον Goal. Αν τα καταφέρεις, σταμάτησε (<code>!</code>) και αποτύχησε (<code>fail</code>). Αν δεν τα καταφέρεις, η 2η πρόταση πετυχαίνει πάντα.»</p>
+
+  <p>Συντακτικά, μπορούμε να γράψουμε <code>\+ Goal</code> ή <code>not Goal</code> (αν είναι ορισμένος ως prefix τελεστής).</p>
+
+  <h3>Παραδείγματα Εφαρμογής</h3>
+
+  <details open>
+    <summary>«Διαφορά»</summary>
+    <div class="cb"><code><span class="cm">% Έκδοση χωρίς not</span>
+<span class="fn">different</span>(X, X) <span class="kw">:-</span> !, <span class="fn">fail</span>.
+<span class="fn">different</span>(_, _).
+
+<span class="cm">% Έκδοση με not — πιο διαβαστή</span>
+<span class="fn">different</span>(X, Y) <span class="kw">:-</span> <span class="fn">not</span> (X = Y).</code></div>
+  </details>
+
+  <details>
+    <summary>«Αρέσει η Μαίρη — αλλά όχι τα φίδια»</summary>
+    <div class="cb"><code><span class="cm">% Πρώτη έκδοση: με !, fail</span>
+<span class="fn">likes</span>(mary, X) <span class="kw">:-</span> <span class="fn">snake</span>(X), !, <span class="fn">fail</span>.
+<span class="fn">likes</span>(mary, X) <span class="kw">:-</span> <span class="fn">animal</span>(X).
+
+<span class="cm">% Πιο κομψά, με not</span>
+<span class="fn">likes</span>(mary, X) <span class="kw">:-</span>
+    <span class="fn">animal</span>(X),
+    <span class="fn">not</span> <span class="fn">snake</span>(X).</code></div>
+  </details>
+
+  <h3>Παραδοχή Κλειστού Κόσμου (Closed World Assumption — CWA)</h3>
+  <div class="wbox" style="border-color:var(--cyan)">
+    <div class="lbl" style="color:var(--cyan)">🌍 Τι σημαίνει «Κλειστός Κόσμος»</div>
+    <p>Η NAF στηρίζεται στην <strong>παραδοχή ότι όσα δεν αποδεικνύονται από το πρόγραμμα είναι ψευδή</strong>. Αυτό λέγεται <em>Closed World Assumption</em>. Σε αντίθεση με την <em>Open World Assumption</em> του Σημαντικού Ιστού (που θα δούμε στο Κεφάλαιο 6), όπου το «δεν αποδείχθηκε» δεν συνεπάγεται «ψευδές».</p>
+    <p>Πρακτικά: αν δεν δηλώνεις ότι η <code>liz</code> είναι γονέας της <code>pat</code>, η Prolog θα απαντήσει <code>no</code> στο <code>?- parent(liz, pat).</code> — όχι «δεν ξέρω».</p>
+  </div>
+
+  <h3>Παγίδες του NAF</h3>
+
+  <div class="pitfall">
+    <div class="pt-title">⚠️ Παράδειγμα: Διαφορετική σειρά στόχων → διαφορετικό αποτέλεσμα</div>
+    <div class="cb"><code><span class="fn">good_standard</span>(jeanluis).
+<span class="fn">expensive</span>(jeanluis).
+<span class="fn">good_standard</span>(francesco).
+<span class="fn">reasonable</span>(Restaurant) <span class="kw">:-</span> <span class="fn">not</span> <span class="fn">expensive</span>(Restaurant).
+
+?- <span class="fn">good_standard</span>(X), <span class="fn">reasonable</span>(X).
+   X = francesco, yes
+
+?- <span class="fn">reasonable</span>(X), <span class="fn">good_standard</span>(X).
+   no    <span class="cm">!!! Αναπάντεχα !!!</span></code></div>
+    <p>Στο δεύτερο ερώτημα, το <code>reasonable(X)</code> καλείται με ελεύθερη X. Η Prolog ψάχνει «κάποιο X που δεν είναι expensive». Επειδή το X είναι ελεύθερο και υπάρχει <code>expensive(jeanluis)</code>, το πρόγραμμα αποτυγχάνει — αντί να επιστρέψει «αλλά υπάρχουν άλλα X που δεν είναι expensive»!</p>
+    <p><strong>Συμπέρασμα:</strong> Το <code>not</code> δεν συμπεριφέρεται «λογικά» όταν εφαρμόζεται σε στόχους με ελεύθερες μεταβλητές. Είναι ασφαλέστερο να καλούμε <code>not</code> σε <em>πλήρως αποτιμημένους</em> στόχους.</p>
+  </div>
+
+  <div class="wbox" style="border-color:var(--blue)">
+    <div class="lbl" style="color:var(--blue)">💡 Συμπεράσματα Κεφαλαίου</div>
+    <ul>
+      <li><strong>Λίστες</strong>: <code>[H|T]</code> + αναδρομή = όλα τα κλασικά κατηγορήματα (member, append, del, …).</li>
+      <li><strong>Accumulators</strong>: Tail recursion, O(N) αντί O(N²).</li>
+      <li><strong>Τελεστές</strong>: Συντακτική ζάχαρη — δεν υπολογίζουν.</li>
+      <li><strong>Αριθμητική</strong>: Το <code>is</code> για υπολογισμό, το <code>=:=</code> για αριθμητική σύγκριση.</li>
+      <li><strong>Cut (<code>!</code>)</strong>: Ελέγχει το backtracking. Πράσινα = επιτάχυνση. Κόκκινα = αλλαγή σημασίας.</li>
+      <li><strong>Άρνηση ως Αποτυχία</strong>: Όχι λογική άρνηση — προσοχή με ελεύθερες μεταβλητές.</li>
+    </ul>
+  </div>
+
+  <div class="exer">
+    <p><span class="exer-num">Άσκηση 2.5</span> Ορίστε:</p>
+    <ol>
+      <li>Σε Prolog την ερώτηση: «Ποια στοιχεία της λίστας <code>Candidates</code> δεν ανήκουν στη λίστα <code>RuledOut</code>;» — μέσω backtracking.</li>
+      <li><code>difference(Set1, Set2, SetDifference)</code>: <code>?- difference([a,b,c,d], [b,d,e,f], D).</code> → <code>D = [a,c]</code>.</li>
+      <li><code>class(Number, Class)</code> με χρήση <code>!</code>: positive αν N&gt;0, zero αν N=0, negative αν N&lt;0.</li>
+      <li><code>split(Numbers, Positives, Negatives)</code>: δύο εκδόσεις (με και χωρίς <code>!</code>).</li>
+    </ol>
+  </div>
+
+  <div class="section-quiz" data-topic="lists_and_cut" data-section="negation"></div>
+</section>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Κεφάλαιο 2 · Master Edition</div>
+</body>
+</html>
