@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Θέμα 3 · Herbrand &amp; SLD</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--gdim) 55%,#0d1117 100%)}
+.hero::after{content:'M_P = lfp(T_P)';position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.9rem,2.5vw,1.8rem);color:rgba(63,185,80,.07);pointer-events:none;font-weight:700}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Θέμα 3 · 20 μονάδες · <strong>Η ΑΓΚΥΡΑ ΣΟΥ</strong></div>
+  <h1>Herbrand &amp; <em>SLD</em></h1>
+  <p>Το πιο μηχανικό θέμα της εξέτασης. Μάθε <strong>μία συνταγή</strong> και τρία «πάντα-ισχύουν» γεγονότα, και παίρνεις σχεδόν όλο το θέμα — κάθε χρονιά.</p>
+  <div class="chips">
+    <span class="chip">Σύμπαν U_L</span><span class="chip">Βάση B_L</span><span class="chip">Μοντέλο</span>
+    <span class="chip">M_P</span><span class="chip">T_P</span><span class="chip">SLD-απόρριψη</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#intro">Διαίσθηση &amp; Θεωρία</a>
+  <a href="#what">Τι ρωτάει</a>
+  <a href="#recipe">Η Συνταγή</a>
+  <a href="#facts">3 «Πάντα» Γεγονότα</a>
+  <a href="#tp">T_P βήμα-βήμα</a>
+  <a href="#solved">Λυμένα Παλιά Θέματα</a>
+  <a href="#mini">Mini-φόρμα</a>
+</nav>
+
+<div class="wrap">
+
+<section id="intro">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">💡</div><h2>Διαίσθηση &amp; Θεωρία (Για Αρχάριους)</h2></div>
+  <p class="lead">Πριν μπούμε στις συνταγές, ας καταλάβουμε τι σημαίνουν αυτές οι λέξεις στην πραγματικότητα. Η θεωρία Herbrand απαντά σε μια απλή ερώτηση: <strong>«Πώς ξέρουμε τι είναι αλήθεια σε ένα πρόγραμμα Prolog;»</strong></p>
+  
+  <div class="compare-grid">
+    <div class="compare-cell good" style="border-color:var(--cyan);background:linear-gradient(180deg,rgba(57,212,200,.04),transparent)">
+      <h4 style="color:var(--cyan);margin-top:0">1. Τα Δομικά Υλικά (Σύμπαν &amp; Βάση)</h4>
+      <p style="font-size:0.92rem;line-height:1.6">
+        Φαντάσου ότι φτιάχνουμε έναν κόσμο με Lego. 
+        <br>• Το <strong>Σύμπαν Herbrand (U<sub>L</sub>)</strong> είναι όλα τα <em>τουβλάκια</em> (σταθερές και συναρτήσεις) που έχουμε στο κουτί μας (π.χ. <code>0</code>, <code>s(0)</code>). Δεν έχουν καμία λογική ακόμα, είναι απλώς «πράγματα».
+        <br>• Η <strong>Βάση Herbrand (B<sub>L</sub>)</strong> είναι όλες οι <em>πιθανές κατασκευές</em> που μπορούμε να κάνουμε αν βάλουμε τα τουβλάκια μέσα στα κατηγορήματά μας (π.χ. <code>p(0)</code>, <code>p(s(0))</code>). Περιλαμβάνει τα πάντα, ακόμα και ανόητα ή ψεύτικα πράγματα.
+      </p>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--purple);background:linear-gradient(180deg,rgba(188,140,255,.04),transparent)">
+      <h4 style="color:var(--purple);margin-top:0">2. Η Αλήθεια &amp; Η Απόδειξη (Μοντέλα &amp; SLD)</h4>
+      <p style="font-size:0.92rem;line-height:1.6">
+        Πώς αποφασίζουμε τι ισχύει;
+        <br>• Ένα <strong>Μοντέλο</strong> είναι μια επιλογή από προτάσεις της Βάσης που <em>δεν σπάει κανέναν κανόνα</em> του προγράμματος. Αν υποθέσουμε ότι όλα είναι αλήθεια (ολόκληρη η Βάση B<sub>L</sub>), κανένας κανόνας δεν σπάει — γι' αυτό η B<sub>L</sub> είναι πάντα μοντέλο!
+        <br>• Το <strong>Ελάχιστο Μοντέλο (M<sub>P</sub>)</strong> είναι ο «πραγματικός» κόσμος της Prolog: περιέχει <em>μόνο</em> ό,τι μπορεί να αποδειχθεί.
+        <br>• Η <strong>SLD-Απόρριψη</strong> είναι απλώς η τυπική απόδειξη. Ένα ερώτημα πετυχαίνει αν και μόνο αν απαντάται με στοιχεία που ανήκουν στο M<sub>P</sub>.
+      </p>
+    </div>
+  </div>
+
+  <div class="def"><div class="hd">⚡ Μικρό λεξιλόγιο (όροι που θα δεις παντού)</div>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>Ground (πλήρως αποτιμημένο):</strong> όρος ή άτομο <em>χωρίς μεταβλητές</em>. Π.χ. το <code>s(s(0))</code> είναι ground· το <code>s(X)</code> όχι. Το U<sub>L</sub> και η B<sub>L</sub> περιέχουν <em>μόνο</em> ground πράγματα.</li>
+      <li><strong>Όρος vs Άτομο:</strong> ο <em>όρος</em> είναι «πράγμα/αντικείμενο» (π.χ. <code>0, s(0), f(a)</code>) — δεν αληθεύει/ψεύδεται. Το <em>άτομο</em> είναι ισχυρισμός (κατηγόρημα με ορίσματα, π.χ. <code>p(0)</code>) που αληθεύει ή ψεύδεται. → Το <strong>U<sub>L</sub> έχει όρους</strong>, η <strong>B<sub>L</sub> έχει άτομα</strong>.</li>
+      <li><strong>Οριστικό πρόγραμμα / πρόταση Horn:</strong> κανόνες με <em>ακριβώς μία κεφαλή</em> (μορφή <code>A ← B₁,…,Bₙ</code>). Όλα τα προγράμματα στις εξετάσεις είναι τέτοια — γι' αυτό δουλεύουν τα «πάντα-ισχύουν» παρακάτω.</li>
+      <li><strong>Λογική συνέπεια:</strong> άτομο που αληθεύει <em>αναγκαστικά</em> σε κάθε μοντέλο του P. Ταυτίζεται με το «ανήκει στο M<sub>P</sub>».</li>
+    </ul>
+  </div>
+</section>
+
+<section id="what">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">📌</div><h2>Τι ρωτάει (πάντα τα ίδια 4–5 υπο-ερωτήματα)</h2></div>
+  <p>Σου δίνουν ένα μικρό λογικό πρόγραμμα (3–5 προτάσεις) και ρωτούν, σχεδόν πάντα με αυτή τη σειρά:</p>
+  <table class="summary-tbl">
+    <thead><tr><th>Υπο-ερώτημα</th><th>Τι θες</th><th>Δυσκολία</th></tr></thead>
+    <tbody>
+      <tr><td>(α) Σύμπαν &amp; βάση Herbrand</td><td>Γράψε U<sub>L</sub> και B<sub>L</sub></td><td>🟢 εύκολο</td></tr>
+      <tr><td>(α) Είναι η βάση B<sub>L</sub> μοντέλο;</td><td><strong>Πάντα ΝΑΙ</strong> (+ αιτιολόγηση)</td><td>🟢 τζάμπα μονάδες</td></tr>
+      <tr><td>(β) Ελάχιστο μοντέλο M<sub>P</sub></td><td>Εφάρμοσε T<sub>P</sub> από το ∅</td><td>🟡 μηχανικό</td></tr>
+      <tr><td>(γ) Μπορεί το άτομο A να ανήκει σε μοντέλο; / τομή</td><td><strong>Πάντα ΝΑΙ</strong> + τομή = M<sub>P∪{A}</sub></td><td>🟡 μηχανικό</td></tr>
+      <tr><td>(δ/ε) Υπάρχει SLD-απόρριψη για στόχο;</td><td>Έλεγξε αν <em>κάθε</em> άτομο ∈ M<sub>P</sub></td><td>🟢 εύκολο</td></tr>
+    </tbody>
+  </table>
+  <div class="mnemo">
+    <div class="hd">🧠 Το μυστικό της Γενίκευσης (Πώς να λύσεις άγνωστα θέματα)</div>
+    <p>Σχεδόν όλα τα προγράμματα στις εξετάσεις κάνουν <strong>μετρήματα ή αριθμητική</strong> κωδικοποιημένη σε σύμβολα (π.χ. <code>s(s(...0))</code>) ή «αφαιρούν/προσθέτουν» <code>f(...)</code>. Για να βρεις το Ελάχιστο Μοντέλο M<sub>P</sub> διαισθητικά σε οποιοδήποτε νέο πρόγραμμα, ακολούθησε αυτό το Mental Model:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>Βρες τον "Σπόρο" (το γεγονός):</strong> Ψάξε την πρόταση που δεν έχει <code>:-</code> (π.χ. <code>p(0, 0)</code>). Αυτό είναι το αρχικό σου σημείο, η βάση της αλήθειας.</li>
+      <li><strong>Διάβασε τον "Κανόνα" σαν εργοστάσιο μετασχηματισμού:</strong> Δες πώς αλλάζουν τα ορίσματα από δεξιά προς τα αριστερά. Π.χ. αν λέει <code>p(s(X), s(Y)) :- p(X, Y).</code> διάβασέ το δυνατά: <em>«Αν βάλω κάτι έγκυρο στο p, το εργοστάσιο θα κολλήσει ένα 's' και στα δύο ορίσματα»</em>.</li>
+      <li><strong>Τρέξε το εργοστάσιο στο μυαλό σου:</strong> 1η φορά: το <code>p(0,0)</code> γίνεται <code>p(s(0), s(0))</code>. 2η φορά: αυτό γίνεται <code>p(s(s(0)), s(s(0)))</code>.</li>
+      <li><strong>Κάνε το Pattern Recognition:</strong> Τι κοινό έχουν όλα τα παραπάνω; Και τα δύο ορίσματα έχουν <em>ακριβώς τον ίδιο</em> αριθμό από 's'. Άρα το πρόγραμμα εκφράζει την ισότητα (X=Y)! Το M<sub>P</sub> είναι "όλα τα <code>p(X,X)</code>".</li>
+    </ul>
+    <p style="margin-top:8px">Μόλις καταλάβεις τι «σημαίνει» το πρόγραμμα (πρόσθεση, ισότητα, αφαίρεση κλπ), το ερώτημα της SLD-απόρριψης γίνεται παιχνιδάκι: απλώς ελέγχεις αν η μαθηματική πράξη ισχύει για το ερώτημα που σου δίνουν!</p>
+  </div>
+</section>
+
+<!-- ============ RECIPE ============ -->
+<section id="recipe">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">📖</div><h2>Η Συνταγή — βήμα-βήμα</h2></div>
+
+  <h3>Βήμα 1 · Σύμπαν Herbrand U<sub>L</sub></h3>
+  <div class="def"><div class="hd">⚡ Ορισμός</div>
+    <p><strong>U<sub>L</sub> = όλοι οι ground (χωρίς μεταβλητές) όροι</strong> που φτιάχνονται από τις <em>σταθερές</em> και τα <em>συναρτησιακά σύμβολα</em> του προγράμματος.</p>
+    <p style="font-size:0.88rem;color:var(--muted)">Αν δεν υπάρχει σταθερά, βάλε μία αυθαίρετη (π.χ. <code>a</code>). Τα <strong>κατηγορήματα ΔΕΝ μπαίνουν</strong> στο U<sub>L</sub>.</p>
+  </div>
+  <ul>
+    <li>Σταθερά <code>0</code> + σύμβολο <code>s/1</code> ⟹ U<sub>L</sub> = { 0, s(0), s(s(0)), … } &nbsp;<span class="pill">άπειρο</span></li>
+    <li>Σταθερές <code>a,b,c</code> και κανένα f/n (n&gt;0) ⟹ U<sub>L</sub> = { a, b, c } &nbsp;<span class="pill">πεπερασμένο</span></li>
+  </ul>
+
+  <h3>Βήμα 2 · Βάση Herbrand B<sub>L</sub></h3>
+  <div class="def"><div class="hd">⚡ Ορισμός</div>
+    <p><strong>B<sub>L</sub> = όλα τα ground άτομα</strong>: κάθε κατηγόρημα του προγράμματος εφαρμοσμένο σε όρους από το U<sub>L</sub>.</p>
+  </div>
+
+  <h3>Βήμα 3 · Ελάχιστο μοντέλο M<sub>P</sub> με τον τελεστή T<sub>P</sub></h3>
+  <div class="def"><div class="hd">⚡ Ο τελεστής T<sub>P</sub></div>
+    <p>T<sub>P</sub>(I) = όλα τα άτομα A που παράγονται σε <strong>ένα βήμα</strong>: υπάρχει ground στιγμιότυπο πρότασης <code>A ← B₁,…,Bₙ</code> με όλα τα B<sub>i</sub> ήδη μέσα στο I. (Τα γεγονότα μπαίνουν αμέσως, αφού δεν έχουν σώμα.)</p>
+  </div>
+  <ol class="steps">
+    <li>Ξεκίνα από <strong>I₀ = ∅</strong>.</li>
+    <li>I₁ = T<sub>P</sub>(∅) = όλα τα <strong>γεγονότα</strong> (ground).</li>
+    <li>Ξανα-εφάρμοσε: πρόσθεσε κεφαλές κανόνων των οποίων το σώμα ικανοποιείται από το τρέχον σύνολο.</li>
+    <li>Σταμάτα όταν <strong>δεν προστίθεται τίποτα νέο</strong> → αυτό είναι το <strong>M<sub>P</sub></strong>.</li>
+  </ol>
+  <div class="theorem"><div class="th-label">🎓 Γιατί δουλεύει</div>
+    <div class="math">M<sub>P</sub> = lfp(T<sub>P</sub>) = ⋃<sub>n≥0</sub> T<sub>P</sub><sup>n</sup>(∅)</div>
+    <p>Το ελάχιστο μοντέλο = τα ground άτομα που είναι <em>λογικές συνέπειες</em> του P. Ό,τι δεν αποδεικνύεται είναι ψευδές (closed-world).</p>
+  </div>
+
+  <h3>Βήμα 4 · «Μπορεί το A να ανήκει σε μοντέλο;» + τομή</h3>
+  <div class="tip-box"><div class="hd">💡 Έτοιμη απάντηση</div>
+    <p><strong>ΝΑΙ, πάντα</strong> — γιατί η βάση B<sub>L</sub> είναι μοντέλο και περιέχει <em>κάθε</em> ground άτομο.</p>
+    <p>Η <strong>τομή όλων των μοντέλων που περιέχουν το A</strong> = το ελάχιστο μοντέλο του προγράμματος <em>αν προσθέσεις το A σαν γεγονός</em>:</p>
+    <div class="math">⋂ {μοντέλα ∋ A} = M<sub>P ∪ {A ←}</sub></div>
+    <p>Δηλαδή: τρέξε ξανά T<sub>P</sub> ξεκινώντας με το M<sub>P</sub> <strong>+ το A</strong>, και πρόσθεσε ό,τι νέο παράγει το A μέσω των κανόνων.</p>
+  </div>
+
+  <div class="mnemo"><div class="hd">🧠 Γιατί η τομή = M<sub>P∪{A}</sub> (η διαίσθηση + συνταγή)</div>
+    <p>Σκέψου το ανάποδα: «ένα μοντέλο που <em>περιέχει</em> το A» είναι ακριβώς το ίδιο με «ένα μοντέλο του προγράμματος <em>αν το A ήταν γεγονός</em>». Άρα η <strong>τομή όλων</strong> αυτών των μοντέλων είναι το <strong>μικρότερο</strong> τέτοιο μοντέλο — δηλαδή το ελάχιστο μοντέλο M<sub>P</sub> του προγράμματος P <em>συν</em> το γεγονός A.</p>
+    <p><strong>Συνταγή (γενικεύσιμη):</strong></p>
+    <ol style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li>Ξεκίνα με το ήδη γνωστό M<sub>P</sub>.</li>
+      <li>Πρόσθεσε το A.</li>
+      <li>Όσο το A (ή κάποιο νέο άτομο) <strong>ταιριάζει στο σώμα</strong> ενός κανόνα, πρόσθεσε και την <strong>κεφαλή</strong> (το «σώμα μέσα ⇒ κεφαλή μέσα» ξανά!).</li>
+      <li>Σταμάτα όταν δεν προστίθεται τίποτα. Αυτό είναι η τομή.</li>
+    </ol>
+    <p>Μνημονικό: <em>«Βάλε το A μέσα → ξανα-άναψε το εργοστάσιο T<sub>P</sub>.»</em></p>
+  </div>
+
+  <h3>Βήμα 5 · «Υπάρχει SLD-απόρριψη για τον στόχο;»</h3>
+  <div class="theorem"><div class="th-label">🎓 Ορθότητα + Πληρότητα SLD (για οριστικά προγράμματα)</div>
+    <p>Για ground στόχο <code>?- A₁, A₂, …, Aₖ</code>:</p>
+    <div class="math">υπάρχει SLD-απόρριψη &nbsp;⟺&nbsp; <strong>κάθε</strong> A<sub>i</sub> ∈ M<sub>P</sub></div>
+    <p>Άρα: τσέκαρε ένα-ένα τα άτομα του στόχου. <strong>Αν έστω ένα δεν είναι στο M<sub>P</sub> → ΔΕΝ υπάρχει απόρριψη.</strong> Αυτό είναι όλο το ερώτημα.</p>
+  </div>
+  <div class="note"><div class="hd">📝 Γιατί λέγεται «απόρριψη» (refutation) — η διαίσθηση</div>
+    <p>Η Prolog δεν αποδεικνύει ευθέως «ισχύει ο στόχος». Κάνει <strong>απόδειξη εις άτοπον</strong>: υποθέτει ότι ο στόχος είναι <em>ψευδής</em> (τον βάζει ως αρνημένη υπόθεση) και ψάχνει να φτάσει σε αντίφαση — την <strong>κενή πρόταση □</strong>. Αν τα καταφέρει, η υπόθεση «ψευδής» <em>απορρίπτεται</em> (refutation) → άρα ο στόχος ισχύει.</p>
+    <p>Και γιατί αρκεί ο απλός έλεγχος «∈ M<sub>P</sub>;»: το M<sub>P</sub> είναι <em>ακριβώς</em> το σύνολο των ατόμων που αποδεικνύονται (ορθότητα = ό,τι αποδεικνύεται είναι αληθές· πληρότητα = ό,τι είναι αληθές αποδεικνύεται). Άρα «έχει SLD-απόρριψη» ⟺ «ανήκει στο M<sub>P</sub>». Δεν χρειάζεσαι δέντρο — μόνο τον έλεγχο ανήκειν.</p>
+  </div>
+
+  <div class="warn"><div class="hd">⚠️ Προσοχή στη διατύπωση</div>
+    <p>Σου ζητούν να αιτιολογήσεις <em>«χωρίς να κατασκευάσεις την SLD-απόρριψη»</em>. Δηλαδή <strong>μη φτιάξεις δέντρο</strong> — απλώς πες «το άτομο X δεν είναι λογική συνέπεια (X ∉ M<sub>P</sub>), άρα από την ορθότητα της SLD δεν υπάρχει απόρριψη».</p>
+  </div>
+</section>
+
+<!-- ============ THREE FACTS ============ -->
+<section id="facts">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">🎁</div><h2>Τα 3 «Πάντα-Ισχύουν» που χαρίζουν μονάδες</h2></div>
+
+  <div class="mnemo"><div class="hd">🧠 ΤΟ ΚΛΕΙΔΙ όλου του θέματος: «Σώμα μέσα ⇒ Κεφαλή μέσα»</div>
+    <p>Όλη η θεωρία μοντέλων κρύβεται σε <strong>μία</strong> πρόταση. Ένα σύνολο <strong>I</strong> (υποσύνολο της B<sub>L</sub>) είναι <strong>μοντέλο</strong> όταν για <em>κάθε</em> κανόνα <code>Κεφαλή ← Σώμα</code> ισχύει:</p>
+    <div class="math">όποτε όλο το <span class="op">Σώμα</span> είναι μέσα στο I &nbsp;⟹&nbsp; και η <span class="op">Κεφαλή</span> είναι μέσα στο I</div>
+    <p>(και φυσικά κάθε γεγονός είναι μέσα στο I — το γεγονός είναι κανόνας με κενό σώμα). Αυτή η μία ιδέα απαντά <strong>και τα 3</strong> είδη ερωτήσεων του θέματος:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>«Είναι μοντέλο η B<sub>L</sub>;»</strong> → Ναι: στη B<sub>L</sub> τα πάντα είναι μέσα, άρα και η κεφαλή είναι πάντα μέσα. Ποτέ δεν «σπάει» κανόνας. ✔</li>
+      <li><strong>«Ποιο από τα M1…M7 είναι μοντέλο;»</strong> → Πέρνα κάθε κανόνα: αν βρεις έστω μία περίπτωση «σώμα μέσα, κεφαλή έξω» → <em>ΔΕΝ</em> είναι μοντέλο.</li>
+      <li><strong>«Ελάχιστο μοντέλο M<sub>P</sub>;»</strong> → Το <em>μικρότερο</em> σύνολο που είναι κλειστό μ' αυτόν τον κανόνα = ό,τι παράγει το T<sub>P</sub> ξεκινώντας από το ∅.</li>
+    </ul>
+    <p style="margin-top:6px">Δηλαδή: «μοντέλο» = <strong>κλειστό σύνολο ως προς τους κανόνες</strong>. Κράτα στο μυαλό σου μόνο το <em>«σώμα μέσα ⇒ κεφαλή μέσα»</em> και τα λύνεις όλα.</p>
+  </div>
+
+  <div class="theorem"><div class="th-label">🎓 Γεγονός 1 — Η βάση B_L είναι ΠΑΝΤΑ μοντέλο</div>
+    <p>Σε κάθε <strong>οριστικό</strong> πρόγραμμα (μόνο προτάσεις Horn με κεφαλή — όπως όλα τα προγράμματα των εξετάσεων), η B<sub>L</sub> είναι μοντέλο.</p>
+    <p><strong>Αιτιολόγηση (γράψ' την έτσι):</strong> Στη B<sub>L</sub> <em>όλα</em> τα άτομα αληθεύουν. Μια οριστική πρόταση <code>A ← B₁,…,Bₙ</code> ικανοποιείται όταν η κεφαλή A αληθεύει (ή το σώμα ψεύδεται). Αφού η κεφαλή κάθε πρότασης είναι άτομο της B<sub>L</sub>, αληθεύει πάντα ⟹ κάθε πρόταση ικανοποιείται ⟹ η B<sub>L</sub> είναι μοντέλο. ∎</p>
+  </div>
+
+  <div class="theorem"><div class="th-label">🎓 Γεγονός 2 — «Μπορεί το A να ανήκει σε μοντέλο;» → ΝΑΙ</div>
+    <p>Κάθε ground άτομο ανήκει σε <em>τουλάχιστον ένα</em> μοντέλο, αφού ανήκει στην B<sub>L</sub> (που είναι μοντέλο). Το ενδιαφέρον είναι μόνο η <strong>τομή</strong> → M<sub>P ∪ {A}</sub> (Βήμα 4).</p>
+  </div>
+
+  <div class="theorem"><div class="th-label">🎓 Γεγονός 3 — SLD-απόρριψη ⟺ όλα τα άτομα στο M_P</div>
+    <p>Για ground στόχο. Δες Βήμα 5. Δεν χρειάζεται δέντρο — μόνο έλεγχος ανήκειν στο M<sub>P</sub>.</p>
+  </div>
+</section>
+
+<!-- ============ TP EXAMPLE ============ -->
+<section id="tp">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">📈</div><h2>T<sub>P</sub> βήμα-βήμα (πλήρες παράδειγμα)</h2></div>
+  <p>Πρόγραμμα P:</p>
+  <div class="cb"><code><span class="fn">p</span>(X) :- <span class="fn">q</span>(X).
+<span class="fn">q</span>(X) :- <span class="fn">r</span>(X).
+<span class="fn">p</span>(<span class="nm">a</span>).
+<span class="fn">q</span>(<span class="nm">b</span>).
+<span class="fn">r</span>(<span class="nm">c</span>).</code></div>
+  <p>U<sub>L</sub> = { a, b, c } (καμία f/n). &nbsp; B<sub>L</sub> = { p(a),p(b),p(c),q(a),q(b),q(c),r(a),r(b),r(c) }.</p>
+  <table class="tp-iter">
+    <thead><tr><th>Βήμα</th><th>Σύνολο</th><th>Νέα άτομα</th></tr></thead>
+    <tbody>
+      <tr><td class="step">T_P(∅)</td><td>{ p(a), q(b), r(c) }</td><td class="new">τα γεγονότα</td></tr>
+      <tr><td class="step">T_P²</td><td>+ { p(b), q(c) }</td><td class="new">p(b) από p(X)←q(X)&amp;q(b)· q(c) από q(X)←r(X)&amp;r(c)</td></tr>
+      <tr><td class="step">T_P³</td><td>+ { p(c) }</td><td class="new">p(c) από p(X)←q(X)&amp;q(c)</td></tr>
+      <tr><td class="step">T_P⁴</td><td>—</td><td class="new">καμία αλλαγή → σταθερό σημείο</td></tr>
+    </tbody>
+  </table>
+  <div class="math">M<sub>P</sub> = { p(a), p(b), p(c), q(b), q(c), r(c) }</div>
+  <p style="color:var(--muted)">Τα q(a), r(a), r(b) <strong>δεν</strong> αποδεικνύονται → εκτός M<sub>P</sub>.</p>
+</section>
+
+<!-- ============ SOLVED PAST EXAMS ============ -->
+<section id="solved">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">✅</div><h2>Και τα 5 Παλιά Θέματα — Λυμένα</h2></div>
+  <p class="lead">Πάτα σε κάθε «Λύση» για να την ανοίξεις. Προσπάθησε <strong>πρώτα μόνος σου</strong> με τη συνταγή, μετά τσέκαρε.</p>
+
+  <div class="exam"><div class="hd">🧭 Πώς να διαχειριστείς το Θέμα 3 (ηρέμησε — είναι μηχανικό)</div>
+    <p>Όποιο πρόγραμμα κι αν δεις, απάντα με ΑΥΤΗ τη σειρά. Είναι πάντα τα ίδια βήματα:</p>
+    <ol style="margin:6px 0; padding-left:20px; line-height:1.7">
+      <li><strong>Γράψε U<sub>L</sub> και B<sub>L</sub></strong> (τα «τουβλάκια» και τα «άτομα»). Σχεδόν τζάμπα μονάδες.</li>
+      <li><strong>«Είναι μοντέλο η B<sub>L</sub>;» → ΝΑΙ</strong> + η έτοιμη φράση (οριστικό πρόγραμμα). Κι άλλες τζάμπα μονάδες.</li>
+      <li><strong>Κατάλαβε «τι μετράει» το πρόγραμμα</strong> (πρόσθεση; ισότητα; αφαίρεση <code>f</code>;). Τότε το M<sub>P</sub> βγαίνει μόνο του — επιβεβαίωσέ το με 2-3 βήματα T<sub>P</sub>.</li>
+      <li><strong>«Ανήκει σε μοντέλο;» → ΝΑΙ</strong>· για την τομή, βάλε το άτομο μέσα και ξανα-τρέξε τους κανόνες.</li>
+      <li><strong>«SLD-απόρριψη;»</strong> τσέκαρε αν κάθε άτομο του στόχου κάνει σωστή την πράξη (∈ M<sub>P</sub>). Ένα λάθος → ΟΧΙ.</li>
+    </ol>
+    <p style="margin-top:4px">Αν θυμάσαι μόνο ένα πράγμα: <strong>«σώμα μέσα ⇒ κεφαλή μέσα»</strong>. Λύνει όλα τα υπο-ερωτήματα.</p>
+  </div>
+
+  <div class="tip-box" style="border-color:var(--cyan);background:linear-gradient(90deg,rgba(57,212,200,.07),transparent 60%)">
+    <div class="hd" style="color:var(--cyan)">💡 Αποκωδικοποίηση Όρων για Αρχάριους (Newbie Guide)</div>
+    <p>Αν βλέπεις αυτούς τους όρους πρώτη φορά, σκέψου τους απλά:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>Σύμπαν Herbrand (U<sub>L</sub>):</strong> Τα <em>«τουβλάκια Lego»</em> σου. Όλα τα πιθανά αντικείμενα (nouns/ουσιαστικά) χωρίς μεταβλητές που φτιάχνονται από τις σταθερές (π.χ. <code>0</code>, <code>a</code>) και τα συναρτησιακά σύμβολα (π.χ. <code>s/1</code>, <code>f/1</code>) του προγράμματος. <em>Προσοχή: Τα κατηγορήματα (ρήματα) ΔΕΝ μπαίνουν εδώ.</em></li>
+      <li><strong>Βάση Herbrand (B<sub>L</sub>):</strong> Όλες οι <em>«πιθανές προτάσεις»</em> (γεγονότα) που φτιάχνεις βάζοντας τα τουβλάκια (U<sub>L</sub>) μέσα στα κατηγορήματα, είτε είναι αλήθεια είτε ψέμα (π.χ. <code>p(a)</code>, <code>p(b)</code> κτλ).</li>
+      <li><strong>Μοντέλο:</strong> Ένας <em>«συνεπής κόσμος»</em> (ένα υποσύνολο της B<sub>L</sub>) όπου κανένας κανόνας του προγράμματος δεν παραβιάζεται. <em>Η βάση B<sub>L</sub> είναι πάντα μοντέλο</em> γιατί αν όλα είναι αλήθεια, κανένας κανόνας δεν παραβιάζεται!</li>
+      <li><strong>Ελάχιστο Μοντέλο (M<sub>P</sub>):</strong> Η <em>«απόλυτη αλήθεια»</em> του προγράμματος. Περιέχει μόνο τα γεγονότα που <em>μπορούμε να αποδείξουμε</em> από το πρόγραμμα. Ό,τι δεν αποδεικνύεται, θεωρείται ψευδές (closed-world).</li>
+      <li><strong>Τελεστής T<sub>P</sub>:</strong> Η <em>«μηχανή συμπερασμάτων»</em>. Ξεκινάς από το κενό (∅), παράγεις τα απλά γεγονότα (βήμα T<sub>P</sub>(∅)), μετά παράγεις όσα εξαρτώνται από αυτά (βήμα T<sub>P</sub><sup>2</sup>), κ.ο.κ. μέχρι να μην αλλάζει τίποτα (σταθερό σημείο).</li>
+      <li><strong>SLD-Απόρριψη:</strong> Μια τυπική απόδειξη. Ένας στόχος (π.χ. <code>?- A, B.</code>) πετυχαίνει αν και μόνο αν <strong>κάθε</strong> στοιχείο του ανήκει στο ελάχιστο μοντέλο M<sub>P</sub>. Αν έστω και ένα ∉ M<sub>P</sub>, η απόδειξη αποτυγχάνει.</li>
+    </ul>
+  </div>
+
+  <!-- 2021 A -->
+  <div class="solved">
+    <div class="solved-hd">📄 Α΄ Περίοδος 2021 — πρόγραμμα p/3 (πρόσθεση)</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">p</span>(<span class="nm">0</span>,X,X).
+<span class="fn">p</span>(<span class="nm">s</span>(X),Y,<span class="nm">s</span>(Z)) :- <span class="fn">p</span>(X,Y,Z).</code></div>
+      <p><strong>Τι κάνει:</strong> <code>p(X,Y,Z)</code> σημαίνει <strong>X + Y = Z</strong> σε αναπαράσταση successor (το <code>s(t)</code> = «t+1»).</p>
+
+      <details class="reveal"><summary>Λύση (α) — U_L, B_L, είναι η B_L μοντέλο;</summary>
+      <div class="reveal-body">
+        <p>Σύμβολα: σταθερά <code>0</code>, συναρτησιακό <code>s/1</code>, κατηγόρημα <code>p/3</code>.</p>
+        <div class="math">U<sub>L</sub> = { 0, s(0), s(s(0)), … } &nbsp;<span class="set">(άπειρο)</span></div>
+        <div class="math">B<sub>L</sub> = { p(t₁,t₂,t₃) | t₁,t₂,t₃ ∈ U<sub>L</sub> } &nbsp;<span class="set">(άπειρο)</span></div>
+        <p><strong>Είναι η B<sub>L</sub> μοντέλο; ΝΑΙ</strong> — οριστικό πρόγραμμα, όλα τα άτομα αληθεύουν, άρα κάθε κεφαλή αληθεύει (Γεγονός 1).</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ελάχιστο μοντέλο M_P</summary>
+      <div class="reveal-body">
+        <p>Από το γεγονός <code>p(0,X,X)</code>: για κάθε ground όρο t, μπαίνει <code>p(0,t,t)</code>. Από τον κανόνα, κάθε <code>s</code> στο 1ο όρισμα προσθέτει ένα <code>s</code> στο 3ο:</p>
+        <div class="math">M<sub>P</sub> = { <span class="fn">p</span>(s<sup>m</sup>(0), &nbsp;t, &nbsp;s<sup>m</sup>(t)) &nbsp;|&nbsp; m ≥ 0, &nbsp;t ∈ U<sub>L</sub> }</div>
+        <p>Όταν και το Y=s<sup>n</sup>(0) είναι αριθμός: <code>p(s<sup>m</sup>(0), s<sup>n</sup>(0), s<sup>m+n</sup>(0))</code> = «m + n = m+n». Δηλαδή <strong>πρόσθεση</strong>.</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — μπορεί p(0,s(0),s(s(0))) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p><code>p(0,s(0),s(s(0)))</code> = «0+1=2» → <strong>ψευδές</strong>, εκτός M<sub>P</sub>. Αλλά <strong>ΝΑΙ</strong>, ανήκει σε μοντέλο (π.χ. στη B<sub>L</sub>).</p>
+        <p>Τομή = M<sub>P ∪ {αυτό}</sub>: πρόσθεσέ το ως γεγονός και τρέξε τον κανόνα (κάθε <code>s</code> μπροστά στο 1ο &amp; 3ο όρισμα):</p>
+        <div class="math">⋂ = M<sub>P</sub> ∪ { <span class="fn">p</span>(s<sup>m</sup>(0), s(0), s<sup>m</sup>(s(s(0)))) | m ≥ 0 }</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (ε) — SLD-απόρριψη για τον στόχο;</summary>
+      <div class="reveal-body">
+        <p><code>?- p(0,0,0), p(s(s(0)),s(0),s(s(s(0)))), p(s(0),s(0),s(0)).</code></p>
+        <ul>
+          <li><code>p(0,0,0)</code>: 0+0=0 ✔ ∈ M<sub>P</sub></li>
+          <li><code>p(s²0,s0,s³0)</code>: 2+1=3 ✔ ∈ M<sub>P</sub></li>
+          <li><code>p(s0,s0,s0)</code>: 1+1=1; <strong>ψευδές</strong> ✘ ∉ M<sub>P</sub></li>
+        </ul>
+        <p><strong>ΟΧΙ</strong>, δεν υπάρχει SLD-απόρριψη: το τρίτο άτομο δεν είναι λογική συνέπεια του P, άρα (ορθότητα SLD) ο στόχος δεν αποδεικνύεται.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2022 A -->
+  <div class="solved">
+    <div class="solved-hd">📄 Α΄ Περίοδος 2022 — πρόγραμμα p/1 (αφαίρεση f)</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">a</span>)))).
+<span class="fn">p</span>(X) :- <span class="fn">p</span>(<span class="nm">f</span>(X)).
+<span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">b</span>)) :- <span class="fn">p</span>(<span class="nm">a</span>).
+<span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">b</span>)))) :- <span class="fn">p</span>(<span class="nm">c</span>).</code></div>
+      <p><strong>Τι κάνει:</strong> ο κανόνας <code>p(X) :- p(f(X))</code> «ξεφλουδίζει» ένα <code>f</code> τη φορά.</p>
+
+      <details class="reveal"><summary>Λύση (α) — U_L, B_L</summary>
+      <div class="reveal-body">
+        <p>Σταθερές <code>a, b, c</code>· συναρτησιακό <code>f/1</code>· κατηγόρημα <code>p/1</code>.</p>
+        <div class="math">U<sub>L</sub> = { a, b, c, f(a), f(b), f(c), f(f(a)), … } &nbsp;<span class="set">(άπειρο)</span></div>
+        <div class="math">B<sub>L</sub> = { p(t) | t ∈ U<sub>L</sub> } &nbsp;<span class="set">(άπειρο)</span></div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — M_P με T_P</summary>
+      <div class="reveal-body">
+        <table class="tp-iter"><thead><tr><th>Βήμα</th><th>Νέα</th></tr></thead><tbody>
+          <tr><td class="step">T_P(∅)</td><td class="new">p(f(f(f(a)))) — το γεγονός</td></tr>
+          <tr><td class="step">↓ ξεφλούδισμα</td><td class="new">p(f(f(a))), p(f(a)), p(a)</td></tr>
+          <tr><td class="step">p(a) ⟹ κανόνας 3</td><td class="new">p(f(b))</td></tr>
+          <tr><td class="step">p(f(b)) ⟹ ξεφλούδισμα</td><td class="new">p(b)</td></tr>
+          <tr><td class="step">σταθερό σημείο</td><td class="new">το p(c) δεν παράγεται ποτέ → κανόνας 4 δεν ενεργοποιείται</td></tr>
+        </tbody></table>
+        <div class="math">M<sub>P</sub> = { p(a), p(f(a)), p(f(f(a))), p(f(f(f(a)))), p(b), p(f(b)) }</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — είναι η B_L μοντέλο;</summary>
+      <div class="reveal-body"><p><strong>ΝΑΙ</strong> — οριστικό πρόγραμμα (Γεγονός 1: όλες οι κεφαλές αληθεύουν στη B<sub>L</sub>).</p></div></details>
+
+      <details class="reveal"><summary>Λύση (δ) — μπορεί p(c) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p><strong>ΝΑΙ</strong> (στη B<sub>L</sub>). Πρόσθεσε <code>p(c)</code> ως γεγονός → ενεργοποιείται ο κανόνας 4: <code>p(f(f(f(b))))</code>, μετά ξεφλούδισμα <code>p(f(f(b)))</code> (τα p(f(b)), p(b) ήδη υπάρχουν).</p>
+        <div class="math">⋂ = M<sub>P</sub> ∪ { p(c), p(f(f(f(b)))), p(f(f(b))) }</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (ε) — SLD-απόρριψη;</summary>
+      <div class="reveal-body">
+        <p><code>?- p(a), p(b), p(f(a)), p(f(b)), p(f(f(a))), p(f(f(b))).</code></p>
+        <p>p(a)✔ p(b)✔ p(f(a))✔ p(f(b))✔ p(f(f(a)))✔ &nbsp;αλλά &nbsp;<code>p(f(f(b)))</code> ∉ M<sub>P</sub> ✘.</p>
+        <p><strong>ΟΧΙ</strong> — το <code>p(f(f(b)))</code> δεν είναι λογική συνέπεια.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2022 B -->
+  <div class="solved">
+    <div class="solved-hd">📄 Β΄ Περίοδος 2022 — αντίστροφο: φτιάξε το πρόγραμμα</div>
+    <div class="solved-body">
+      <p>Ζητάει το <strong>ελάχιστο (σε χαρακτήρες) οριστικό πρόγραμμα</strong> με ελάχιστο μοντέλο:</p>
+      <div class="math">M<sub>P</sub> = { p(a), p(f²a), p(f⁴a), p(f⁶a), &nbsp; q(f a), q(f³a), q(f⁵a) }</div>
+      <p style="color:var(--muted)">(<code>f²a</code> = f(f(a)). Δηλαδή p στα <strong>ζυγά</strong>, q στα <strong>μονά</strong>, μέχρι το 6.)</p>
+
+      <details class="reveal"><summary>Λύση — η «προφανής» απάντηση χωρίς απαίτηση ελαχιστότητας</summary>
+      <div class="reveal-body">
+        <p>Απλώς όλα ως γεγονότα:</p>
+        <div class="cb"><code><span class="fn">p</span>(a). <span class="fn">p</span>(f(f(a))). <span class="fn">p</span>(f(f(f(f(a))))). <span class="fn">p</span>(f(f(f(f(f(f(a))))))).
+<span class="fn">q</span>(f(a)). <span class="fn">q</span>(f(f(f(a)))). <span class="fn">q</span>(f(f(f(f(f(a)))))).</code></div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση — το ΕΛΑΧΙΣΤΟ πρόγραμμα</summary>
+      <div class="reveal-body">
+        <p>Trick: <strong>μην</strong> κάνεις αναδρομή προς τα <em>πάνω</em> (θα παράγει άπειρα). Βάλε <em>ένα</em> γεγονός στην κορυφή (f⁶a) και κανόνες που κατεβαίνουν — τερματίζει στο <code>a</code>:</p>
+        <div class="cb"><code><span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">a</span>))))))).
+<span class="fn">q</span>(X) :- <span class="fn">p</span>(<span class="nm">f</span>(X)).
+<span class="fn">p</span>(X) :- <span class="fn">q</span>(<span class="nm">f</span>(X)).</code></div>
+        <p>Έλεγχος: p(f⁶a)→q(f⁵a)→p(f⁴a)→q(f³a)→p(f²a)→q(fa)→p(a). Σταματά (το <code>a</code> δεν είναι <code>f(_)</code>). Ακριβώς το ζητούμενο M<sub>P</sub>. ✔</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση — άπειρο μοντέλο που ΔΕΝ είναι η B_L</summary>
+      <div class="reveal-body">
+        <p>Επέκτεινε το μοτίβο «p στα ζυγά, q στα μονά» στο <strong>άπειρο</strong>:</p>
+        <div class="math">I = { p(f<sup>2k</sup>a) | k ≥ 0 } ∪ { q(f<sup>2k+1</sup>a) | k ≥ 0 }</div>
+        <p>Είναι μοντέλο (κλειστό στους κανόνες), άπειρο, και ≠ B<sub>L</sub> (λείπουν π.χ. το <code>p(f a)</code> και το <code>q(a)</code>).</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2023 A -->
+  <div class="solved">
+    <div class="solved-hd">📄 Α΄ Περίοδος 2023 — πρόγραμμα six/2 (A + B = 6)</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">six</span>(<span class="nm">0</span>, <span class="nm">s</span>(<span class="nm">s</span>(<span class="nm">s</span>(<span class="nm">s</span>(<span class="nm">s</span>(<span class="nm">s</span>(<span class="nm">0</span>))))))).
+<span class="fn">six</span>(<span class="nm">s</span>(X), Y) :- <span class="fn">six</span>(X, <span class="nm">s</span>(Y)).</code></div>
+      <p><strong>Τι κάνει:</strong> <code>six(A,B)</code> ισχύει όταν <strong>A + B = 6</strong> (μεταφέρει <code>s</code> από το 1ο στο 2ο όρισμα).</p>
+
+      <details class="reveal"><summary>Λύση (α) — U_L, B_L, είναι μοντέλο η B_L;</summary>
+      <div class="reveal-body">
+        <div class="math">U<sub>L</sub> = { 0, s(0), s²(0), … } (άπειρο) &nbsp;·&nbsp; B<sub>L</sub> = { six(t₁,t₂) } (άπειρο)</div>
+        <p><strong>Είναι η B<sub>L</sub> μοντέλο; ΝΑΙ</strong> (οριστικό πρόγραμμα — Γεγονός 1).</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ελάχιστο μοντέλο</summary>
+      <div class="reveal-body">
+        <div class="math">M<sub>P</sub> = { six(s<sup>m</sup>0, s<sup>n</sup>0) | m + n = 6 } = 7 άτομα:<br>
+        six(0,s⁶0), six(s0,s⁵0), six(s²0,s⁴0), six(s³0,s³0), six(s⁴0,s²0), six(s⁵0,s0), six(s⁶0,0)</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — μπορεί six(s²0,s³0) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p>six(s²0,s³0) = «2+3=5» ≠ 6 → εκτός M<sub>P</sub>, αλλά <strong>ΝΑΙ</strong> σε μοντέλο (B<sub>L</sub>). Πρόσθεσέ το ως γεγονός· ο κανόνας μεταφέρει <code>s</code>:</p>
+        <div class="math">⋂ = M<sub>P</sub> ∪ { six(s²0,s³0), six(s³0,s²0), six(s⁴0,s0), six(s⁵0,0) }</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (δ) — SLD-απόρριψη;</summary>
+      <div class="reveal-body">
+        <p><code>?- six(s²0,s⁴0), six(s⁵0,s0), six(s³0,0).</code></p>
+        <p>six(s²0,s⁴0): 2+4=6 ✔ · six(s⁵0,s0): 5+1=6 ✔ · <strong>six(s³0,0): 3+0=3≠6 ✘</strong>.</p>
+        <p><strong>ΟΧΙ</strong> — το τρίτο δεν ανήκει στο M<sub>P</sub>.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2023 B -->
+  <div class="solved">
+    <div class="solved-hd">📄 Β΄ Περίοδος 2023 — πρόγραμμα p/2 (ποια σύνολα είναι μοντέλα)</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">p</span>(X,<span class="nm">f</span>(Y)) :- <span class="fn">p</span>(<span class="nm">f</span>(X),Y).
+<span class="fn">p</span>(<span class="nm">f</span>(Y),X) :- <span class="fn">p</span>(X,<span class="nm">f</span>(Y)).
+<span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">a</span>),<span class="nm">b</span>).</code></div>
+
+      <details class="reveal"><summary>Λύση (α) — U_L, B_L, μοντέλο;</summary>
+      <div class="reveal-body">
+        <div class="math">U<sub>L</sub> = { a, b, f(a), f(b), f(f(a)), … } (άπειρο) · B<sub>L</sub> = { p(t₁,t₂) } (άπειρο)</div>
+        <p><strong>Η B<sub>L</sub> είναι μοντέλο; ΝΑΙ</strong> (Γεγονός 1).</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ποια από τα M1…M7 είναι μοντέλα</summary>
+      <div class="reveal-body">
+        <p><strong>Μέθοδος (το «σώμα μέσα ⇒ κεφαλή μέσα» σε δράση):</strong> για κάθε σύνολο, πέρνα τους 2 κανόνες και ρώτα: «υπάρχει άτομο που ταιριάζει στο <em>σώμα</em>, αλλά λείπει η <em>κεφαλή</em> του;». Αν ναι → <strong>ΔΕΝ</strong> είναι μοντέλο.</p>
+        <ul style="margin:6px 0; padding-left:20px; line-height:1.5">
+          <li><strong>C1:</strong> αν <code>p(f(X),Y) ∈ I</code> τότε πρέπει <code>p(X,f(Y)) ∈ I</code>.</li>
+          <li><strong>C2:</strong> αν <code>p(X,f(Y)) ∈ I</code> τότε πρέπει <code>p(f(Y),X) ∈ I</code>.</li>
+          <li>και το γεγονός <code>p(f(a),b) ∈ I</code> πρέπει να υπάρχει πάντα.</li>
+        </ul>
+        <table class="summary-tbl"><thead><tr><th>Σύνολο</th><th>Μοντέλο;</th><th>Γιατί</th></tr></thead><tbody>
+          <tr><td>M1 = {p(f(a),b)}</td><td>✘ ΟΧΙ</td><td>C1: λείπει p(a,f(b))</td></tr>
+          <tr><td>M2</td><td>✘ ΟΧΙ</td><td>C2: λείπει p(f(b),a)</td></tr>
+          <tr><td>M3 (4 άτομα)</td><td>✔ ΝΑΙ</td><td>κλειστό — είναι το M<sub>P</sub></td></tr>
+          <tr><td>M4 = M3 ∪ {p(a,a)}</td><td>✔ ΝΑΙ</td><td>το p(a,a) δεν ενεργοποιεί κανόνα</td></tr>
+          <tr><td>M5 = M3 ∪ {p(b,f(b))}</td><td>✘ ΟΧΙ</td><td>C2: λείπει p(f(b),b)</td></tr>
+          <tr><td>M6 = M5 ∪ {p(f(b),b)}</td><td>✔ ΝΑΙ</td><td>πλέον κλειστό</td></tr>
+          <tr><td>M7 = M3 ∪ {p(f(a),f(a)),p(a,f(a))}</td><td>✘ ΟΧΙ</td><td>C1 σε p(f(a),f(a)): λείπει p(a,f(f(a)))</td></tr>
+        </tbody></table>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — ποιο είναι το ελάχιστο μοντέλο;</summary>
+      <div class="reveal-body">
+        <p>Το <strong>M3</strong> = M<sub>P</sub> = { p(f(a),b), p(a,f(b)), p(f(b),a), p(b,f(a)) }. (M4, M6 είναι μοντέλα αλλά υπερσύνολα του M3 — όχι ελάχιστα.)</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (δ) — μπορεί p(f(a),f(b)) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p><strong>ΝΑΙ</strong> (B<sub>L</sub>). Πρόσθεσέ το ως γεγονός και κλείσε με C1/C2:</p>
+        <div class="math" style="font-size:0.92rem">⋂ = M<sub>P</sub> ∪ { p(f(a),f(b)), p(a,f(f(b))), p(f(b),f(a)), p(f(f(b)),a), p(b,f(f(a))), p(f(f(a)),b) }</div>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="mnemo"><div class="hd">🧠 Ο κανόνας-κλειδί για να «βλέπεις» αν το M_P είναι άπειρο ή πεπερασμένο</div>
+    <p style="margin:6px 0">Κοίτα τι κάνει ο <strong>αναδρομικός κανόνας</strong> στον όρο:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>ΑΥΞΑΝΕΙ</strong> τον όρο (π.χ. <code>p(f(f(X))) :- p(X)</code> — η κεφαλή έχει <em>περισσότερα</em> <code>f</code> από το σώμα) → χτίζει ολοένα μεγαλύτερους όρους → <strong>ΑΠΕΙΡΟ M<sub>P</sub></strong>.</li>
+      <li><strong>ΜΕΙΩΝΕΙ</strong> τον όρο (π.χ. <code>q(X) :- p(f(X))</code> — το σώμα έχει <em>περισσότερα</em> <code>f</code>, άρα κάθε βήμα «ξεφλουδίζει» ένα <code>f</code>) → ξεκινάς από έναν σταθερό όρο και κατεβαίνεις ώς το <code>a</code> → <strong>ΠΕΠΕΡΑΣΜΕΝΟ M<sub>P</sub></strong>.</li>
+    </ul>
+    <p style="margin:6px 0 0">Αυτό σε γλιτώνει από λάθη: πριν αρχίσεις τον T<sub>P</sub>, δες αν «μεγαλώνει» ή «μικραίνει» ο όρος.</p>
+  </div>
+
+  <!-- EXTRA 1: simple p/1 over two constants (πραγματικό παλιό θέμα) -->
+  <div class="solved">
+    <div class="solved-hd">📄 Επιπλέον (παλιό θέμα) — πρόγραμμα p/1: «ζυγά f πάνω από a, μονά f πάνω από b»</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">p</span>(<span class="nm">a</span>).
+<span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">b</span>)).
+<span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">f</span>(X))) :- <span class="fn">p</span>(X).</code></div>
+      <p><strong>Τι κάνει:</strong> ο κανόνας <em>προσθέτει</em> δύο <code>f</code> κάθε φορά. Άρα από το <code>a</code> βγαίνουν <strong>ζυγά</strong> <code>f</code>, από το <code>f(b)</code> βγαίνουν <strong>μονά</strong> <code>f</code>. (Όρος μεγαλώνει → άπειρο M<sub>P</sub>.)</p>
+
+      <details class="reveal" open><summary>Λύση (α) — U_L, B_L, είναι μοντέλο η B_L;</summary>
+      <div class="reveal-body">
+        <div class="math">U<sub>L</sub> = { a, b, f(a), f(b), f(f(a)), f(f(b)), … } (άπειρο) &nbsp;·&nbsp; B<sub>L</sub> = { p(t) | t ∈ U<sub>L</sub> } (άπειρο)</div>
+        <p><strong>Είναι η B<sub>L</sub> μοντέλο; ΝΑΙ</strong> — οριστικό πρόγραμμα, όλα τα άτομα αληθεύουν ⇒ κάθε πρόταση ικανοποιείται (Γεγονός 1).</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ελάχιστο μοντέλο M_P (εφάρμοσε T_P)</summary>
+      <div class="reveal-body">
+        <p>Ξεκίνα από τα γεγονότα και πρόσθεσε «+2 f» κάθε γύρο:</p>
+        <table class="tp-iter"><thead><tr><th>Γύρος</th><th>Νέα άτομα</th></tr></thead><tbody>
+          <tr><td>γεγονότα</td><td>p(a), p(f(b))</td></tr>
+          <tr><td>+1</td><td>p(f²(a)), p(f³(b))</td></tr>
+          <tr><td>+2</td><td>p(f⁴(a)), p(f⁵(b))</td></tr>
+          <tr><td>…</td><td>…</td></tr>
+        </tbody></table>
+        <div class="math">M<sub>P</sub> = { p(f<sup>2k</sup>(a)) | k ≥ 0 } ∪ { p(f<sup>2k+1</sup>(b)) | k ≥ 0 }<br>= { p(a), p(f²a), p(f⁴a), … } ∪ { p(fb), p(f³b), p(f⁵b), … }</div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — είναι το p(f⁴(b)) λογική συνέπεια;</summary>
+      <div class="reveal-body">
+        <p>p(f⁴(b)) = <strong>ζυγά</strong> <code>f</code> πάνω από <code>b</code>. Όμως το M<sub>P</sub> έχει μόνο <strong>μονά</strong> <code>f</code> πάνω από <code>b</code>. → <strong>ΟΧΙ</strong>, δεν ανήκει στο M<sub>P</sub>, άρα δεν είναι λογική συνέπεια του P.</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (δ) — μπορεί p(f(a)) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p>p(f(a)) = <strong>μονά</strong> <code>f</code> πάνω από <code>a</code> → εκτός M<sub>P</sub>, αλλά <strong>ΝΑΙ</strong> σε μοντέλο (π.χ. στη B<sub>L</sub>). Πρόσθεσέ το ως γεγονός· ο κανόνας «+2 f» παράγει όλα τα μονά:</p>
+        <div class="math">⋂ = M<sub>P</sub> ∪ { p(f<sup>2k+1</sup>(a)) | k ≥ 0 } = M<sub>P</sub> ∪ { p(fa), p(f³a), p(f⁵a), … }</div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- EXTRA 2: mutual recursion p/q, FINITE M_P (πραγματικό παλιό θέμα) -->
+  <div class="solved">
+    <div class="solved-hd">📄 Επιπλέον (παλιό θέμα) — αμοιβαία αναδρομή p/q με <strong>ΠΕΠΕΡΑΣΜΕΝΟ</strong> M_P</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">p</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">f</span>(<span class="nm">a</span>))))).
+<span class="fn">p</span>(X) :- <span class="fn">q</span>(<span class="nm">f</span>(X)).
+<span class="fn">q</span>(X) :- <span class="fn">p</span>(<span class="nm">f</span>(X)).</code></div>
+      <p><strong>Τι κάνει:</strong> και οι δύο κανόνες έχουν το <code>f</code> στο <em>σώμα</em> → κάθε βήμα <em>αφαιρεί</em> ένα <code>f</code>. Ξεκινάμε από το <code>f⁴(a)</code> και κατεβαίνουμε ώς το <code>a</code>. (Όρος μικραίνει → <strong>πεπερασμένο</strong> M<sub>P</sub>.)</p>
+
+      <details class="reveal" open><summary>Λύση (α) — U_L, B_L, είναι μοντέλο η B_L;</summary>
+      <div class="reveal-body">
+        <div class="math">U<sub>L</sub> = { a, f(a), f²(a), f³(a), … } (άπειρο) &nbsp;·&nbsp; B<sub>L</sub> = { p(t), q(t) | t ∈ U<sub>L</sub> } (άπειρο)</div>
+        <p><strong>Η B<sub>L</sub> μοντέλο; ΝΑΙ</strong> (Γεγονός 1). Προσοχή: το U<sub>L</sub>/B<sub>L</sub> είναι <em>άπειρο</em>, αλλά το M<sub>P</sub> θα βγει <em>πεπερασμένο</em>.</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ελάχιστο μοντέλο M_P (κατεβαίνει ώς το a)</summary>
+      <div class="reveal-body">
+        <p>Από <code>p(f⁴a)</code> εφάρμοσε <code>q(X):-p(f(X))</code> (X = f³a) → <code>q(f³a)</code>· μετά <code>p(X):-q(f(X))</code> (X = f²a) → <code>p(f²a)</code>· κ.ο.κ.:</p>
+        <table class="tp-iter"><thead><tr><th>Βήμα</th><th>Νέο άτομο</th></tr></thead><tbody>
+          <tr><td>γεγονός</td><td>p(f⁴a)</td></tr>
+          <tr><td>q(X):-p(f(X))</td><td>q(f³a)</td></tr>
+          <tr><td>p(X):-q(f(X))</td><td>p(f²a)</td></tr>
+          <tr><td>q(X):-p(f(X))</td><td>q(fa)</td></tr>
+          <tr><td>p(X):-q(f(X))</td><td>p(a)</td></tr>
+          <tr><td>stop</td><td>q χρειάζεται p(f(a))… ήδη κάλυψα τα πάντα</td></tr>
+        </tbody></table>
+        <div class="math">M<sub>P</sub> = { p(a), p(f²a), p(f⁴a), q(fa), q(f³a) } &nbsp;— <strong>5 άτομα, ΠΕΠΕΡΑΣΜΕΝΟ</strong></div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — μπορεί p(f³(a)) σε μοντέλο; τομή;</summary>
+      <div class="reveal-body">
+        <p>p(f³a) = <strong>μονά</strong> <code>f</code>· το M<sub>P</sub> έχει p μόνο σε <strong>ζυγά</strong> → εκτός M<sub>P</sub>, αλλά <strong>ΝΑΙ</strong> σε μοντέλο. Πρόσθεσέ το ως γεγονός και «ξεφλούδισε» προς τα κάτω:</p>
+        <p style="font-size:0.92rem">p(f³a) → q(f²a) → p(fa) → q(a) → στοπ.</p>
+        <div class="math">⋂ = M<sub>P</sub> ∪ { p(f³a), q(f²a), p(fa), q(a) }<br>= { p(a),p(fa),p(f²a),p(f³a),p(f⁴a), q(a),q(fa),q(f²a),q(f³a) } (9 άτομα)</div>
+      </div></details>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ MINI FORM ============ -->
+<section id="mini">
+  <div class="sh"><div class="sh-icon" style="background:var(--gdim)">🗒️</div><h2>Mini-φόρμα να τη γράψεις στο πρόχειρο</h2></div>
+  <div class="exam"><div class="hd">📚 Όταν δεις πρόγραμμα στο Θέμα 3, γράψε αυτά:</div>
+    <ol class="steps" style="margin-top:6px">
+      <li><strong>U<sub>L</sub>:</strong> σταθερές + f(…) επ' άπειρον (ή πεπερασμένο αν δεν έχει f/n).</li>
+      <li><strong>B<sub>L</sub>:</strong> κάθε κατηγόρημα με ορίσματα από U<sub>L</sub>.</li>
+      <li><strong>«Είναι B<sub>L</sub> μοντέλο;» → ΝΑΙ</strong> (οριστικό πρόγραμμα· όλες οι κεφαλές αληθεύουν).</li>
+      <li><strong>M<sub>P</sub>:</strong> T<sub>P</sub> από ∅: πρώτα γεγονότα, μετά κανόνες, μέχρι να μην αλλάζει.</li>
+      <li><strong>«Ανήκει το A σε μοντέλο;» → ΝΑΙ· τομή = M<sub>P∪{A}</sub></strong> (πρόσθεσε A, ξανα-τρέξε κανόνες).</li>
+      <li><strong>«SLD-απόρριψη;»</strong> κάθε άτομο του στόχου ∈ M<sub>P</sub>; Αν όχι έστω ένα → <strong>ΟΧΙ</strong>.</li>
+    </ol>
+  </div>
+  <p style="text-align:center;margin-top:24px"><a class="chip" href="exam_theme2_csp.html" style="text-decoration:none">Επόμενο → Θέμα 2 · CSP</a></p>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Θέμα 3 · Herbrand &amp; SLD</div>
+</body>
+</html>

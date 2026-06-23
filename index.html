@@ -1,182 +1,148 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Λογικός Προγραμματισμός</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/base.css">
-    <style>
-        :root {
-            --bg:#05070a; --surf:#0c0f16; --surf2:#141822; --border:#1e2433;
-            --green:#4ade80; --green-rgb:74,222,128;
-            --blue:#60a5fa;  --purple:#c084fc;
-            --orange:#fb923c; --orange-rgb:251,146,60;
-            --txt:#f1f5f9; --muted:#94a3b8; --dim:#475569;
-        }
-        .hub-hero {
-            padding: 140px 40px 80px;
-            text-align: center;
-            background: radial-gradient(circle at 50% 0%, rgba(74,222,128,0.05) 0%, transparent 70%);
-        }
-        .hub-hero h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 20px;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hub-hero p {
-            font-size: 1.25rem; color: var(--muted);
-            max-width: 700px; margin: 0 auto 40px;
-        }
-        .search-container { max-width: 500px; margin: 0 auto; position: relative; }
-        .search-container input {
-            width: 100%;
-            background: var(--surf); border: 1px solid var(--border);
-            padding: 1.125rem 1.75rem; border-radius: 6.25rem;
-            color: var(--txt); font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem; outline: none;
-            transition: var(--transition);
-        }
-        .search-container input:focus {
-            border-color: var(--green);
-            box-shadow: 0 0 20px rgba(74,222,128,0.1);
-        }
-        .topics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px; padding: 40px;
-            max-width: 1240px; margin: 0 auto;
-        }
-        .topic-card {
-            background: var(--surf); border: 1px solid var(--border);
-            border-radius: 20px; padding: 32px;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; gap: 16px;
-        }
-        .topic-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--green); background: var(--surf2);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .topic-card::before {
-            content: ''; position: absolute; top: 0; right: 0;
-            width: 100px; height: 100px;
-            background: linear-gradient(135deg, transparent, rgba(var(--green-rgb), 0.05));
-            border-radius: 0 0 0 100%;
-            transition: var(--transition);
-        }
-        .topic-card:hover::before {
-            width: 150px; height: 150px;
-            background: linear-gradient(135deg, transparent, rgba(var(--green-rgb), 0.1));
-        }
-        .topic-num {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--green); font-size: 0.875rem;
-            font-weight: 700; letter-spacing: 2px;
-        }
-        .topic-card h3 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.5rem; color: var(--txt); font-weight: 700;
-        }
-        .topic-card p { color: var(--muted); font-size: 1rem; line-height: 1.7; }
-        .topic-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
-        .tag {
-            font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
-            color: var(--dim); background: rgba(255,255,255,0.03);
-            padding: 0.1875rem 0.625rem; border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-    </style>
-    <script src="js/nav.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Λογικός Προγραμματισμός · Πλάνο Εξετάσεων</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/exam.css">
+<style>
+:root{
+  --bg:#05070a; --surf:#0c0f16; --surf2:#141822; --border:#1e2433;
+  --green:#4ade80; --green-rgb:74,222,128;
+  --blue:#60a5fa; --purple:#c084fc;
+  --orange:#fb923c; --orange-rgb:251,146,60;
+  --txt:#f1f5f9; --muted:#94a3b8; --dim:#475569;
+}
+.hub-hero{padding:120px 40px 40px;text-align:center;background:radial-gradient(circle at 50% 0%, rgba(74,222,128,0.06) 0%, transparent 70%)}
+.hub-hero .kick{font-family:'JetBrains Mono',monospace;color:var(--green);letter-spacing:3px;font-size:0.8rem;text-transform:uppercase}
+.hub-hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,7vw,4rem);font-weight:800;letter-spacing:-2px;margin:14px 0 16px;background:linear-gradient(to bottom,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hub-hero p{font-size:1.15rem;color:var(--muted);max-width:720px;margin:0 auto}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px 60px}
+.topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;margin:30px 0}
+.topic-card{background:var(--surf);border:1px solid var(--border);border-radius:18px;padding:26px;text-decoration:none;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.topic-card:hover{transform:translateY(-6px);border-color:var(--green);background:var(--surf2);box-shadow:0 18px 36px rgba(0,0,0,.35)}
+.topic-num{font-family:'JetBrains Mono',monospace;color:var(--green);font-size:0.8rem;font-weight:700;letter-spacing:2px}
+.topic-card h3{font-family:'Syne',sans-serif;font-size:1.35rem;color:var(--txt);font-weight:700}
+.topic-card p{color:var(--muted);font-size:0.96rem;line-height:1.65}
+.topic-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto}
+.tag{font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--dim);background:rgba(255,255,255,.03);padding:3px 9px;border-radius:4px;border:1px solid var(--border)}
+.topic-card.q3{border-color:rgba(74,222,128,.5)} .topic-card.q3 .topic-num{color:var(--green)}
+.topic-card.q2{border-color:rgba(96,165,250,.4)} .topic-card.q2 .topic-num{color:var(--blue)}
+.topic-card.q1{border-color:rgba(251,146,60,.4)} .topic-card.q1 .topic-num{color:var(--orange)}
+.topic-card.q4{border-color:rgba(57,212,200,.4)} .topic-card.q4 .topic-num{color:#39d4c8}
+.topic-card.full{border-style:dashed} .topic-card.full .topic-num{color:var(--muted)}
+.sec-h{font-family:'Syne',sans-serif;font-size:1.6rem;color:var(--txt);margin:34px 0 6px}
+.lead{color:var(--muted);max-width:760px}
+</style>
+<script src="js/nav_exam.js" defer></script>
 </head>
 <body>
-    <div id="site-nav"></div>
+<div id="site-nav"></div>
 
-    <div class="hub-hero">
-        <div class="hero-label">Πανεπιστήμιο Αθηνών · Πληροφορική</div>
-        <h1>Λογικός Προγραμματισμός</h1>
-        <p>Διαδραστικές σημειώσεις για το μάθημα Λογικού Προγραμματισμού. Βασισμένες σε παρουσιάσεις PDF με επιπλέον εξηγήσεις, κώδικα και quizzes.</p>
+<div class="hub-hero">
+  <div class="kick">Κρας-Τεστ Προετοιμασίας · 1–2 ημέρες</div>
+  <h1>Λογικός Προγραμματισμός</h1>
+  <p>Στοχευμένες σημειώσεις για να <strong>περάσεις</strong> (≈ 30/60). Όχι όλη η ύλη — μόνο τα 3 θέματα που πέφτουν <em>κάθε</em> χρονιά, με λυμένα παλιά θέματα και έτοιμες «συνταγές».</p>
+</div>
 
-        <div class="search-container">
-            <input type="text" id="topic-search" placeholder="Αναζήτηση σε κεφάλαια...">
-        </div>
+<div class="wrap">
+
+  <!-- STRATEGY -->
+  <section>
+    <h2 class="sec-h">🎯 Η στρατηγική σε μία εικόνα</h2>
+    <p class="lead">Κάθε εξέταση (2021–2023) έχει τα <strong>ίδια 3 θέματα</strong>, 20 μονάδες το καθένα. Δεν χρειάζεται να τα ξέρεις όλα τέλεια — χρειάζεται ~30/60. Να πού θα μαζέψεις τους πόντους:</p>
+
+    <div class="budget-grid">
+      <div class="budget-card anchor">
+        <div class="tag">Άγκυρα</div>
+        <div class="pts">~18/20</div>
+        <div class="lbl"><strong>Θέμα 3 · Herbrand</strong><br>Το πιο μηχανικό. Μια συνταγή — την εφαρμόζεις και παίρνεις σχεδόν όλο το θέμα.</div>
+      </div>
+      <div class="budget-card pillar">
+        <div class="tag">Πυλώνας</div>
+        <div class="pts">~13/20</div>
+        <div class="lbl"><strong>Θέμα 2 · CSP</strong><br>Καθαρό template (μεταβλητές/πεδία/περιορισμοί/κόστος). <em>Χωρίς κώδικα.</em></div>
+      </div>
+      <div class="budget-card bonus">
+        <div class="tag">Bonus</div>
+        <div class="pts">~6/20</div>
+        <div class="lbl"><strong>Θέμα 1 · Prolog</strong><br>Το δυσκολότερο. Μάθε το <em>ένα</em> μοτίβο και άρπαξε μερική βαθμολογία.</div>
+      </div>
     </div>
 
-    <div class="topics-grid">
-
-        <a href="_build/topic1_intro_prolog.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 01</div>
-            <h3>Εισαγωγή στην Prolog</h3>
-            <p>Βασικές έννοιες Λογικού Προγραμματισμού, συντακτικό Prolog, αναδρομή, ενοποίηση (unification) και διαδικαστική σημασία (backtracking).</p>
-            <div class="topic-tags">
-                <span class="tag">intro</span><span class="tag">syntax</span><span class="tag">recursion</span><span class="tag">unification</span>
-            </div>
-        </a>
-
-        <a href="_build/topic2_lists_and_cut.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 02</div>
-            <h3>Λίστες, Τελεστές και Cut</h3>
-            <p>Χειρισμός λιστών, ορισμός τελεστών, αριθμητική, έλεγχος της οπισθοδρόμησης με το Cut (!) και άρνηση ως αποτυχία.</p>
-            <div class="topic-tags">
-                <span class="tag">lists</span><span class="tag">operators</span><span class="tag">cut</span><span class="tag">negation</span>
-            </div>
-        </a>
-
-        <a href="_build/topic3_trees_graphs_search.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 03</div>
-            <h3>Δέντρα, Γράφοι και Αναζήτηση</h3>
-            <p>Δυαδικά δέντρα, λεξικά, γράφοι και αλγόριθμοι αναζήτησης σε χώρους καταστάσεων για την επίλυση λογικών γρίφων.</p>
-            <div class="topic-tags">
-                <span class="tag">trees</span><span class="tag">graphs</span><span class="tag">DFS</span><span class="tag">puzzles</span>
-            </div>
-        </a>
-
-        <a href="_build/topic4_logic_theory_semantics.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 04</div>
-            <h3>Θεωρία και Σημασιολογία</h3>
-            <p>Μαθηματικό υπόβαθρο, Λογική 1ης τάξης, προτάσεις Horn, θεωρία μοντέλων, SLD-ανάλυση και Προγραμματισμός με Περιορισμούς (CLP).</p>
-            <div class="topic-tags">
-                <span class="tag">logic</span><span class="tag">semantics</span><span class="tag">SLD</span><span class="tag">CLP</span>
-            </div>
-        </a>
-
-        <a href="_build/topic5_advanced_programming.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 05</div>
-            <h3>Προχωρημένος Προγραμματισμός</h3>
-            <p>Είσοδος/Έξοδος (I/O), δυναμική τροποποίηση της βάσης γνώσης (assert/retract), ταξινόμηση και πράξεις σε σύνολα (findall/setof).</p>
-            <div class="topic-tags">
-                <span class="tag">IO</span><span class="tag">dynamic</span><span class="tag">sorting</span><span class="tag">sets</span>
-            </div>
-        </a>
-
-        <a href="_build/topic6_semantic_web.html" class="topic-card">
-            <div class="topic-num">ΚΕΦΑΛΑΙΟ 06</div>
-            <h3>Λογική και Semantic Web</h3>
-            <p>RDF, OWL, Περιγραφικές Λογικές (DL), TBox/ABox και η σύνδεση του Λογικού Προγραμματισμού με τον Σημασιολογικό Ιστό.</p>
-            <div class="topic-tags">
-                <span class="tag">RDF</span><span class="tag">OWL</span><span class="tag">DL</span><span class="tag">SemanticWeb</span>
-            </div>
-        </a>
-
-        <!-- ─── Interactive Quiz card (keep at end, purple-themed) ─── -->
-        <a href="interactive_quiz.html" class="topic-card" style="border-color: var(--purple); background: linear-gradient(135deg, var(--surf), rgba(192, 132, 252, 0.05));">
-            <div class="topic-num" style="color: var(--purple);">PRACTICE</div>
-            <h3>Interactive Quiz</h3>
-            <p>Δοκίμασε τις γνώσεις σου με ένα διαδραστικό τεστ πολλαπλών επιλογών για όλα τα topics.</p>
-            <div class="topic-tags">
-                <span class="tag">interactive</span><span class="tag">test</span><span class="tag">practice</span>
-            </div>
-        </a>
-
+    <div class="tip-box">
+      <div class="hd">💡 Σύνολο: ~37/60</div>
+      <p>Με αυτό το πλάνο περνάς με άνεση. Αν μείνει χρόνος, ρίξε τον στο Θέμα 1. Αν πανικοβληθείς, <strong>ξεκίνα από το Θέμα 3</strong> — είναι σχεδόν σίγουρες μονάδες.</p>
     </div>
 
-    <div class="footer">Λογικός Προγραμματισμός · Course Notes</div>
+    <div class="warn">
+      <div class="hd">⚠️ Πιθανό 4ο θέμα — Αναπαράσταση Γνώσης</div>
+      <p>Σε <strong>2021/2022</strong> υπήρχε και 4ο θέμα (~15 μον.): <strong>αναπαράσταση γνώσης</strong> — σημασιολογικά δίκτυα (<code>isa</code> + κληρονομικότητα) ή μηχανή συμπερασμού. Στις 2023 ΔΕΝ έπεσε. Αν το βάλουν, οι μονάδες μοιράζονται αλλιώς (π.χ. 15+10+20+15). <strong>Η στρατηγική ίδια:</strong> Θέμα 3 πρώτο, μετά 2· το Θέμα 4 (σημασιολογικά δίκτυα) είναι σχετικά βατό για bonus. → δες τη <a href="_build/exam_theme4_kr.html" style="color:#39d4c8">σελίδα Θέματος 4</a>.</p>
+    </div>
+  </section>
+
+  <!-- THE PAGES -->
+  <h2 class="sec-h">📖 Οι σελίδες (με αυτή τη σειρά μελέτης)</h2>
+  <div class="topics-grid">
+
+    <a href="_build/exam_theme3_herbrand.html" class="topic-card q3">
+      <div class="topic-num">ΘΕΜΑ 3 · ΞΕΚΙΝΑ ΕΔΩ</div>
+      <h3>Herbrand &amp; SLD</h3>
+      <p>Σύμπαν &amp; βάση Herbrand, «είναι μοντέλο η βάση;», ελάχιστο μοντέλο M<sub>P</sub> με T<sub>P</sub>, τομή μοντέλων, ύπαρξη SLD-απόρριψης. Και τα 5 παλιά θέματα λυμένα.</p>
+      <div class="topic-tags"><span class="tag">U_L · B_L</span><span class="tag">M_P</span><span class="tag">T_P</span><span class="tag">SLD</span></div>
+    </a>
+
+    <a href="_build/exam_theme2_csp.html" class="topic-card q2">
+      <div class="topic-num">ΘΕΜΑ 2</div>
+      <h3>Μοντελοποίηση CSP</h3>
+      <p>Το 4-βημο template: μεταβλητές → πεδία → περιορισμοί → συνάρτηση κόστους. Knapsack, βάρδιες, MAX-SAT, set cover/partition — όλα λυμένα.</p>
+      <div class="topic-tags"><span class="tag">μεταβλητές</span><span class="tag">πεδία</span><span class="tag">περιορισμοί</span><span class="tag">κόστος</span></div>
+    </a>
+
+    <a href="_build/exam_theme1_prolog.html" class="topic-card q1">
+      <div class="topic-num">ΘΕΜΑ 1</div>
+      <h3>Prolog (non-CSP)</h3>
+      <p>Το επαναλαμβανόμενο μοτίβο <code>generate-and-test + \+(υπάρχει καλύτερο)</code>, λίστες, subseq, append. Όλα τα «συμπλήρωσε τα κενά» λυμένα.</p>
+      <div class="topic-tags"><span class="tag">\+</span><span class="tag">subseq</span><span class="tag">append</span><span class="tag">recursion</span></div>
+    </a>
+
+    <a href="_build/exam_theme4_kr.html" class="topic-card q4">
+      <div class="topic-num">ΘΕΜΑ 4 · ΑΝ ΠΕΣΕΙ</div>
+      <h3>Αναπαράσταση Γνώσης</h3>
+      <p>Θέμα κώδικα που πέφτει σε 2 μορφές: <strong>σημασιολογικά δίκτυα</strong> (isa + κληρονομικότητα, η εύκολη) και <strong>μηχανή συμπερασμού forward</strong>. Λυμένα 2021Α, 2022Α/Β.</p>
+      <div class="topic-tags"><span class="tag">isa</span><span class="tag">κληρονομικότητα</span><span class="tag">βεβαιότητες</span><span class="tag">forward</span></div>
+    </a>
+
+    <a href="_build/exam_cheatsheet.html" class="topic-card">
+      <div class="topic-num">ΤΕΛΕΥΤΑΙΑ ΩΡΑ</div>
+      <h3>Cheat-sheet</h3>
+      <p>Μία σελίδα με όλες τις συνταγές, τους τύπους και τα «έτοιμα» που πρέπει να θυμάσαι μπαίνοντας στην αίθουσα.</p>
+      <div class="topic-tags"><span class="tag">recap</span><span class="tag">τύποι</span><span class="tag">μνημονικά</span></div>
+    </a>
+
+    <a href="full_notes.html" class="topic-card full">
+      <div class="topic-num">ΓΙΑ ΑΡΓΟΤΕΡΑ</div>
+      <h3>Πλήρεις Σημειώσεις</h3>
+      <p>Οι αναλυτικές σημειώσεις 6 κεφαλαίων (ανέπαφες). Χρήσιμες για βαθύτερη μελέτη — όχι για το 1-ήμερο διάβασμα.</p>
+      <div class="topic-tags"><span class="tag">6 κεφάλαια</span><span class="tag">full</span></div>
+    </a>
+
+  </div>
+
+  <div class="note">
+    <div class="hd">📝 Πώς να διαβάσεις σε 1 ημέρα</div>
+    <ol style="margin:6px 0 0">
+      <li><strong>Πρωί:</strong> Θέμα 3 (Herbrand). Μάθε τη συνταγή, λύσε τα 5 παλιά μαζί με τη σελίδα.</li>
+      <li><strong>Μεσημέρι:</strong> Θέμα 2 (CSP). Αποστήθισε το template, γράψε το knapsack + set cover με κλειστά μάτια.</li>
+      <li><strong>Απόγευμα:</strong> Θέμα 1 (Prolog). Κατάλαβε το <code>\+</code>-μοτίβο. Μη ζοριστείς για τελειότητα.</li>
+      <li><strong>Βράδυ:</strong> Cheat-sheet, 2 φορές. Κοιμήσου.</li>
+    </ol>
+  </div>
+
+</div>
+
+<div class="footer">Λογικός Προγραμματισμός · Exam-Prep Crash Course</div>
 </body>
 </html>
