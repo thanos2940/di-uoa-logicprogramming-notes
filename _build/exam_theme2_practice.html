@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Θέμα 2 · Προπόνηση</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--bdim) 55%,#0d1117 100%)}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--bdim) 55%,#f8fafc 100%)}
+.hero::after{content:"min max \u2212 min";position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+<script src="../js/vendor/tau/core.js"></script>
+<script src="../js/vendor/tau/lists.js"></script>
+<script src="../js/vendor/tau/charsio.js"></script>
+<script src="../js/vendor/tau/format.js"></script>
+<script src="../js/prolog_runner.js" defer></script>
+<script src="../js/lb_widget.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Θέμα 2 · Προπόνηση μοντελοποίησης</div>
+  <h1>Κόστος που <em>ξεχωρίζει</em> λύσεις</h1>
+  <p>Widget ισοκατανομής, το ίδιο πείραμα σε Prolog, 12 σενάρια «ποια συνάρτηση», 8 παραλλαγές του Ιουνίου, 6 παλιά θέματα και μια προσομοίωση 25 λεπτών.</p>
+  <div class="chips"><span class="chip">min max</span><span class="chip">max min</span><span class="chip">max − min</span><span class="chip">Σ τετραγώνων</span><span class="chip">βοηθητικές μεταβλητές</span><span class="chip">στιγμιότυπο</span></div>
+</div>
+
+<nav class="toc">
+  <a href="#how">Μέθοδος</a>
+  <a href="#widget">Widget</a>
+  <a href="#bridge">Prolog</a>
+  <a href="#which">Σενάρια</a>
+  <a href="#aux">Κατεύθυνση</a>
+  <a href="#variants">Παραλλαγές</a>
+  <a href="#models">Παλιά θέματα</a>
+  <a href="#timed">Προσομοίωση</a>
+  <a href="#reflect">Αναστοχασμός</a>
+</nav>
+
+<div class="wrap">
+
+<section id="how">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🧭</div><h2>Πώς να προπονηθείς στο Θέμα 2</h2></div>
+
+  <p class="lead">Το Θέμα 2 δεν θέλει κώδικα. Θέλει μια σταθερή συνταγή και μια συνάρτηση κόστους που περνάει τους ελέγχους. Εδώ τα εξασκείς με ένα widget που δείχνει τι «βλέπει» κάθε κριτήριο, με ένα πρόγραμμα Prolog που το επιβεβαιώνει, και με παλιά θέματα που γράφεις μόνος σου.</p>
+  <div class="flow">
+    <div class="flow-step"><div class="n">ΒΗΜΑ 1</div><div class="t">Δεδομένα</div><div class="d">Ονόμασε ό,τι δίνεται: N, K, L<sub>i</sub>, M, σύνολα, ζεύγη.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 2</div><div class="t">Μεταβλητές, πεδία</div><div class="d">Τι αποφασίζει ο λύτης για κάθε αντικείμενο; Γράψε την ερμηνεία.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 3</div><div class="t">Περιορισμοί</div><div class="d">Μία γραμμή για κάθε κανόνα της εκφώνησης, με ∀ και Σ.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 4</div><div class="t">Κόστος</div><div class="d">Μία παράσταση των μεταβλητών και min. Πέρασέ τη από τους 4 ελέγχους.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 5</div><div class="t">Στιγμιότυπο</div><div class="d">Αν ζητείται, γράψε μεταβλητές, πεδία και περιορισμούς με αριθμούς.</div></div>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <h4 style="color:var(--green);margin-top:0">Οι 4 έλεγχοι του κόστους</h4>
+      <ol style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+        <li><strong>Κατεύθυνση:</strong> ελαχιστοποίηση· το «μεγιστοποίησε F» γίνεται «ελαχιστοποίησε −F».</li>
+        <li><strong>Σταθερότητα:</strong> δύο πολύ διαφορετικές λύσεις πρέπει να παίρνουν διαφορετική τιμή.</li>
+        <li><strong>Νόημα:</strong> η φανερά καλύτερη λύση παίρνει μικρότερη τιμή.</li>
+        <li><strong>Βοηθητικές μεταβλητές:</strong> η ελαχιστοποίηση τις σπρώχνει στη σωστή τιμή.</li>
+      </ol>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--orange)">
+      <h4 style="color:var(--orange);margin-top:0">Σειρά μελέτης σε αυτή τη σελίδα</h4>
+      <ol style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+        <li>Widget και γέφυρα Prolog (20 λεπτά): φτιάχνεις τη διαίσθηση για min max και max − min.</li>
+        <li>Σενάρια και κατεύθυνση (20 λεπτά): λέξη της εκφώνησης → συνάρτηση.</li>
+        <li>Παραλλαγές του Ιουνίου (30 λεπτά).</li>
+        <li>Παλιά θέματα και προσομοίωση 25 λεπτών (40 λεπτά).</li>
+      </ol>
+    </div>
+  </div>
+  <div class="tip-box"><div class="hd">⏱️ Χρόνος στο γραπτό</div>
+  <p style="margin:4px 0">Η εξέταση διαρκεί 120 λεπτά και το Θέμα 2 παίρνει 20 από τις 100 μονάδες, άρα του αναλογούν περίπου 25 λεπτά. Στην προσομοίωση στο τέλος της σελίδας βάλε χρονόμετρο.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="how"></div>
+</section>
+
+<section id="widget">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">⚖️</div><h2>Widget: ποιο κριτήριο «βλέπει» τη δικαιοσύνη;</h2></div>
+
+  <p class="lead">Πέντε εργασίες με φόρτους 6, 6, 4, 2, 2 και τρεις εργαζόμενοι. Ο πίνακας υπολογίζει για κάθε συνάρτηση κόστους (με εξαντλητική αναζήτηση στις 3<sup>5</sup> = 243 αναθέσεις) τη βέλτιστη τιμή και <strong>πόσες εφικτές αναθέσεις τη φτάνουν</strong>. Αν τη φτάνουν όλες, η συνάρτηση είναι άχρηστη και η γραμμή βάφεται κόκκινη.</p>
+  <div class="lb" data-widget="balance" data-m="10"></div>
+  <h3>Πειράματα</h3>
+<div class="qa-grid"><div class="qa-card"><div class="qq2"><strong>Πείραμα 1</strong> (M = 10). Κοίτα τη γραμμή «Σ φόρτων». Τι γράφει η στήλη «Πόσες αναθέσεις τη φτάνουν»;</div><details><summary>Απάντηση</summary><div><strong>102 / 102.</strong> Κάθε εφικτή ανάθεση είναι «βέλτιστη», επειδή ο συνολικός φόρτος είναι πάντα 20. Αυτή ήταν η συνάρτηση του Ιουνίου: δεν διαλέγει τίποτα.</div></details></div><div class="qa-card"><div class="qq2"><strong>Πείραμα 2</strong> (M = 10). Πάτα αρκετές φορές «βέλτιστη για max φόρτος». Ποια προφίλ φόρτων εμφανίζονται;</div><details><summary>Απάντηση</summary><div>Τα <strong>(8,8,4)</strong> και <strong>(8,6,6)</strong>: 42 βέλτιστες αναθέσεις. Το min max δεν ξεχωρίζει την (8,6,6), που είναι φανερά πιο δίκαιη, από την (8,8,4).</div></details></div><div class="qa-card"><div class="qq2"><strong>Πείραμα 3</strong>. Βάλε <strong>M = 8</strong>. Τι παθαίνει τώρα το min max;</div><details><summary>Απάντηση</summary><div>Και οι 42 εφικτές έχουν max = 8, άρα το <strong>min max γίνεται κι αυτό σταθερό</strong>. Το εύρος, τα τετράγωνα και το max min συνεχίζουν να διαλέγουν τις 30 με προφίλ (8,6,6).</div></details></div><div class="qa-card"><div class="qq2"><strong>Πείραμα 4</strong>. Βάλε <strong>M = 7</strong>. Γιατί δεν υπάρχει εφικτή ανάθεση;</div><details><summary>Απάντηση</summary><div>Οι φόρτοι 6, 6, 4 πρέπει να πάνε σε τρεις διαφορετικούς (ανά δύο ξεπερνούν το 7). Η πρώτη εργασία φόρτου 2 χωράει μόνο με την 4, και για τη δεύτερη δεν μένει χώρος.</div></details></div><div class="qa-card"><div class="qq2"><strong>Πείραμα 5</strong>. Ανέβασε το M στο 20. Αλλάζει η βέλτιστη τιμή κάποιου κριτηρίου;</div><details><summary>Απάντηση</summary><div>Όχι. Οι εφικτές γίνονται 243 (όλες), αλλά οι βέλτιστες για max, εύρος, τετράγωνα και max min μένουν ίδιες. Το M είναι <strong>περιορισμός</strong>: κόβει λύσεις, δεν τις κατατάσσει.</div></details></div><div class="qa-card"><div class="qq2"><strong>Πείραμα 6</strong>. Φτιάξε με το χέρι την ανάθεση T1→E1, T2→E2, T3→E3, T4→E2, T5→E3. Ποιο είναι το προφίλ και ποια κριτήρια τη θεωρούν βέλτιστη;</div><details><summary>Απάντηση</summary><div>Φόρτοι (6, 8, 6). Είναι βέλτιστη για max (8), εύρος (2), τετράγωνα (136) και max min (−6). Αυτό είναι το προφίλ (8,6,6) με άλλη σειρά εργαζομένων.</div></details></div></div>
+  <div class="mnemo"><div class="hd">🧠 Τι κρατάς</div>
+  <p style="margin:4px 0">Ένα κριτήριο είναι καλό όταν <strong>χωρίζει</strong> τις εφικτές λύσεις και η καλύτερη (με τη λέξη της εκφώνησης) βγαίνει πρώτη. Για «δικαιοσύνη» το max − min και τα τετράγωνα ξεχωρίζουν την (8,6,6) και με M = 10 και με M = 8. Το min max αφήνει ισοπαλίες με M = 10 και γίνεται σταθερό με M = 8.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="widget"></div>
+</section>
+
+<section id="bridge">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🔗</div><h2>Γέφυρα με το Θέμα 1: το ίδιο πείραμα σε Prolog</h2></div>
+
+  <p class="lead">Το <code>best/4</code> παρακάτω είναι το μοτίβο «βέλτιστο με <code>\+</code>» του Θέματος 1: παίρνει μια λύση και την απορρίπτει αν υπάρχει άλλη με <strong>μικρότερο</strong> κόστος. Αν η συνάρτηση κόστους είναι σταθερή, καμία λύση δεν απορρίπτεται και όλες βγαίνουν «βέλτιστες».</p>
+  <ol class="steps">
+    <li>Τρέξε <code>count_best(total, N).</code>, μετά <code>count_best(max, N).</code> και <code>count_best(range, N).</code> Πρέπει να δεις 102, 42 και 30.</li>
+    <li>Τρέξε <code>best(max, Ws, Loads, C).</code> και πάτα <strong>; επόμενη</strong> μερικές φορές: θα δεις και (8,8,4) και (8,6,6).</li>
+    <li>Άλλαξε το <code>maxload(10).</code> σε <code>maxload(8).</code> και ξανατρέξε το <code>count_best(max, N).</code> Τι περιμένεις;</li>
+  </ol>
+<div class="plx" data-id="lb" data-query="count_best(total, N)." data-title="Brute force σε Prolog: ποια συνάρτηση κόστους ξεχωρίζει λύσεις;">
+<script type="text/plain" class="plx-src">
+% N = 5 εργασίες με φόρτους L, K = 3 εργαζόμενοι, όριο M = 10
+loads([6, 6, 4, 2, 2]).
+workers([1, 2, 3]).
+maxload(10).
+
+% assign(Ls, Ws): το Ws λέει σε ποιον εργαζόμενο πάει κάθε εργασία
+assign([], []).
+assign([_|Ls], [W|Ws]) :- workers(Ks), member(W, Ks), assign(Ls, Ws).
+
+% load_of(J, Ls, Ws, S): συνολικός φόρτος του εργαζόμενου J
+load_of(_, [], [], 0).
+load_of(J, [L|Ls], [W|Ws], S) :-
+    load_of(J, Ls, Ws, S1),
+    ( W =:= J -> S is S1 + L ; S = S1 ).
+
+% sol(Ws, Loads): εφικτή ανάθεση και οι φόρτοι των 3 εργαζομένων
+sol(Ws, Loads) :-
+    loads(Ls), assign(Ls, Ws),
+    workers(Ks), findall(S, (member(J, Ks), load_of(J, Ls, Ws, S)), Loads),
+    maxload(M), max_list(Loads, Mx), Mx =< M.
+
+% οι υποψήφιες συναρτήσεις κόστους (ελαχιστοποίηση)
+cost(total, Loads, C) :- sum_list(Loads, C).
+cost(max,   Loads, C) :- max_list(Loads, C).
+cost(range, Loads, C) :- max_list(Loads, Mx), min_list(Loads, Mn), C is Mx - Mn.
+
+% όλες οι εφικτές λύσεις με το κόστος τους, μία φορά: [C-(Ws-Loads), ...]
+scored(Kind, S) :- findall(C-(Ws-Loads), (sol(Ws, Loads), cost(Kind, Loads, C)), S).
+
+% ΘΕΜΑ 1 μέσα στο ΘΕΜΑ 2: βέλτιστη = καμία λύση με μικρότερο κόστος
+best(Kind, Ws, Loads, C) :-
+    scored(Kind, S),
+    member(C-(Ws-Loads), S),
+    \+ ( member(C2-_, S), C2 < C ).
+
+% πόσες λύσεις είναι «βέλτιστες» για κάθε κριτήριο;
+count_best(Kind, N) :- findall(x, best(Kind, _, _, _), Bs), length(Bs, N).
+
+% Δοκίμασε:  count_best(total, N).   count_best(max, N).   count_best(range, N).
+%            best(max, Ws, Loads, C).   best(range, Ws, Loads, C).
+</script>
+</div>
+  <div class="note"><div class="hd">📝 Απάντηση στο βήμα 3</div>
+  <p style="margin:4px 0">Με M = 8 υπάρχουν 42 εφικτές και <code>count_best(max, N)</code> δίνει N = 42: όλες. Το <code>count_best(range, N)</code> δίνει ακόμα 30.</p></div>
+  <h3>Άσκηση: πρόσθεσε δύο κριτήρια</h3>
+  <p>Συμπλήρωσε το <code>cost(squares, …)</code> (άθροισμα τετραγώνων) και το <code>cost(maxmin, …)</code> (ο λιγότερο φορτωμένος να έχει όσο πιο πολύ φόρτο γίνεται). Ο έλεγχος τρέχει τα <code>count_best</code> και <code>best</code> για τα δύο νέα κριτήρια.</p>
+<div class="plx" data-id="lb2" data-query="count_best(squares, N)." data-title="Πρόσθεσε δύο κριτήρια: άθροισμα τετραγώνων και «μεγιστοποίησε το ελάχιστο»">
+<script type="text/plain" class="plx-src">
+% N = 5 εργασίες με φόρτους L, K = 3 εργαζόμενοι, όριο M = 10
+loads([6, 6, 4, 2, 2]).
+workers([1, 2, 3]).
+maxload(10).
+
+% assign(Ls, Ws): το Ws λέει σε ποιον εργαζόμενο πάει κάθε εργασία
+assign([], []).
+assign([_|Ls], [W|Ws]) :- workers(Ks), member(W, Ks), assign(Ls, Ws).
+
+% load_of(J, Ls, Ws, S): συνολικός φόρτος του εργαζόμενου J
+load_of(_, [], [], 0).
+load_of(J, [L|Ls], [W|Ws], S) :-
+    load_of(J, Ls, Ws, S1),
+    ( W =:= J -> S is S1 + L ; S = S1 ).
+
+% sol(Ws, Loads): εφικτή ανάθεση και οι φόρτοι των 3 εργαζομένων
+sol(Ws, Loads) :-
+    loads(Ls), assign(Ls, Ws),
+    workers(Ks), findall(S, (member(J, Ks), load_of(J, Ls, Ws, S)), Loads),
+    maxload(M), max_list(Loads, Mx), Mx =< M.
+
+% οι υποψήφιες συναρτήσεις κόστους (ελαχιστοποίηση)
+cost(total, Loads, C) :- sum_list(Loads, C).
+cost(max,   Loads, C) :- max_list(Loads, C).
+cost(range, Loads, C) :- max_list(Loads, Mx), min_list(Loads, Mn), C is Mx - Mn.
+
+% όλες οι εφικτές λύσεις με το κόστος τους, μία φορά: [C-(Ws-Loads), ...]
+scored(Kind, S) :- findall(C-(Ws-Loads), (sol(Ws, Loads), cost(Kind, Loads, C)), S).
+
+% ΘΕΜΑ 1 μέσα στο ΘΕΜΑ 2: βέλτιστη = καμία λύση με μικρότερο κόστος
+best(Kind, Ws, Loads, C) :-
+    scored(Kind, S),
+    member(C-(Ws-Loads), S),
+    \+ ( member(C2-_, S), C2 < C ).
+
+% πόσες λύσεις είναι «βέλτιστες» για κάθε κριτήριο;
+count_best(Kind, N) :- findall(x, best(Kind, _, _, _), Bs), length(Bs, N).
+
+% ΑΣΚΗΣΗ: συμπλήρωσε τα δύο κόστη (και τα δύο ΕΛΑΧΙΣΤΟΠΟΙΟΥΝΤΑΙ)
+cost(squares, Loads, C) :- ......................
+cost(maxmin,  Loads, C) :- ......................   % max του min  ==  min του -min
+
+% Δοκίμασε:  count_best(total, N).   count_best(max, N).   count_best(range, N).
+%            best(max, Ws, Loads, C).   best(range, Ws, Loads, C).
+</script>
+<script type="text/plain" class="plx-ref">
+% N = 5 εργασίες με φόρτους L, K = 3 εργαζόμενοι, όριο M = 10
+loads([6, 6, 4, 2, 2]).
+workers([1, 2, 3]).
+maxload(10).
+
+% assign(Ls, Ws): το Ws λέει σε ποιον εργαζόμενο πάει κάθε εργασία
+assign([], []).
+assign([_|Ls], [W|Ws]) :- workers(Ks), member(W, Ks), assign(Ls, Ws).
+
+% load_of(J, Ls, Ws, S): συνολικός φόρτος του εργαζόμενου J
+load_of(_, [], [], 0).
+load_of(J, [L|Ls], [W|Ws], S) :-
+    load_of(J, Ls, Ws, S1),
+    ( W =:= J -> S is S1 + L ; S = S1 ).
+
+% sol(Ws, Loads): εφικτή ανάθεση και οι φόρτοι των 3 εργαζομένων
+sol(Ws, Loads) :-
+    loads(Ls), assign(Ls, Ws),
+    workers(Ks), findall(S, (member(J, Ks), load_of(J, Ls, Ws, S)), Loads),
+    maxload(M), max_list(Loads, Mx), Mx =< M.
+
+% οι υποψήφιες συναρτήσεις κόστους (ελαχιστοποίηση)
+cost(total, Loads, C) :- sum_list(Loads, C).
+cost(max,   Loads, C) :- max_list(Loads, C).
+cost(range, Loads, C) :- max_list(Loads, Mx), min_list(Loads, Mn), C is Mx - Mn.
+
+% όλες οι εφικτές λύσεις με το κόστος τους, μία φορά: [C-(Ws-Loads), ...]
+scored(Kind, S) :- findall(C-(Ws-Loads), (sol(Ws, Loads), cost(Kind, Loads, C)), S).
+
+% ΘΕΜΑ 1 μέσα στο ΘΕΜΑ 2: βέλτιστη = καμία λύση με μικρότερο κόστος
+best(Kind, Ws, Loads, C) :-
+    scored(Kind, S),
+    member(C-(Ws-Loads), S),
+    \+ ( member(C2-_, S), C2 < C ).
+
+% πόσες λύσεις είναι «βέλτιστες» για κάθε κριτήριο;
+count_best(Kind, N) :- findall(x, best(Kind, _, _, _), Bs), length(Bs, N).
+
+cost(squares, Loads, C) :- findall(Q, (member(X, Loads), Q is X * X), Qs), sum_list(Qs, C).
+cost(maxmin,  Loads, C) :- min_list(Loads, Mn), C is -Mn.
+
+% Δοκίμασε:  count_best(total, N).   count_best(max, N).   count_best(range, N).
+%            best(max, Ws, Loads, C).   best(range, Ws, Loads, C).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "count_best(squares, N).", "n": 1}, {"q": "count_best(maxmin, N).", "n": 1}, {"q": "best(squares, Ws, Loads, C).", "n": 2}, {"q": "best(maxmin, Ws, Loads, C).", "n": 2}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem">
+  <li>Τετράγωνα: για κάθε φόρτο X της λίστας υπολόγισε X·X, μάζεψέ τα με <code>findall</code> και άθροισέ τα με <code>sum_list</code>.</li>
+  <li>«Μεγιστοποίησε το ελάχιστο»: το <code>best/4</code> ελαχιστοποιεί, άρα δώσε κόστος <strong>−min</strong>. Το <code>min_list/2</code> βρίσκει το ελάχιστο.</li>
+</ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% N = 5 εργασίες με φόρτους L, K = 3 εργαζόμενοι, όριο M = 10</span>
+<span class="fn">loads</span>([<span class="nm">6</span>, <span class="nm">6</span>, <span class="nm">4</span>, <span class="nm">2</span>, <span class="nm">2</span>]).
+<span class="fn">workers</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>]).
+<span class="fn">maxload</span>(<span class="nm">10</span>).
+
+<span class="cm">% assign(Ls, Ws): το Ws λέει σε ποιον εργαζόμενο πάει κάθε εργασία</span>
+<span class="fn">assign</span>([], []).
+<span class="fn">assign</span>([_|Ls], [W|Ws]) <span class="kw">:-</span> <span class="fn">workers</span>(Ks), <span class="fn">member</span>(W, Ks), <span class="fn">assign</span>(Ls, Ws).
+
+<span class="cm">% load_of(J, Ls, Ws, S): συνολικός φόρτος του εργαζόμενου J</span>
+<span class="fn">load_of</span>(_, [], [], <span class="nm">0</span>).
+<span class="fn">load_of</span>(J, [L|Ls], [W|Ws], S) <span class="kw">:-</span>
+    <span class="fn">load_of</span>(J, Ls, Ws, S1),
+    ( W <span class="op">=:=</span> J <span class="op">-&gt;</span> S <span class="op">is</span> S1 + L ; S = S1 ).
+
+<span class="cm">% sol(Ws, Loads): εφικτή ανάθεση και οι φόρτοι των 3 εργαζομένων</span>
+<span class="fn">sol</span>(Ws, Loads) <span class="kw">:-</span>
+    <span class="fn">loads</span>(Ls), <span class="fn">assign</span>(Ls, Ws),
+    <span class="fn">workers</span>(Ks), <span class="fn">findall</span>(S, (<span class="fn">member</span>(J, Ks), <span class="fn">load_of</span>(J, Ls, Ws, S)), Loads),
+    <span class="fn">maxload</span>(M), <span class="fn">max_list</span>(Loads, Mx), Mx <span class="op">=&lt;</span> M.
+
+<span class="cm">% οι υποψήφιες συναρτήσεις κόστους (ελαχιστοποίηση)</span>
+<span class="fn">cost</span>(total, Loads, C) <span class="kw">:-</span> <span class="fn">sum_list</span>(Loads, C).
+<span class="fn">cost</span>(max,   Loads, C) <span class="kw">:-</span> <span class="fn">max_list</span>(Loads, C).
+<span class="fn">cost</span>(range, Loads, C) <span class="kw">:-</span> <span class="fn">max_list</span>(Loads, Mx), <span class="fn">min_list</span>(Loads, Mn), C <span class="op">is</span> Mx - Mn.
+
+<span class="cm">% όλες οι εφικτές λύσεις με το κόστος τους, μία φορά: [C-(Ws-Loads), ...]</span>
+<span class="fn">scored</span>(Kind, S) <span class="kw">:-</span> <span class="fn">findall</span>(C-(Ws-Loads), (<span class="fn">sol</span>(Ws, Loads), <span class="fn">cost</span>(Kind, Loads, C)), S).
+
+<span class="cm">% ΘΕΜΑ 1 μέσα στο ΘΕΜΑ 2: βέλτιστη = καμία λύση με μικρότερο κόστος</span>
+<span class="fn">best</span>(Kind, Ws, Loads, C) <span class="kw">:-</span>
+    <span class="fn">scored</span>(Kind, S),
+    <span class="fn">member</span>(C-(Ws-Loads), S),
+    <span class="op">\+</span> ( <span class="fn">member</span>(C2-_, S), C2 &lt; C ).
+
+<span class="cm">% πόσες λύσεις είναι «βέλτιστες» για κάθε κριτήριο;</span>
+<span class="fn">count_best</span>(Kind, N) <span class="kw">:-</span> <span class="fn">findall</span>(x, <span class="fn">best</span>(Kind, _, _, _), Bs), <span class="fn">length</span>(Bs, N).
+
+<span class="fn">cost</span>(squares, Loads, C) <span class="kw">:-</span> <span class="fill"><span class="fn">findall</span>(Q, (<span class="fn">member</span>(X, Loads), Q <span class="op">is</span> X * X), Qs), <span class="fn">sum_list</span>(Qs, C)</span>.
+<span class="fn">cost</span>(maxmin,  Loads, C) <span class="kw">:-</span> <span class="fill"><span class="fn">min_list</span>(Loads, Mn), C <span class="op">is</span> -Mn</span>.
+
+<span class="cm">% Δοκίμασε:  count_best(total, N).   count_best(max, N).   count_best(range, N).</span>
+<span class="cm">%            best(max, Ws, Loads, C).   best(range, Ws, Loads, C).</span></code></div><p>Και τα δύο κριτήρια δίνουν 30 βέλτιστες αναθέσεις, όλες με προφίλ (8,6,6), όπως στο widget.</p>
+</div></details>
+  <div class="tip-box"><div class="hd">💡 Γιατί αξίζει αυτή η γέφυρα</div>
+  <p style="margin:4px 0">Στο Θέμα 1 του Ιουνίου το <code>maxage/1</code> ζητούσε ακριβώς «βέλτιστο με <code>\+</code>», και στο Θέμα 2 το ζητούμενο ήταν να επιλέξεις <em>τι</em> βελτιστοποιείται. Όταν γράφεις το κόστος στο χαρτί, φαντάσου το <code>best/4</code>: αν δεν απορρίπτει ποτέ τίποτα, το κόστος σου είναι λάθος.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="bridge"></div>
+</section>
+
+<section id="which">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🎯</div><h2>Ποια συνάρτηση κόστους; 12 σενάρια</h2></div>
+
+  <p class="lead">Διάβασε τη φράση, γράψε τη συνάρτηση στο χαρτί, και μετά άνοιξε την απάντηση. Ο στόχος είναι να αναγνωρίζεις τη μορφή από τη διατύπωση: «η μεγαλύτερη … όσο μικρότερη» → min max, «ο μικρότερος … όσο μεγαλύτερος» → max min, «όσο πιο ίσα» → max − min ή τετράγωνα, «συνολικό» → Σ, αρκεί να μην είναι σταθερό.</p>
+<div class="qa-grid"><div class="qa-card"><div class="qq2">«Να τελειώσουν όλες οι εργασίες <strong>όσο νωρίτερα γίνεται</strong>» (T<sub>i</sub> = έναρξη, D<sub>i</sub> = διάρκεια)</div><details><summary>Απάντηση</summary><div><strong>min max<sub>i</sub> (T<sub>i</sub> + D<sub>i</sub>)</strong>: η στιγμή που τελειώνει η τελευταία (makespan). Το άθροισμα μετράει άλλο πράγμα.</div></details></div><div class="qa-card"><div class="qq2">«Ο <strong>μέσος</strong> χρόνος ολοκλήρωσης να είναι ελάχιστος»</div><details><summary>Απάντηση</summary><div><strong>min Σ<sub>i</sub> (T<sub>i</sub> + D<sub>i</sub>)</strong>. Εδώ το άθροισμα είναι σωστό: εξαρτάται από τα T<sub>i</sub>, άρα δεν είναι σταθερό.</div></details></div><div class="qa-card"><div class="qq2">«Κανένας οδηγός να μην οδηγεί <strong>πολύ περισσότερο από τους άλλους</strong>»</div><details><summary>Απάντηση</summary><div><strong>min (max<sub>d</sub> H<sub>d</sub> − min<sub>d</sub> H<sub>d</sub>)</strong>, με H<sub>d</sub> τις ώρες του οδηγού d. Δεκτό και το min max<sub>d</sub> H<sub>d</sub>, με τη γνωστή αδυναμία στις ισοπαλίες.</div></details></div><div class="qa-card"><div class="qq2">«Ο <strong>λιγότερο απασχολημένος</strong> να έχει όσο πιο πολλή δουλειά γίνεται»</div><details><summary>Απάντηση</summary><div><strong>max min<sub>j</sub> Load<sub>j</sub></strong> ≡ min (−min<sub>j</sub> Load<sub>j</sub>). Με βοηθητική: Z ≤ Load<sub>j</sub> ∀j, max Z.</div></details></div><div class="qa-card"><div class="qq2">«Να χρησιμοποιηθούν <strong>όσο λιγότερες αίθουσες</strong>» (ίδιες αίθουσες, X<sub>i</sub> = αίθουσα της i)</div><details><summary>Απάντηση</summary><div><strong>min max<sub>i</sub> X<sub>i</sub></strong> (επειδή οι αίθουσες είναι ίδιες, οι χρησιμοποιούμενες ξαναριθμούνται 1..u), ή U<sub>r</sub> ≥ [X<sub>i</sub> = r] ∀i, r και min Σ<sub>r</sub> U<sub>r</sub>.</div></details></div><div class="qa-card"><div class="qq2">«<strong>Μέγιστο κέρδος</strong> από τις παραγγελίες που θα εκτελεστούν» (x<sub>i</sub> ∈ {0,1}, κέρδος P<sub>i</sub>)</div><details><summary>Απάντηση</summary><div><strong>max Σ<sub>i</sub> P<sub>i</sub> x<sub>i</sub></strong> ≡ min −Σ<sub>i</sub> P<sub>i</sub> x<sub>i</sub>. Όχι σταθερό, γιατί δεν εκτελούνται όλες.</div></details></div><div class="qa-card"><div class="qq2">«<strong>Ελάχιστο συνολικό κόστος</strong>, όπου ο εργαζόμενος j χρεώνει c<sub>ij</sub> για την εργασία i»</div><details><summary>Απάντηση</summary><div><strong>min Σ<sub>i</sub> Σ<sub>j</sub> c<sub>ij</sub> · [X<sub>i</sub> = j]</strong>. Δεν είναι σταθερό, επειδή το κόστος εξαρτάται από το <em>ποιος</em> κάνει την εργασία.</div></details></div><div class="qa-card"><div class="qq2">«<strong>Ελάχιστος συνολικός φόρτος</strong>», όπου κάθε εργασία i (φόρτος L<sub>i</sub>) ανατίθεται σε ακριβώς έναν</div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Παγίδα.</strong> Σ<sub>j</sub> Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>, σταθερό. Γράψε ότι το κριτήριο δεν διακρίνει λύσεις και πρότεινε κάτι που μετράει διαφορές (max − min).</div></details></div><div class="qa-card"><div class="qq2">«Να ικανοποιηθούν <strong>όσο περισσότερες προτιμήσεις</strong>» (ο φοιτητής s θέλει την ομάδα g<sub>s</sub>)</div><details><summary>Απάντηση</summary><div><strong>max Σ<sub>s</sub> [X<sub>s</sub> = g<sub>s</sub>]</strong> ≡ min Σ<sub>s</sub> [X<sub>s</sub> ≠ g<sub>s</sub>].</div></details></div><div class="qa-card"><div class="qq2">«Οι εξετάσεις του ίδιου έτους να <strong>απέχουν όσο γίνεται περισσότερο</strong>»</div><details><summary>Απάντηση</summary><div>max min απόστασης: G ≤ |D<sub>c</sub> − D<sub>c′</sub>| για κάθε ζεύγος c ≠ c′ του ίδιου έτους, <strong>max G</strong> (≡ min −G).</div></details></div><div class="qa-card"><div class="qq2">«Να κοπούν <strong>όσο λιγότερες σχέσεις</strong>» όταν χωρίζουμε μια ομάδα στα δύο (x<sub>v</sub> ∈ {0,1})</div><details><summary>Απάντηση</summary><div><strong>min Σ<sub>(u,v)∈E</sub> [x<sub>u</sub> ≠ x<sub>v</sub>]</strong> (με βάρη: w<sub>uv</sub> · [x<sub>u</sub> ≠ x<sub>v</sub>]).</div></details></div><div class="qa-card"><div class="qq2">«Η <strong>μεγαλύτερη καθυστέρηση</strong> να είναι όσο μικρότερη γίνεται» (προθεσμία d<sub>i</sub>)</div><details><summary>Απάντηση</summary><div><strong>min max<sub>i</sub> max(0, T<sub>i</sub> + D<sub>i</sub> − d<sub>i</sub>)</strong>. «Η μεγαλύτερη … όσο μικρότερη» είναι πάντα min max.</div></details></div></div>
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="which"></div>
+</section>
+
+<section id="aux">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🧮</div><h2>Βοηθητικές μεταβλητές: σωστή ή λάθος κατεύθυνση;</h2></div>
+
+  <p class="lead">Μια ανισότητα «Z ≥ κάτι» κάνει το Z μόνο <strong>φράγμα</strong>. Γίνεται ίσο με αυτό που θέλεις μόνο αν η βελτιστοποίηση το σπρώχνει προς το σωστό μέρος. Για καθεμία, πες αν μετράει αυτό που υπόσχεται.</p>
+<div class="qa-grid"><div class="qa-card"><div class="qq2">Z ≥ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>min Z</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--green)">Σωστό.</strong> Ο λύτης κατεβάζει το Z μέχρι το μεγαλύτερο Load<sub>j</sub>: min max.</div></details></div><div class="qa-card"><div class="qq2">Z ≥ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>max Z</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Λάθος.</strong> Το Z ανεβαίνει στο πάνω όριο του πεδίου του, ανεξάρτητα από τους φόρτους.</div></details></div><div class="qa-card"><div class="qq2">Z ≤ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>max Z</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--green)">Σωστό.</strong> Το Z ανεβαίνει μέχρι το μικρότερο Load<sub>j</sub>: max min.</div></details></div><div class="qa-card"><div class="qq2">Z ≤ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>min Z</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Λάθος.</strong> Το Z πέφτει στο 0 σε κάθε λύση. Σταθερό κόστος.</div></details></div><div class="qa-card"><div class="qq2">Z<sub>max</sub> ≥ Load<sub>j</sub>, Z<sub>min</sub> ≤ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>min Z<sub>max</sub> − Z<sub>min</sub></strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--green)">Σωστό.</strong> Το −Z<sub>min</sub> σπρώχνει το Z<sub>min</sub> προς τα πάνω, το Z<sub>max</sub> προς τα κάτω: min (max − min).</div></details></div><div class="qa-card"><div class="qq2">Z<sub>max</sub> ≥ Load<sub>j</sub>, Z<sub>min</sub> ≤ Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>min Z<sub>max</sub> + Z<sub>min</sub></strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Λάθος.</strong> Το Z<sub>min</sub> πέφτει στο 0 και μένει μόνο το min max.</div></details></div><div class="qa-card"><div class="qq2">Z = Load<sub>j</sub> ∀j &nbsp;·&nbsp; <strong>min Z</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Λάθος ιδέα.</strong> Αυτό είναι ο περιορισμός «όλοι ίσοι», όχι κόστος. Με φόρτους 6,6,4,2,2 και K = 3 (σύνολο 20) δεν έχει καμία λύση.</div></details></div><div class="qa-card"><div class="qq2">Max = max(Load<sub>1</sub>, …, Load<sub>K</sub>) &nbsp;·&nbsp; <strong>min Max</strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--green)">Σωστό.</strong> Εδώ το Max είναι <em>ίσο</em> με το μέγιστο (έκφραση), οπότε η κατεύθυνση δεν χρειάζεται για να έχει τη σωστή τιμή.</div></details></div><div class="qa-card"><div class="qq2">U<sub>j</sub> ∈ {0,1}, U<sub>j</sub> ≥ [X<sub>i</sub> = j] ∀i, j &nbsp;·&nbsp; <strong>min Σ<sub>j</sub> U<sub>j</sub></strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--green)">Σωστό.</strong> Το U<sub>j</sub> αναγκάζεται σε 1 όταν κάποια εργασία πάει στον j, αλλιώς η ελαχιστοποίηση το κρατάει 0: πλήθος χρησιμοποιούμενων.</div></details></div><div class="qa-card"><div class="qq2">Y<sub>uv</sub> ≥ x<sub>u</sub> − x<sub>v</sub>, Y<sub>uv</sub> ≥ x<sub>v</sub> − x<sub>u</sub> &nbsp;·&nbsp; <strong>max Σ w<sub>uv</sub> Y<sub>uv</sub></strong></div><details><summary>Απάντηση</summary><div><strong style="color:var(--red)">Λάθος κατεύθυνση.</strong> Με max, το Y<sub>uv</sub> γίνεται 1 ακόμα κι όταν x<sub>u</sub> = x<sub>v</sub>. Το σωστό είναι <strong>min</strong>, και τότε Y<sub>uv</sub> = |x<sub>u</sub> − x<sub>v</sub>|.</div></details></div></div>
+  <div class="mnemo"><div class="hd">🧠 Κανόνας</div>
+  <p style="margin:4px 0"><strong>Άνω φράγμα → min. Κάτω φράγμα → max.</strong> Αν το ίδιο κόστος έχει και τα δύο, το κάτω φράγμα μπαίνει με πρόσημο μείον.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="aux"></div>
+</section>
+
+<section id="variants">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🔀</div><h2>Παραλλαγές του Ιουνίου</h2></div>
+
+  <p class="lead">Το ίδιο πρόβλημα με μία αλλαγή κάθε φορά. Αν γράφεις σωστά και τις οκτώ, το θέμα του Ιουνίου σε οποιαδήποτε μορφή δεν θα σε ξαφνιάσει.</p>
+<div class="math" style="text-align:left"><strong>Βάση (Ιούνιος 2026):</strong> X<sub>i</sub> ∈ {1, …, K} &nbsp;·&nbsp; Load<sub>j</sub> = Σ<sub>i=1</sub><sup>N</sup> L<sub>i</sub> · [X<sub>i</sub> = j] ≤ M &nbsp; ∀j &nbsp;·&nbsp; <span class="quant">min</span> max<sub>j</sub> Load<sub>j</sub> − min<sub>j</sub> Load<sub>j</sub></div>
+<div class="drill" id="v1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Π1 · Κανείς χωρίς δουλειά</div>
+  <div class="drill-body">
+<p>«Κάθε εργαζόμενος πρέπει να αναλάβει τουλάχιστον μία εργασία.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">Σ<sub>i=1</sub><sup>N</sup> [X<sub>i</sub> = j] ≥ 1 &nbsp; ∀ j ∈ {1..K}</div><p>Με δυαδικό πίνακα: Σ<sub>i</sub> x<sub>ij</sub> ≥ 1 ∀j. Πρόσεξε ότι μετράς <strong>πλήθος</strong> εργασιών ([·] χωρίς το L<sub>i</sub>), όχι φόρτο.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v2">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Π2 · Δεξιότητες</div>
+  <div class="drill-body">
+<p>«Ο εργαζόμενος j μπορεί να αναλάβει μόνο τις εργασίες ενός δεδομένου συνόλου S<sub>j</sub>.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">X<sub>i</sub> ∈ { j ∈ {1..K} : i ∈ S<sub>j</sub> } &nbsp; ∀ i</div><p>Ισοδύναμα: X<sub>i</sub> ≠ j για κάθε j με i ∉ S<sub>j</sub>. Ό,τι αφορά μία μόνο μεταβλητή γράφεται πιο καθαρά ως <strong>περιορισμός πεδίου</strong>.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v3">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Π3 · Μαζί ή χώρια</div>
+  <div class="drill-body">
+<p>«Οι εργασίες 3 και 7 πρέπει να γίνουν από διαφορετικούς εργαζόμενους, ενώ οι 2 και 5 από τον ίδιο.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">X<sub>3</sub> ≠ X<sub>7</sub> &nbsp;&nbsp;&nbsp; X<sub>2</sub> = X<sub>5</sub></div><p>Γενικά, για σύνολο ζευγών Diff: X<sub>a</sub> ≠ X<sub>b</sub> ∀(a,b) ∈ Diff. Αυτό είναι το ίδιο με το «δεν επιτρέπεται να συμπέσουν» του 2020Α και των δραστηριοτήτων.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Π4 · Ο φόρτος εξαρτάται από τον εργαζόμενο</div>
+  <div class="drill-body">
+<p>«Κάθε εργαζόμενος j έχει δικό του όριο M<sub>j</sub>, και η εργασία i του κοστίζει φόρτο L<sub>ij</sub> (άλλοι είναι πιο γρήγοροι). Θέλουμε τον ελάχιστο συνολικό φόρτο.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">Load<sub>j</sub> = Σ<sub>i</sub> L<sub>ij</sub> · [X<sub>i</sub> = j] ≤ M<sub>j</sub> &nbsp; ∀j<br><span class="quant">min</span> Σ<sub>j</sub> Load<sub>j</sub> = Σ<sub>i</sub> Σ<sub>j</sub> L<sub>ij</sub> · [X<sub>i</sub> = j]</div><p><strong>Εδώ το «min συνολικού φόρτου» είναι σωστό.</strong> Το άθροισμα ισούται με Σ<sub>i</sub> L<sub>i,X<sub>i</sub></sub> και αλλάζει ανάλογα με το ποιος κάνει κάθε εργασία. Τον Ιούνιο ο φόρτος L<sub>i</sub> δεν εξαρτιόταν από τον εργαζόμενο, γι' αυτό το άθροισμα ήταν σταθερό.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Π5 · Όσο λιγότεροι εργαζόμενοι</div>
+  <div class="drill-body">
+<p>«Να χρησιμοποιηθούν όσο το δυνατόν λιγότεροι εργαζόμενοι.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">U<sub>j</sub> ∈ {0,1} &nbsp; ∀j &nbsp;<span class="op">// 1 ⟺ ο j χρησιμοποιείται</span><br>U<sub>j</sub> ≥ [X<sub>i</sub> = j] &nbsp; ∀i, ∀j<br><span class="quant">min</span> Σ<sub>j=1</sub><sup>K</sup> U<sub>j</sub></div><p><strong>Κατεύθυνση:</strong> το U<sub>j</sub> αναγκάζεται σε 1 όταν κάποια εργασία πάει στον j· αλλιώς η ελαχιστοποίηση το αφήνει 0.</p><p><strong>Συντομότερα:</strong> αφού οι εργαζόμενοι είναι ίδιοι (κοινό M), κάθε λύση με u εργαζόμενους ξαναριθμείται ώστε να χρησιμοποιεί τους 1..u, άρα <span class="quant">min</span> max<sub>i</sub> X<sub>i</sub> δίνει το ίδιο. Αυτό <em>δεν</em> ισχύει αν οι εργαζόμενοι διαφέρουν (Π2, Π4).</p><p>Στο παράδειγμα 6, 6, 4, 2, 2 με M = 10 αρκούν 2 εργαζόμενοι: {6, 4} και {6, 2, 2}.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v6">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Π6 · Κοντά στον μέσο όρο</div>
+  <div class="drill-body">
+<p>«Ο φόρτος κάθε εργαζόμενου δεν επιτρέπεται να απέχει από τον μέσο όρο περισσότερο από Δ.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">| K · Load<sub>j</sub> − Σ<sub>i=1</sub><sup>N</sup> L<sub>i</sub> | ≤ K · Δ &nbsp; ∀j</div><p>Πολλαπλασιάζω με K για να μείνω σε ακέραιους (ο μέσος όρος Σ L<sub>i</sub> / K μπορεί να μην είναι ακέραιος). Η λέξη «δεν επιτρέπεται» το κάνει <strong>περιορισμό</strong>, όχι κόστος.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v7">
+  <div class="drill-hd"><span class="lvl h">HARD</span> Π7 · Πρώτα min max, μετά max min</div>
+  <div class="drill-body">
+<p>«Ελαχιστοποίησε τον φόρτο του πιο φορτωμένου· ανάμεσα σε λύσεις με τον ίδιο, προτίμησε αυτή όπου ο λιγότερο φορτωμένος έχει τον περισσότερο φόρτο.» Γράψε <strong>μία</strong> συνάρτηση κόστους.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><span class="quant">min</span> (M + 1) · max<sub>j</sub> Load<sub>j</sub> − min<sub>j</sub> Load<sub>j</sub></div><p>Το min<sub>j</sub> Load<sub>j</sub> παίρνει τιμές στο 0..M, άρα μία μονάδα στο max (βάρος M + 1) μετράει περισσότερο από οποιαδήποτε διαφορά στο min. Έτσι το max κρίνει πρώτο και το min σπάει τις ισοπαλίες.</p><p>Στο παράδειγμα (M = 10): (8,6,6) → 11·8 − 6 = 82 και (8,8,4) → 11·8 − 4 = 84, άρα κερδίζει η (8,6,6).</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="v8">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Π8 · Δεν χωράνε όλες</div>
+  <div class="drill-body">
+<p>«Δεν είναι υποχρεωτικό να ανατεθούν όλες οι εργασίες. Θέλουμε να ανατεθεί όσο το δυνατόν μεγαλύτερος συνολικός φόρτος, χωρίς κανείς να ξεπεράσει το M.»</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ξεκίνα από το μοντέλο του Ιουνίου (X<sub>i</sub> ∈ {1..K}, Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M) και γράψε μόνο ό,τι αλλάζει.</p></div><details class="reveal"><summary>✅ Απάντηση</summary><div class="reveal-body">
+<div class="math" style="text-align:left">X<sub>i</sub> ∈ {0, 1, …, K} &nbsp;<span class="op">// 0 = η εργασία δεν ανατίθεται</span><br>Σ<sub>i</sub> L<sub>i</sub> · [X<sub>i</sub> = j] ≤ M &nbsp; ∀ j ∈ {1..K}<br><span class="quant">max</span> Σ<sub>i</sub> L<sub>i</sub> · [X<sub>i</sub> ≠ 0] &nbsp; ≡ &nbsp; <span class="quant">min</span> Σ<sub>i</sub> L<sub>i</sub> · [X<sub>i</sub> = 0]</div><p>Εδώ ο συνολικός φόρτος <strong>έχει νόημα</strong>, γιατί δεν ανατίθενται όλες οι εργασίες. Το μοντέλο είναι το πολλαπλό σακίδιο του 2021Α με L<sub>i</sub> στη θέση και του βάρους και της αξίας.</p>
+</div></details>
+  </div>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="variants"></div>
+</section>
+
+<section id="models">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🏗️</div><h2>Μοντελοποίησε μόνος σου: παλιά θέματα</h2></div>
+
+  <p class="lead">Ίδια μορφή με το γραπτό. Γράψε ολόκληρη την απάντηση πριν ανοίξεις τη λύση και σύγκρινε γραμμή προς γραμμή: μεταβλητές, πεδία, περιορισμοί, κόστος, στιγμιότυπο.</p>
+
+<div class="drill" id="m1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Μ1 · Μέγιστη κλίκα<span class="src">2021Β Θ2 · 2016Α (β)</span></div>
+  <div class="drill-body">
+<p>Γράφος με N κόμβους και σύνολο ακμών E. Κλίκα = υποσύνολο κόμβων που ανά δύο συνδέονται. Ζητείται μέγιστη κλίκα. Στιγμιότυπο: N = 8, E = {1-4, 1-5, 1-8, 2-3, 2-5, 2-6, 2-7, 3-7, 4-5, 6-7, 7-8}.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ποια είναι η απόφαση για κάθε κόμβο; Ποιο ζεύγος κόμβων <em>απαγορεύεται</em> να επιλεγεί μαζί;</p></div><details class="reveal"><summary>✅ Μοντέλο + στιγμιότυπο</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Μεταβλητές:</strong> x<sub>v</sub> ∈ {0,1}, v = 1..N &nbsp;<span class="op">// 1 ⟺ ο κόμβος v ανήκει στην κλίκα</span><br>
+<strong>Περιορισμοί:</strong> x<sub>u</sub> + x<sub>v</sub> ≤ 1 &nbsp; για κάθε u &lt; v με (u,v) ∉ E &nbsp;<span class="op">// δύο μη γειτονικοί δεν μπαίνουν μαζί</span><br>
+<strong>Κόστος:</strong> <span class="quant">max</span> Σ<sub>v</sub> x<sub>v</sub> &nbsp; ≡ &nbsp; <span class="quant">min</span> −Σ<sub>v</sub> x<sub>v</sub><br><br>
+<strong>Στιγμιότυπο:</strong> x<sub>1</sub>, …, x<sub>8</sub> ∈ {0,1} και ένας περιορισμός για καθένα από τα 17 μη γειτονικά ζεύγη:<br>
+(1,2) (1,3) (1,6) (1,7) (2,4) (2,8) (3,4) (3,5) (3,6) (3,8) (4,6) (4,7) (4,8) (5,6) (5,7) (5,8) (6,8)<br>
+π.χ. x<sub>1</sub> + x<sub>2</sub> ≤ 1, x<sub>1</sub> + x<sub>3</sub> ≤ 1, …, x<sub>6</sub> + x<sub>8</sub> ≤ 1<br>
+<span class="quant">max</span> x<sub>1</sub> + … + x<sub>8</sub> &nbsp; → βέλτιστο 3: {1,4,5}, {2,3,7}, {2,6,7}</div><p>Στην ECLiPSe: <code>Xs :: 0..1</code>, <code>X1 + X2 #=&lt; 1</code> για κάθε μη ακμή, <code>Cost #= -sum(Xs)</code>, <code>bb_min(labeling(Xs), Cost, _)</code>.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="m2">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Μ2 · Δραστηριότητες με όριο χρόνου<span class="src">2020Β Θ2 · 15/75 · 2018Β (β)</span></div>
+  <div class="drill-body">
+<p>Δραστηριότητες με χρόνους έναρξης και λήξης στελεχώνονται από άτομα. Κάθε δραστηριότητα από ακριβώς ένα άτομο. Κανείς δεν αναλαμβάνει δύο που επικαλύπτονται, και ανάμεσα σε δύο διαδοχικές του ίδιου ατόμου μεσολαβεί τουλάχιστον μία μονάδα χρόνου. Ο συνολικός χρόνος κάθε ατόμου δεν ξεπερνά το MaxTime. Εξειδίκευσε για τις 9 δραστηριότητες <code>act(0,3), act(0,4), act(1,5), act(4,6), act(6,8), act(6,9), act(9,10), act(9,13), act(11,14)</code>, με 3 άτομα και MaxTime = 10, και πρότεινε εύλογη συνάρτηση κόστους.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Πότε δύο δραστηριότητες <em>συγκρούονται</em>; Γράψε τη συνθήκη με S και E, και μετά βρες όλα τα ζεύγη που την ικανοποιούν.</p></div><details class="reveal"><summary>✅ Μοντέλο + στιγμιότυπο</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Δεδομένα:</strong> δραστηριότητες a = 1..n με [S<sub>a</sub>, E<sub>a</sub>], διάρκεια D<sub>a</sub> = E<sub>a</sub> − S<sub>a</sub>· P άτομα· όριο T (MaxTime).<br>
+<strong>Μεταβλητές:</strong> X<sub>a</sub> ∈ {1, …, P} &nbsp;<span class="op">// το άτομο που αναλαμβάνει την a</span><br>
+<strong>Περιορισμοί:</strong><br>
+(1) X<sub>a</sub> ≠ X<sub>b</sub> &nbsp; για κάθε a &lt; b με S<sub>b</sub> ≤ E<sub>a</sub> και S<sub>a</sub> ≤ E<sub>b</sub> &nbsp;<span class="op">// επικαλύπτονται ή δεν έχουν κενό μίας μονάδας</span><br>
+(2) Σ<sub>a=1</sub><sup>n</sup> D<sub>a</sub> · [X<sub>a</sub> = p] ≤ T &nbsp; ∀ p ∈ {1..P}<br>
+<strong>Κόστος (εύλογο):</strong> <span class="quant">min</span> max<sub>p</sub> W<sub>p</sub> − min<sub>p</sub> W<sub>p</sub>, &nbsp; W<sub>p</sub> = Σ<sub>a</sub> D<sub>a</sub>[X<sub>a</sub> = p] &nbsp;<span class="op">// ισοκατανομή χρόνου</span><br>
+<span style="color:var(--muted)">ή, για λιγότερα άτομα:</span> <span class="quant">min</span> max<sub>a</sub> X<sub>a</sub><br><br>
+<strong>Στιγμιότυπο (P = 3, T = 10):</strong> X<sub>1</sub>, …, X<sub>9</sub> ∈ {1, 2, 3}<br>
+X<sub>1</sub>≠X<sub>2</sub>, X<sub>1</sub>≠X<sub>3</sub>, X<sub>2</sub>≠X<sub>3</sub>, X<sub>2</sub>≠X<sub>4</sub>, X<sub>3</sub>≠X<sub>4</sub>, X<sub>4</sub>≠X<sub>5</sub>, X<sub>4</sub>≠X<sub>6</sub>, X<sub>5</sub>≠X<sub>6</sub>, X<sub>6</sub>≠X<sub>7</sub>, X<sub>6</sub>≠X<sub>8</sub>, X<sub>7</sub>≠X<sub>8</sub>, X<sub>8</sub>≠X<sub>9</sub><br>
+3[X<sub>1</sub>=p] + 4[X<sub>2</sub>=p] + 4[X<sub>3</sub>=p] + 2[X<sub>4</sub>=p] + 2[X<sub>5</sub>=p] + 3[X<sub>6</sub>=p] + 1[X<sub>7</sub>=p] + 4[X<sub>8</sub>=p] + 3[X<sub>9</sub>=p] ≤ 10, &nbsp; p = 1, 2, 3</div><div class="note"><div class="hd">📝 Τι δίνει το στιγμιότυπο (ελεγμένο εξαντλητικά)</div>
+<ul style="padding-left:1.5rem;margin:4px 0">
+  <li>Οι 12 συγκρούσεις αφήνουν 48 αναθέσεις σε 3 άτομα (όσες και στο Θέμα 1 της ίδιας εξέτασης) και καμία σε 2. Και οι 48 σέβονται το T = 10· με T = 9 δεν υπάρχει λύση.</li>
+  <li>Προφίλ χρόνων: 36 αναθέσεις με (10, 9, 7) και 12 με (10, 10, 6).</li>
+  <li><strong>Το min max είναι σταθερό εδώ</strong> (πάντα 10). Το εύρος (3 έναντι 4), τα τετράγωνα (230 έναντι 236) και το max min (7 έναντι 6) διαλέγουν τις 36. Ίδιο φαινόμενο με το M = 8 στο widget.</li>
+</ul></div>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="m3">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Μ3 · Διαμέριση γράφου<span class="src">2017Α (β)</span></div>
+  <div class="drill-body">
+<p>Γράφος με βάρη στις ακμές. Τον χωρίζουμε σε δύο υπογράφους με πλήθη κόμβων ίσα ή που διαφέρουν κατά ένα. Κόστος διαμέρισης = άθροισμα βαρών των ακμών που «κόβονται». Ζητείται διαμέριση ελάχιστου κόστους, και σκιαγράφηση στην ECLiPSe.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Πώς εκφράζεις «η ακμή (u,v) κόβεται» με τις μεταβλητές σου; Πώς εκφράζεις «πλήθη ίσα ή διαφέρουν κατά 1» με <em>ένα</em> άθροισμα;</p></div><details class="reveal"><summary>✅ Μοντέλο</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Δεδομένα:</strong> γράφος G = (V, E), n = |V|, βάρη w<sub>uv</sub> > 0 στις ακμές.<br>
+<strong>Μεταβλητές:</strong> x<sub>v</sub> ∈ {0,1}, v ∈ V &nbsp;<span class="op">// σε ποιο από τα δύο κομμάτια ανήκει ο v</span><br>
+<strong>Περιορισμοί:</strong> ⌊n/2⌋ ≤ Σ<sub>v∈V</sub> x<sub>v</sub> ≤ ⌈n/2⌉ &nbsp;<span class="op">// πλήθη ίσα ή διαφέρουν κατά 1</span><br>
+<strong>Κόστος:</strong> <span class="quant">min</span> Σ<sub>(u,v)∈E</sub> w<sub>uv</sub> · [x<sub>u</sub> ≠ x<sub>v</sub>] &nbsp;<span class="op">// βάρος των ακμών που κόβονται</span><br><br>
+<strong>Γραμμική μορφή:</strong> y<sub>uv</sub> ∈ {0,1}, y<sub>uv</sub> ≥ x<sub>u</sub> − x<sub>v</sub>, y<sub>uv</sub> ≥ x<sub>v</sub> − x<sub>u</sub>, <span class="quant">min</span> Σ w<sub>uv</sub> y<sub>uv</sub><br>
+<strong>Συμμετρία:</strong> η ανταλλαγή των δύο κομματιών δίνει ίδιο κόστος, άρα μπορώ να ορίσω x<sub>1</sub> = 0 και να μισέψω τον χώρο αναζήτησης.</div><p>Στην ECLiPSe: <code>Xs :: 0..1</code>, όρια στο <code>sum(Xs)</code>, <code>Cost #= sum(Ws_times_cut)</code> με όρους <code>W * (Xu #\= Xv)</code>, και <code>bb_min(labeling(Xs), Cost, _)</code>.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="m4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Μ4 · Πλανόδιος πωλητής<span class="src">2012Α (β)</span></div>
+  <div class="drill-body">
+<p>N πόλεις με αποστάσεις d(i, j) ανά δύο. Ο πωλητής ξεκινά από μια πόλη, περνά από όλες ακριβώς μία φορά και επιστρέφει. Ζητείται η σειρά επίσκεψης με ελάχιστη συνολική απόσταση. Για N = 5: διαφέρει η σειρά 1, 5, 3, 2, 4 από την 2, 4, 1, 5, 3 ή από την 1, 4, 2, 3, 5; Πώς μικραίνεις τον χώρο αναζήτησης;</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Ζωγράφισε τις τρεις σειρές ως κύκλους. Ποιες ακμές χρησιμοποιεί καθεμία;</p></div><details class="reveal"><summary>✅ Μοντέλο + συμμετρίες</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Μεταβλητές:</strong> O<sub>k</sub> ∈ {1, …, N}, k = 1..N &nbsp;<span class="op">// η πόλη που επισκέπτομαι k-στή</span><br>
+<strong>Περιορισμοί:</strong> alldifferent(O<sub>1</sub>, …, O<sub>N</sub>) &nbsp;<span class="op">// κάθε πόλη ακριβώς μία φορά</span><br>
+<strong>Κόστος:</strong> <span class="quant">min</span> Σ<sub>k=1</sub><sup>N−1</sup> d(O<sub>k</sub>, O<sub>k+1</sub>) + d(O<sub>N</sub>, O<sub>1</sub>)<br><br>
+<strong>Σπάσιμο συμμετρίας:</strong> O<sub>1</sub> = 1 &nbsp;(σταθερή αφετηρία) &nbsp;και&nbsp; O<sub>2</sub> &lt; O<sub>N</sub> &nbsp;(σταθερή φορά)</div><p>Και οι τρεις σειρές είναι <strong>ο ίδιος κύκλος</strong>: η 2, 4, 1, 5, 3 είναι περιστροφή της 1, 5, 3, 2, 4 (ξεκινά από άλλη πόλη) και η 1, 4, 2, 3, 5 είναι η ίδια διαδρομή με αντίθετη φορά. Με συμμετρικές αποστάσεις έχουν ίδιο κόστος. Με O<sub>1</sub> = 1 και O<sub>2</sub> &lt; O<sub>N</sub> οι διατάξεις πέφτουν από N! σε (N−1)!/2: για N = 5 από 120 σε 12.</p>
+    <p>Στην ECLiPSe η απόσταση d(O<sub>k</sub>, O<sub>k+1</sub>) γράφεται με έναν πίνακα αποστάσεων και τον περιορισμό <code>element/3</code>, και η βελτιστοποίηση με <code>bb_min</code>.</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="m5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Μ5 · Πρόγραμμα εξετάσεων<span class="src">2010Β (β)</span></div>
+  <div class="drill-body">
+<p>N<sub>1</sub>, N<sub>2</sub>, N<sub>3</sub>, N<sub>4</sub> μαθήματα του 1ου έως 4ου έτους εξετάζονται σε D συνεχόμενες ημέρες. Κάθε ημέρα εξετάζονται το πολύ τρία μαθήματα, και δύο μαθήματα του ίδιου έτους δεν εξετάζονται την ίδια ημέρα. Μοντελοποίησε, και πρότεινε πώς ορίζεται και βρίσκεται η «καλύτερη» λύση.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Το «το πολύ τρία την ημέρα» είναι μέτρημα με [·]. Το «όχι δύο του ίδιου έτους μαζί» είναι alldifferent. Για το «καλύτερη», ποια λέξη διαλέγεις και ποια μορφή (min max ή max min) της αντιστοιχεί;</p></div><details class="reveal"><summary>✅ Μοντέλο</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Δεδομένα:</strong> μαθήματα c ∈ C = C<sub>1</sub> ∪ C<sub>2</sub> ∪ C<sub>3</sub> ∪ C<sub>4</sub> (ανά έτος, |C<sub>y</sub>| = N<sub>y</sub>), D ημέρες.<br>
+<strong>Μεταβλητές:</strong> Day<sub>c</sub> ∈ {1, …, D} &nbsp;<span class="op">// η ημέρα εξέτασης του c</span><br>
+<strong>Περιορισμοί:</strong><br>
+(1) Σ<sub>c∈C</sub> [Day<sub>c</sub> = d] ≤ 3 &nbsp; ∀ d ∈ {1..D}<br>
+(2) alldifferent({Day<sub>c</sub> : c ∈ C<sub>y</sub>}) &nbsp; ∀ y ∈ {1,2,3,4} &nbsp;<span class="op">// ισοδύναμα Day<sub>c</sub> ≠ Day<sub>c′</sub> για c ≠ c′ του ίδιου έτους</span><br><br>
+<strong>«Καλύτερη» (δύο εύλογοι ορισμοί):</strong><br>
+• αραιές εξετάσεις ανά έτος: G ≤ |Day<sub>c</sub> − Day<sub>c′</sub>| για κάθε c ≠ c′ του ίδιου έτους, <span class="quant">max</span> G<br>
+• να τελειώσει νωρίς η εξεταστική: <span class="quant">min</span> max<sub>c</sub> Day<sub>c</sub></div><p>Το «καλύτερη» βρίσκεται με branch and bound: <code>bb_min(labeling(Days), Cost, _)</code>, με <code>Cost</code> το κόστος (ή −G για το max G).</p>
+</div></details>
+  </div>
+</div>
+
+<div class="drill" id="m6">
+  <div class="drill-hd"><span class="lvl h">HARD</span> Μ6 · Ακολουθία Langford<span class="src">2015Α (β)</span></div>
+  <div class="drill-body">
+<p>Λίστα 14 θέσεων με τους αριθμούς 1..7 από δύο φορές, ώστε ανάμεσα στα δύο k να υπάρχουν ακριβώς k στοιχεία. Πρότεινε μοντέλο CSP (με μαθηματικά ή με γνωστούς περιορισμούς όπως το alldifferent), και μία δεύτερη, διαφορετική μοντελοποίηση.</p><div class="try"><div class="hd">✍️ Γράψε πρώτα στο χαρτί</div><p style="margin:4px 0">Δύο δρόμοι: μεταβλητή για κάθε <em>αριθμό</em> (πού μπαίνει) ή για κάθε <em>θέση</em> (τι περιέχει). Με ποιον το «ακριβώς k ενδιάμεσα» γράφεται πιο εύκολα;</p></div><details class="reveal"><summary>✅ Δύο μοντέλα</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>Μοντέλο Α (θέσεις):</strong> P<sub>k</sub> ∈ {1, …, 13 − k}, k = 1..7 &nbsp;<span class="op">// η θέση του πρώτου k· το δεύτερο είναι στη θέση P<sub>k</sub> + k + 1 ≤ 14</span><br>
+alldifferent(P<sub>1</sub>, …, P<sub>7</sub>, P<sub>1</sub> + 2, P<sub>2</sub> + 3, …, P<sub>7</sub> + 8) &nbsp;<span class="op">// 14 διαφορετικές θέσεις</span><br><br>
+<strong>Μοντέλο Β (τιμές):</strong> V<sub>p</sub> ∈ {1, …, 7}, p = 1..14 &nbsp;<span class="op">// ο αριθμός στη θέση p</span><br>
+Σ<sub>p=1</sub><sup>14</sup> [V<sub>p</sub> = k] = 2 &nbsp; ∀k &nbsp;<span class="op">// κάθε k δύο φορές</span><br>
+Σ<sub>p=1</sub><sup>13−k</sup> [V<sub>p</sub> = k] · [V<sub>p+k+1</sub> = k] = 1 &nbsp; ∀k &nbsp;<span class="op">// τα δύο k απέχουν k + 1 θέσεις</span></div><p>Το Α είναι πιο μικρό και «άμεσα υλοποιήσιμο» (ένα alldifferent). Στο Β, αφού κάθε k εμφανίζεται ακριβώς δύο φορές, ένα ζεύγος θέσεων σε απόσταση k + 1 με τιμή k είναι αναγκαστικά αυτά τα δύο. Και τα δύο δίνουν 52 λύσεις (26 και οι κατοπτρικές τους).</p>
+</div></details>
+  </div>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="models"></div>
+</section>
+
+<section id="timed">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">⏱️</div><h2>Προσομοίωση 25 λεπτών (καινούργιο πρόβλημα)</h2></div>
+
+  <p class="lead">Πρόβλημα που δεν έχει πέσει, γραμμένο στο ύφος της εξέτασης. Βάλε χρονόμετρο στα 25 λεπτά και γράψε την απάντηση όπως θα την παρέδιδες.</p>
+  <div class="solved"><div class="solved-hd">Φόρτωση δεμάτων σε φορτηγά</div><div class="solved-body">
+  <p>Μια αποθήκη έχει N δέματα με βάρη W<sub>i</sub> και K ίδια φορτηγά χωρητικότητας C. Κάθε δέμα φορτώνεται σε ακριβώς ένα φορτηγό, και το συνολικό βάρος σε κάθε φορτηγό δεν ξεπερνά το C. Κάποια ζεύγη δεμάτων (σύνολο Inc) δεν επιτρέπεται να ταξιδέψουν μαζί.</p>
+  <ol style="list-style-type:lower-greek;padding-left:1.8rem;line-height:1.8">
+    <li>Μοντελοποίησε το πρόβλημα ως CSP (μεταβλητές, πεδία, περιορισμοί), με περιορισμούς άμεσα υλοποιήσιμους στην ECLiPSe.</li>
+    <li>Ορίστε συνάρτηση κόστους ώστε να χρησιμοποιούνται όσο το δυνατόν λιγότερα φορτηγά.</li>
+    <li>Ορίστε συνάρτηση κόστους ώστε τα K φορτηγά να είναι όσο πιο ισοφορτωμένα γίνεται.</li>
+    <li>Εξειδίκευσε για N = 6, W = (5, 4, 4, 3, 2, 2), K = 3, C = 10, Inc = {(1,2), (3,4)}.</li>
+  </ol>
+  </div></div>
+<details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>(α)</strong> X<sub>i</sub> ∈ {1, …, K}, i = 1..N &nbsp;<span class="op">// το φορτηγό του δέματος i</span><br>
+Σ<sub>i=1</sub><sup>N</sup> W<sub>i</sub> · [X<sub>i</sub> = k] ≤ C &nbsp; ∀ k ∈ {1..K}<br>
+X<sub>a</sub> ≠ X<sub>b</sub> &nbsp; ∀ (a, b) ∈ Inc<br><br>
+<strong>(β)</strong> U<sub>k</sub> ∈ {0,1}, &nbsp; U<sub>k</sub> ≥ [X<sub>i</sub> = k] ∀i, k, &nbsp; <span class="quant">min</span> Σ<sub>k</sub> U<sub>k</sub> &nbsp;<span class="op">// ή min max<sub>i</sub> X<sub>i</sub>, αφού τα φορτηγά είναι ίδια</span><br><br>
+<strong>(γ)</strong> Load<sub>k</sub> = Σ<sub>i</sub> W<sub>i</sub> · [X<sub>i</sub> = k], &nbsp; <span class="quant">min</span> max<sub>k</sub> Load<sub>k</sub> − min<sub>k</sub> Load<sub>k</sub><br><br>
+<strong>(δ)</strong> X<sub>1</sub>, …, X<sub>6</sub> ∈ {1, 2, 3}<br>
+5[X<sub>1</sub>=k] + 4[X<sub>2</sub>=k] + 4[X<sub>3</sub>=k] + 3[X<sub>4</sub>=k] + 2[X<sub>5</sub>=k] + 2[X<sub>6</sub>=k] ≤ 10, &nbsp; k = 1, 2, 3<br>
+X<sub>1</sub> ≠ X<sub>2</sub>, &nbsp; X<sub>3</sub> ≠ X<sub>4</sub></div><div class="note"><div class="hd">📝 Αποτελέσματα στο στιγμιότυπο (ελεγμένα εξαντλητικά)</div>
+<ul style="padding-left:1.5rem;margin:4px 0">
+  <li>Εφικτές αναθέσεις: 228.</li>
+  <li>(β) Αρκούν <strong>2 φορτηγά</strong>: {1, 4, 5} και {2, 3, 6}, 10 κιλά το καθένα (και η συμμετρική {1, 4, 6} / {2, 3, 5}).</li>
+  <li>(γ) Βέλτιστο εύρος <strong>1</strong>, με φορτία (7, 7, 6), π.χ. {1, 5}, {2, 4}, {3, 6}. Εύρος 0 δεν γίνεται, αφού το 20 δεν διαιρείται με το 3.</li>
+  <li>Ο συνολικός φόρτος είναι 20 σε κάθε ανάθεση: η παγίδα του Ιουνίου υπάρχει και εδώ.</li>
+</ul></div>
+</div></details><div class="compare-grid">
+  <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">Αυτοέλεγχος</h4>
+  <ul style="padding-left:1.5rem;line-height:1.8;font-size:0.93rem">
+    <li>Έγραψα ερμηνεία και πεδίο για κάθε μεταβλητή (και για τις U<sub>k</sub>);</li>
+    <li>Ο περιορισμός χωρητικότητας έχει «∀k»;</li>
+    <li>Τα ασύμβατα ζεύγη έγιναν X<sub>a</sub> ≠ X<sub>b</sub>;</li>
+    <li>Στο (β) η κατεύθυνση κάνει το U<sub>k</sub> σωστό;</li>
+    <li>Στο (γ) το κόστος αλλάζει από λύση σε λύση;</li>
+    <li>Στο (δ) έγραψα τους περιορισμούς με αριθμούς;</li>
+  </ul></div>
+  <div class="compare-cell good" style="border-color:var(--orange)"><h4 style="color:var(--orange);margin-top:0">Συχνά λάθη εδώ</h4>
+  <ul style="padding-left:1.5rem;line-height:1.8;font-size:0.93rem">
+    <li>«min Σ<sub>k</sub> Load<sub>k</sub>» στο (γ): σταθερό (20).</li>
+    <li>«max Σ U<sub>k</sub>» στο (β): όλα τα U<sub>k</sub> γίνονται 1.</li>
+    <li>U<sub>k</sub> ≤ [X<sub>i</sub> = k]: κάνει το U<sub>k</sub> 0 μόλις ένα δέμα <em>δεν</em> είναι στο k.</li>
+    <li>Ξεχασμένο «∀k» ή όρια δεικτών.</li>
+  </ul></div>
+</div>
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="timed"></div>
+</section>
+
+<section id="reflect">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🪞</div><h2>Μετά την προπόνηση</h2></div>
+
+  <ol class="steps">
+    <li><strong>Μπορώ να εξηγήσω σε μία πρόταση γιατί το «min συνολικού φόρτου» ήταν λάθος τον Ιούνιο;</strong> (Σ<sub>j</sub> Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub> σε κάθε λύση.)</li>
+    <li><strong>Ξέρω πότε το άθροισμα είναι σωστό;</strong> Όταν εξαρτάται από τις αποφάσεις: κόστος που αλλάζει με τον εργαζόμενο (Π4), ή όταν δεν ανατίθενται όλα (Π8).</li>
+    <li><strong>Ξέρω πότε το min max δεν αρκεί;</strong> Όταν πολλές λύσεις έχουν το ίδιο μέγιστο (widget με M = 8, δραστηριότητες με T = 10).</li>
+    <li><strong>Γράφω σωστά max ή min με βοηθητικές μεταβλητές;</strong> Άνω φράγμα → min, κάτω φράγμα → max.</li>
+  </ol>
+  <div class="exam"><div class="hd">🎯 Στόχος για το 8ωρο</div>
+  <p style="margin:4px 0">Widget και γέφυρα, τα 12 σενάρια, οι παραλλαγές με <span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span>, τα Μ1 και Μ2, και η προσομοίωση. Τα υπόλοιπα αν περισσέψει χρόνος.</p></div>
+<p style="text-align:center;margin-top:14px"><a class="chip" href="exam_theme2_csp.html" style="text-decoration:none;background:var(--blue);color:#0d1117;font-weight:700;padding:8px 16px">← Θεωρία Θέματος 2</a></p>
+  <div class="section-quiz" data-topic="exam_t2_gym" data-section="reflect"></div>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Θέμα 2 · Προπόνηση</div>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Θέμα 2 · Μοντελοποίηση CSP</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--bdim) 55%,#0d1117 100%)}
+.hero::after{content:'min Σ cᵢxᵢ';position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.9rem,2.5vw,1.8rem);color:rgba(88,166,255,.07);pointer-events:none;font-weight:700}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Θέμα 2 · ~20 μονάδες · <strong>ΧΩΡΙΣ ΚΩΔΙΚΑ</strong></div>
+  <h1>Μοντελοποίηση <em>CSP</em></h1>
+  <p>Σου περιγράφουν ένα πρόβλημα βελτιστοποίησης. Εσύ το γράφεις ως <strong>Πρόβλημα Ικανοποίησης Περιορισμών</strong> με 4 μέρη. Είναι καθαρό template — μάθε το και το εφαρμόζεις σε οτιδήποτε.</p>
+  <div class="chips">
+    <span class="chip">Μεταβλητές</span><span class="chip">Πεδία</span><span class="chip">Περιορισμοί</span><span class="chip">Κόστος</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#intro">Διαίσθηση &amp; Θεωρία</a>
+  <a href="#warn">Κανόνες</a>
+  <a href="#template">Το Template</a>
+  <a href="#tricks">Tricks</a>
+  <a href="#solved">Λυμένα Παλιά Θέματα</a>
+</nav>
+
+<div class="wrap">
+
+<section id="intro">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">💡</div><h2>Διαίσθηση &amp; Θεωρία (Για Αρχάριους)</h2></div>
+  <p class="lead">Τα προβλήματα CSP (Constraint Satisfaction Problems) αφορούν μια πολύ απλή ιδέα: <strong>«Αντί να γράψεις έναν αλγόριθμο που βρίσκει τη λύση, απλώς περιέγραψε τους κανόνες και άφησε τον υπολογιστή να τη βρει.»</strong></p>
+  
+  <div class="compare-grid">
+    <div class="compare-cell good" style="border-color:var(--cyan);background:linear-gradient(180deg,rgba(57,212,200,.04),transparent)">
+      <h4 style="color:var(--cyan);margin-top:0">1. Τι είναι το CSP; (Η αναλογία του Sudoku)</h4>
+      <p style="font-size:0.92rem;line-height:1.6">
+        Σκέψου ένα Sudoku. Δεν γράφεις κώδικα που ψάχνει αριθμούς. Απλώς λες:
+        <br>• <strong>Μεταβλητές:</strong> Τα 81 τετραγωνάκια (τι πρέπει να συμπληρωθεί).
+        <br>• <strong>Πεδία:</strong> Κάθε τετραγωνάκι παίρνει τιμές από το 1 έως το 9.
+        <br>• <strong>Περιορισμοί:</strong> «Όχι ίδιοι αριθμοί στην ίδια σειρά, στήλη ή κουτάκι 3x3».
+        <br>Ο υπολογιστής παίρνει αυτή την περιγραφή και βρίσκει τη λύση μόνος του.
+      </p>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--purple);background:linear-gradient(180deg,rgba(188,140,255,.04),transparent)">
+      <h4 style="color:var(--purple);margin-top:0">2. Γιατί ΔΕΝ γράφουμε κώδικα στην εξέταση;</h4>
+      <p style="font-size:0.92rem;line-height:1.6">
+        Στις εξετάσεις ζητείται <strong>μόνο η μαθηματική μοντελοποίηση</strong>, όχι η υλοποίηση.
+        <br>• Χρησιμοποιούμε καθαρή μαθηματική γλώσσα (Σ, ∀, ≤, ≥, ∈) για να περιγράψουμε τις μεταβλητές, τα πεδία, τους περιορισμούς και το κόστος.
+        <br>• <strong>Οποιοσδήποτε κώδικας (π.χ. Prolog) μηδενίζεται!</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="warn">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🚦</div><h2>Διάβασε πρώτα αυτό</h2></div>
+  <div class="warn"><div class="hd">⚠️ ΚΩΔΙΚΑΣ = 0 ΜΟΝΑΔΕΣ</div>
+    <p>Η εκφώνηση λέει ρητά: <em>«Δεν ζητείται υλοποίηση. Κώδικας στην απάντηση δεν θα βαθμολογηθεί.»</em> Γράψε <strong>μαθηματικό φορμαλισμό</strong>, όχι Prolog/ECLiPSe. Σύμβολα Σ, ∀, ≤, ∈ — όχι <code>:-</code>.</p>
+  </div>
+  <div class="tip-box"><div class="hd">💡 Πάντα οι ίδιες 4 επικεφαλίδες</div>
+    <p>Δομή την απάντηση <strong>ακριβώς</strong> έτσι — οι διορθωτές ψάχνουν αυτές τις 4 λέξεις:</p>
+    <ol style="margin:6px 0"><li><strong>Μεταβλητές</strong> (variables)</li><li><strong>Πεδία τιμών</strong> (domains)</li><li><strong>Περιορισμοί</strong> (constraints)</li><li><strong>Συνάρτηση κόστους / αντικειμενική</strong> (objective)</li></ol>
+  </div>
+  <div class="mnemo"><div class="hd">🧠 Μνημονικό: «Μ-Π-Π-Κ»</div>
+    <p><strong>Μ</strong>εταβλητές → <strong>Π</strong>εδία → <strong>Π</strong>εριορισμοί → <strong>Κ</strong>όστος. Θυμήσου τη φράση «<strong>Μ</strong>ε <strong>Π</strong>οιά <strong>Π</strong>ράγματα <strong>Κ</strong>ερδίζω;».</p>
+    <p>Και η <em>μία</em> ιδέα που τα ενώνει όλα: <strong>«διάλεξε με 0/1 · μέτρα με Σ · βελτιστοποίησε με min/max».</strong> Αν την κρατήσεις, στήνεις οποιοδήποτε πρόβλημα.</p>
+  </div>
+</section>
+
+<section id="template">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🧱</div><h2>Το Universal Template</h2></div>
+  <p>Σχεδόν κάθε πρόβλημα «διάλεξε υποσύνολο / ανάθεσε ώστε να βελτιστοποιηθεί κάτι» γράφεται με <strong>δυαδικές μεταβλητές απόφασης</strong> 0/1:</p>
+
+  <div class="def"><div class="hd">⚡ Σκελετός</div>
+    <div class="math" style="text-align:left">
+      <strong>Μεταβλητές:</strong> &nbsp; x<sub>i</sub> ∈ {0,1}, &nbsp; i = 1…n &nbsp; <span class="op">// x<sub>i</sub>=1 ⟺ «διαλέγω/αναθέτω το i»</span><br><br>
+      <strong>Πεδία:</strong> &nbsp; D(x<sub>i</sub>) = {0, 1}<br><br>
+      <strong>Περιορισμοί:</strong> &nbsp; Σ (γραμμικοί συνδυασμοί x<sub>i</sub>) &nbsp; { = , ≤ , ≥ } &nbsp; (όριο)<br><br>
+      <strong>Κόστος:</strong> &nbsp; <span class="quant">min</span> / <span class="quant">max</span> &nbsp; Σ<sub>i</sub> c<sub>i</sub>·x<sub>i</sub>
+    </div>
+  </div>
+
+  <div class="mnemo">
+    <div class="hd">🧠 Το μυστικό της Γενίκευσης (Από τα Ελληνικά στα Μαθηματικά)</div>
+    <p>Για να λύσεις ένα εντελώς νέο πρόβλημα, μην ψάχνεις να θυμηθείς παλιές λύσεις. Κάνε την εξής "αυτόματη μετάφραση" από κείμενο σε μαθηματικά:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>Βήμα 1 (Μεταβλητές):</strong> Βρες το <em>"Τι πρέπει να αποφασίσω;"</em>. Π.χ. "Ποια πτήση να διαλέξω;" → Μεταβλητή x<sub>i</sub>. "Ποιον υπάλληλο e να βάλω στην ημέρα d;" → Μεταβλητή S<sub>e,d</sub>. Φτιάξε μια μεταβλητή για κάθε <em>ανεξάρτητη επιλογή</em>.</li>
+      <li><strong>Βήμα 2 (Πεδία):</strong> Αν η επιλογή είναι Ναι/Όχι (την επιλέγω ή όχι;), το πεδίο είναι {0,1}. Αν η επιλογή είναι "ποια κατάσταση/βάρδια", το πεδίο είναι {Μ, Ε, Ν, R}.</li>
+      <li><strong>Βήμα 3 (Περιορισμοί):</strong> Πάρε κάθε πρόταση της εκφώνησης και μετάφρασέ την:
+        <ul style="margin:2px 0; padding-left:20px">
+          <li>Η λέξη <em>"ακριβώς ένα"</em> (π.χ. κάθε εργάτης σε μία βάρδια) → Το άθροισμα (Σ) ισούται με 1.</li>
+          <li>Η λέξη <em>"τουλάχιστον ένα"</em> (π.χ. τουλάχιστον ένας γιατρός) → Το άθροισμα (Σ) είναι ≥ 1.</li>
+          <li>Η φράση <em>"όχι πάνω από X"</em> ή <em>"χωρητικότητα"</em> → Το άθροισμα (Σ) με βάρη είναι ≤ X.</li>
+        </ul>
+      </li>
+      <li><strong>Βήμα 4 (Κόστος):</strong> Βρες τις λέξεις <em>ελάχιστο/μέγιστο, φθηνότερο/ακριβότερο</em> στην εκφώνηση. Γράψε απλώς <code>min</code> ή <code>max</code> μπροστά από το συνολικό άθροισμα (Σ) του κόστους.</li>
+    </ul>
+  </div>
+
+  <div class="note"><div class="hd">📝 Η πιο συχνή σύγχυση: Περιορισμός ≠ Κόστος</div>
+    <p><strong>Περιορισμός</strong> = κάτι που <em>ΠΡΕΠΕΙ</em> να ισχύει· αν δεν ισχύει, η λύση είναι <strong>άκυρη</strong>. Γράφεται με <code>=, ≤, ≥</code>.</p>
+    <p><strong>Κόστος / αντικειμενική</strong> = κάτι που <em>ΘΕΛΟΥΜΕ</em> όσο γίνεται καλύτερο· καμία τιμή του δεν κάνει τη λύση άκυρη — απλώς χειρότερη. Γράφεται με <code>min/max</code>.</p>
+    <p>Γρήγορος έλεγχος: «χωρητικότητα ≤», «τουλάχιστον ≥», «ακριβώς =» → <em>περιορισμός</em>. «φθηνότερο», «μέγιστη αξία», «λιγότερες βάρδιες» → <em>κόστος</em>. Αν μια φράση μπορεί να «παραβιαστεί» χωρίς να χαλάσει η λύση, είναι κόστος· αλλιώς περιορισμός.</p>
+  </div>
+</section>
+
+<section id="tricks">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">🛠️</div><h2>3 Tricks που καλύπτουν τα πάντα</h2></div>
+  <table class="summary-tbl"><thead><tr><th>Λέει η εκφώνηση…</th><th>Γράψε…</th></tr></thead><tbody>
+    <tr><td>«καλύπτει <strong>ακριβώς</strong>» (διαμέριση/exact cover)</td><td>Σ<sub>i: j∈P<sub>i</sub></sub> x<sub>i</sub> = 1 &nbsp;για κάθε στοιχείο j</td></tr>
+    <tr><td>«καλύπτει <strong>τουλάχιστον</strong>» (set cover)</td><td>Σ<sub>i: j∈P<sub>i</sub></sub> x<sub>i</sub> ≥ 1 &nbsp;για κάθε j</td></tr>
+    <tr><td>«το πολύ μία φορά / σε ένα» </td><td>Σ x ≤ 1</td></tr>
+    <tr><td>«χωρητικότητα / όριο πόρου»</td><td>Σ<sub>i</sub> w<sub>i</sub>·x<sub>i</sub> ≤ C</td></tr>
+    <tr><td>«τουλάχιστον k από αυτά»</td><td>Σ x ≥ k</td></tr>
+    <tr><td>«πλήθος των i με ιδιότητα = …»</td><td>Σ [μετράω με δυαδικές] </td></tr>
+  </tbody></table>
+  <div class="note"><div class="hd">📝 Reification (για το MAX-SAT)</div>
+    <p>Όταν θες να <em>μετρήσεις πόσοι περιορισμοί ισχύουν</em>, βάλε μια δυαδική s<sub>j</sub> που «αντικατοπτρίζει» αν ισχύει ο περιορισμός j (reified constraint). Στην ECLiPSe αυτή η δυνατότητα λέγεται <strong>reification</strong> — η χρήσιμη «έξτρα» δυνατότητα που ρωτάει το 2022Β.</p>
+  </div>
+</section>
+
+<!-- ============ SOLVED ============ -->
+<section id="solved">
+  <div class="sh"><div class="sh-icon" style="background:var(--bdim)">✅</div><h2>Και τα 5 Παλιά Θέματα — Λυμένα</h2></div>
+
+  <div class="exam"><div class="hd">🧭 Πώς να διαχειριστείς το Θέμα 2 (το πιο «ασφαλές» — γέμισε 4 κουτιά)</div>
+    <p>Δεν χρειάζεται έμπνευση. Χρειάζεται να γεμίσεις 4 κουτιά. Κάνε ΑΥΤΟ:</p>
+    <ol style="margin:6px 0; padding-left:20px; line-height:1.7">
+      <li>Γράψε στο χαρτί τις 4 επικεφαλίδες <strong>Μ-Π-Π-Κ</strong>, με κενό κάτω από κάθε μία.</li>
+      <li><strong>Μεταβλητές:</strong> «τι αποφασίζω;» → μία 0/1 για κάθε επιλογή (ή <code>x<sub>ij</sub></code> για «βάζω το i στο j»).</li>
+      <li><strong>Πεδία:</strong> {0,1} (ή το σύνολο καταστάσεων, π.χ. {M,E,N,R}).</li>
+      <li><strong>Περιορισμοί:</strong> πάρε <em>κάθε</em> πρόταση της εκφώνησης και κάν' την ανισότητα με Σ (δες τον πίνακα μετάφρασης πιο πάνω).</li>
+      <li><strong>Κόστος:</strong> βρες το «ελάχιστο/μέγιστο…» και γράψε <code>min / max Σ</code>.</li>
+    </ol>
+    <p style="margin-top:4px"><strong>Καθόλου κώδικας.</strong> Αν γράψεις τα 4 κουτιά με σύμβολα (Σ, ∀, ≤), έχεις ήδη πάρει τις περισσότερες μονάδες.</p>
+  </div>
+
+  <div class="tip-box" style="border-color:var(--cyan);background:linear-gradient(90deg,rgba(57,212,200,.07),transparent 60%)">
+    <div class="hd" style="color:var(--cyan)">💡 Αποκωδικοποίηση Όρων για Αρχάριους (Newbie Guide)</div>
+    <p>Αν βλέπεις τη μοντελοποίηση CSP πρώτη φορά, σκέψου τη σαν κανόνες για Sudoku:</p>
+    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+      <li><strong>CSP (Πρόβλημα Ικανοποίησης Περιορισμών):</strong> Αντί να γράψουμε κώδικα που λύνει ένα πρόβλημα, απλώς <em>περιγράφουμε μαθηματικά</em> τους κανόνες του. <strong>Προσοχή: Κώδικας Prolog = 0 μονάδες.</strong> Γράφουμε μόνο μαθηματικό φορμαλισμό (Σ, ∀, ≤, ≥, ∈).</li>
+      <li><strong>Μεταβλητές (Variables):</strong> Τι αποφάσεις πρέπει να πάρουμε.
+        <ul style="margin:2px 0; padding-left:20px">
+          <li><em>Δυαδικές (0/1):</em> x<sub>i</sub> = 1 αν επιλέξουμε το i, 0 αν το απορρίψουμε (π.χ. Knapsack, Set Cover).</li>
+          <li><em>Ανάθεσης (x<sub>ij</sub>):</em> x<sub>ij</sub> = 1 αν το αντικείμενο i πάει στη θέση/σακίδιο j.</li>
+          <li><em>Κατάστασης:</em> S<sub>e,d</sub> ∈ {M, E, N, R} για τη βάρδια του υπαλλήλου e την ημέρα d.</li>
+        </ul>
+      </li>
+      <li><strong>Πεδία (Domains):</strong> Οι επιτρεπτές τιμές για κάθε μεταβλητή (π.χ. {0, 1} ή {M, E, N, R}).</li>
+      <li><strong>Περιορισμοί (Constraints):</strong> Οι κανόνες της εκφώνησης μεταφρασμένοι σε μαθηματικές εξισώσεις/ανισότητες.
+        <ul style="margin:2px 0; padding-left:20px">
+          <li><em>Exact Cover (ακριβώς ένα):</em> Σ x<sub>i</sub> = 1.</li>
+          <li><em>Set Cover (τουλάχιστον ένα):</em> Σ x<sub>i</sub> ≥ 1.</li>
+          <li><em>Χωρητικότητα/Όριο πόρου:</em> Σ W<sub>i</sub>·x<sub>i</sub> ≤ C.</li>
+        </ul>
+      </li>
+      <li><strong>Κόστος (Objective Function):</strong> Αυτό που θέλουμε να μεγιστοποιήσουμε (max) ή να ελαχιστοποιήσουμε (min) (π.χ. min Σ C<sub>i</sub>·x<sub>i</sub>).</li>
+      <li><strong>Reification (Αντανάκλαση Περιορισμού):</strong> Μια δυαδική μεταβλητή-διακόπτης s<sub>j</sub> ∈ {0,1} που παίρνει την τιμή 1 αν ισχύει ο j-οστός περιορισμός, και 0 αν παραβιάζεται. Μας βοηθά να μετράμε πόσους κανόνες ικανοποιήσαμε (π.χ. στο MAX-SAT).</li>
+    </ul>
+  </div>
+
+  <!-- June 2026: load balancing / fairness -->
+  <div class="solved">
+    <div class="solved-hd">🆕 June 2026 — Ανάθεση εργασιών με ΔΙΚΑΙΗ ισοκατανομή φόρτου · <span style="color:var(--orange)">ΕΔΩ ΕΚΑΝΕΣ ΤΟ ΛΑΘΟΣ ΣΤΟ ΚΟΣΤΟΣ</span></div>
+    <div class="solved-body">
+      <p>N εργασίες, K εργαζόμενοι. Εργασία i έχει φόρτο L<sub>i</sub>. Κάθε εργασία σε <strong>ακριβώς έναν</strong> εργαζόμενο· ο συνολικός φόρτος κάθε εργαζόμενου ≤ M. Μοντελοποίησε, και βρες την <strong>πιο δίκαιη</strong> κατανομή (ισοκατανομή φόρτου) με κατάλληλη συνάρτηση κόστους.</p>
+      <details class="reveal" open><summary>Πλήρης λύση (μοντέλο + σωστό κόστος)</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong><br>
+          x<sub>ij</sub> ∈ {0,1} = «η εργασία i ανατίθεται στον εργαζόμενο j;» &nbsp; i=1…N, j=1…K<br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί:</strong><br>
+          (1) κάθε εργασία σε ΑΚΡΙΒΩΣ έναν εργαζόμενο: &nbsp; Σ<sub>j=1</sub><sup>K</sup> x<sub>ij</sub> = 1 &nbsp; ∀i<br>
+          (2) όριο φόρτου ανά εργαζόμενο: &nbsp; Σ<sub>i=1</sub><sup>N</sup> L<sub>i</sub>·x<sub>ij</sub> ≤ M &nbsp; ∀j<br><br>
+          <strong>Φόρτος εργαζόμενου j:</strong> &nbsp; Load<sub>j</sub> = Σ<sub>i=1</sub><sup>N</sup> L<sub>i</sub>·x<sub>ij</sub><br><br>
+          <strong>Κόστος (δικαιοσύνη = ελαχιστοποίηση του μέγιστου φόρτου):</strong><br>
+          <span class="quant">min</span> Z &nbsp; <span class="op">// υπό τον περιορισμό:</span> &nbsp; Z ≥ Load<sub>j</sub> &nbsp; ∀j<br>
+          <span class="op">// δηλ. Z = max<sub>j</sub> Load<sub>j</sub>· ελαχιστοποιώντας το «καμπανάκι» ισοκατανέμω</span>
+        </div>
+        <div class="warn"><div class="hd">⚠️ Το λάθος-παγίδα στο κόστος (το πιο συχνό εδώ)</div>
+          <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+            <li><strong>ΛΑΘΟΣ:</strong> <code>min Σ<sub>i</sub> L<sub>i</sub></code> ή <code>min Σ<sub>ij</sub> L<sub>i</sub>·x<sub>ij</sub></code>. Ο <strong>συνολικός</strong> φόρτος είναι <em>ΣΤΑΘΕΡΟΣ</em> (κάθε εργασία ανατίθεται ακριβώς μία φορά, άρα το άθροισμα = Σ L<sub>i</sub> πάντα). Δεν έχει νόημα να το «ελαχιστοποιήσεις».</li>
+            <li><strong>ΣΩΣΤΟ:</strong> η δικαιοσύνη αφορά την <em>ΚΑΤΑΝΟΜΗ</em>, όχι το άθροισμα. Ελαχιστοποίησε τον <strong>μέγιστο</strong> φόρτο (<code>min max<sub>j</sub> Load<sub>j</sub></code>) — «κατέβασε τον πιο φορτωμένο» ⇒ ισοκατανομή.</li>
+          </ul>
+        </div>
+        <div class="note"><div class="hd">📖 Τρόπος σκέψης + πώς γράφεται σε ECLiPSe</div>
+          <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+            <li><strong>«min-max» με βοηθητική Z:</strong> δεν γράφεις <code>min(max(...))</code> κατευθείαν. Βάζεις μια μεταβλητή <code>Z</code>, τους περιορισμούς <code>Z ≥ Load<sub>j</sub></code> για κάθε j, και <code>min Z</code>. Αυτό είναι «άμεσα υλοποιήσιμο» (το ζητάει η εκφώνηση).</li>
+            <li><strong>Εναλλακτικές δίκαιες συναρτήσεις</strong> (αν προτιμάς): <code>min (max<sub>j</sub> Load<sub>j</sub> − min<sub>j</sub> Load<sub>j</sub>)</code> (εύρος), ή <code>min Σ<sub>j</sub> (Load<sub>j</sub> − M̄)²</code> με M̄ = ΣL<sub>i</sub>/K (τετραγωνική απόκλιση). Το <strong>min-max</strong> είναι το πιο καθαρό &amp; συνηθισμένο.</li>
+          </ul>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2023 A: exact cover -->
+  <div class="solved">
+    <div class="solved-hd">📄 2023 Α — Πτήσεις: διαμέριση (exact cover), ελάχιστο κόστος</div>
+    <div class="solved-body">
+      <p>N πτήσεις, M συνδυασμοί P<sub>i</sub> (υποσύνολα πτήσεων) με κόστος C<sub>i</sub>. Διάλεξε συνδυασμούς <strong>ξένους μεταξύ τους</strong> που καλύπτουν <strong>ακριβώς</strong> όλες τις πτήσεις, με ελάχιστο κόστος.</p>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong> x<sub>i</sub> ∈ {0,1}, i=1…M &nbsp;<span class="op">// x<sub>i</sub>=1 ⟺ διαλέγω τον συνδυασμό P<sub>i</sub></span><br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί (exact cover):</strong><br>
+          για κάθε πτήση j ∈ {1…N}: &nbsp; Σ<sub>i : j ∈ P<sub>i</sub></sub> x<sub>i</sub> = 1<br>
+          <span class="op">// κάθε πτήση καλύπτεται από ακριβώς έναν επιλεγμένο συνδυασμό → «ξένοι» + «καλύπτουν ακριβώς»</span><br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">min</span> Σ<sub>i=1</sub><sup>M</sup> C<sub>i</sub>·x<sub>i</sub>
+        </div>
+        <p style="color:var(--muted)">Στο παράδειγμα η βέλτιστη {{1,5},{2},{3,4}} έχει κόστος 5+3+4=12. ✔</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2023 B: set cover -->
+  <div class="solved">
+    <div class="solved-hd">📄 2023 Β — Πτήσεις: κάλυψη (set cover), ελάχιστο κόστος</div>
+    <div class="solved-body">
+      <p>Ίδιο σκηνικό, αλλά οι συνδυασμοί <strong>όχι κατ' ανάγκη ξένοι</strong>: κάθε πτήση να καλύπτεται <strong>τουλάχιστον</strong> μία φορά, ελάχιστο κόστος.</p>
+      <div class="note"><div class="hd">📝 Μοναδική διαφορά από το 2023Α</div><p>Αλλάζει <strong>μόνο</strong> ο περιορισμός: <code>= 1</code> γίνεται <code>≥ 1</code>. Όλα τα άλλα ίδια.</p></div>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong> x<sub>i</sub> ∈ {0,1}, i=1…M<br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί (κάλυψη):</strong> για κάθε πτήση j: &nbsp; Σ<sub>i : j ∈ P<sub>i</sub></sub> x<sub>i</sub> ≥ 1<br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">min</span> Σ<sub>i=1</sub><sup>M</sup> C<sub>i</sub>·x<sub>i</sub>
+        </div>
+        <p style="color:var(--muted)">Βέλτιστη {{1,2,3},{2,4,5}} κόστος 5+6=11. ✔</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2021 A: multiple knapsack -->
+  <div class="solved">
+    <div class="solved-hd">📄 2021 Α — Πολλαπλό σακίδιο (multiple knapsack)</div>
+    <div class="solved-body">
+      <p>N αντικείμενα (βάρος W<sub>i</sub>, αξία V<sub>i</sub>), K σακίδια με χωρητικότητες C<sub>j</sub>. Βάλε αντικείμενα σε σακίδια χωρίς υπέρβαση χωρητικότητας, μεγιστοποιώντας τη συνολική αξία.</p>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong> x<sub>ij</sub> ∈ {0,1}, i=1…N, j=1…K &nbsp;<span class="op">// x<sub>ij</sub>=1 ⟺ αντικείμενο i στο σακίδιο j</span><br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί:</strong><br>
+          κάθε αντικείμενο το πολύ σε ένα σακίδιο: &nbsp; Σ<sub>j=1</sub><sup>K</sup> x<sub>ij</sub> ≤ 1 &nbsp;(∀ i)<br>
+          χωρητικότητα κάθε σακιδίου: &nbsp; Σ<sub>i=1</sub><sup>N</sup> W<sub>i</sub>·x<sub>ij</sub> ≤ C<sub>j</sub> &nbsp;(∀ j)<br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">max</span> Σ<sub>i</sub> Σ<sub>j</sub> V<sub>i</sub>·x<sub>ij</sub>
+        </div>
+        <p style="color:var(--muted)">Στιγμιότυπο: 10 αντικείμενα, K=3, C=(30,35,40) → ίδιες εξισώσεις με N=10, K=3.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2022 A: scheduling -->
+  <div class="solved">
+    <div class="solved-hd">📄 2022 Α — Πρόγραμμα βαρδιών (50 υπάλληλοι × 30 ημέρες)</div>
+    <div class="solved-body">
+      <p>Βάρδιες M/E/N/R. Κανόνες: κάθε μέρα ≥15 M, ≥10 E, ≥8 N· μετά από N (νύχτα) όχι M την επομένη· σε κάθε 7 συνεχόμενες μέρες ≥2 R. Πρότεινε και αντικειμενική συνάρτηση.</p>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong> S<sub>e,d</sub> για e=1…50, d=1…30 &nbsp;<span class="op">// η βάρδια του υπαλλήλου e την ημέρα d</span><br><br>
+          <strong>Πεδία:</strong> S<sub>e,d</sub> ∈ { M, E, N, R }<br><br>
+          <strong>Περιορισμοί:</strong><br>
+          (κάλυψη) ∀d: &nbsp;|{e : S<sub>e,d</sub>=M}| ≥ 15, &nbsp;|{e : S<sub>e,d</sub>=E}| ≥ 10, &nbsp;|{e : S<sub>e,d</sub>=N}| ≥ 8<br>
+          (νύχτα→όχι πρωί) ∀e, ∀d∈{1…29}: &nbsp; ¬( S<sub>e,d</sub>=N ∧ S<sub>e,d+1</sub>=M )<br>
+          (ανάπαυση) ∀e, ∀ παράθυρο w∈{1…24}: &nbsp; |{ d ∈ [w, w+6] : S<sub>e,d</sub>=R }| ≥ 2<br><br>
+          <strong>Αντικειμενική (πρόταση):</strong> &nbsp; <span class="quant">min</span> &nbsp;max<sub>e</sub> |{ d : S<sub>e,d</sub>=N }|<br>
+          <span class="op">// ελαχιστοποίησε τις πιο πολλές νυχτερινές ενός υπαλλήλου → δίκαιη κατανομή</span>
+        </div>
+        <div class="note"><div class="hd">📖 Πώς διάβασα την εκφώνηση (κάθε πρόταση → ένας περιορισμός)</div>
+          <ul style="margin:6px 0; padding-left:20px; line-height:1.5">
+            <li>Το <code>|{e : S<sub>e,d</sub>=M}|</code> διαβάζεται απλά «<strong>πόσοι υπάλληλοι έχουν πρωινό τη μέρα d</strong>» — ένα μέτρημα. Το «≥ 15» είναι ο κανόνας κάλυψης.</li>
+            <li>«μετά από νύχτα όχι πρωί» → απαγόρευσε τον συνδυασμό: <code>¬(S<sub>e,d</sub>=N ∧ S<sub>e,d+1</sub>=M)</code>.</li>
+            <li>«≥ 2 ρεπό σε κάθε 7 μέρες» → για κάθε «παράθυρο» 7 διαδοχικών ημερών, το πλήθος των R να είναι ≥ 2.</li>
+          </ul>
+        </div>
+        <p style="color:var(--muted)">Εναλλακτική αντικειμενική: ελαχιστοποίηση συνολικών νυχτερινών Σ<sub>e,d</sub>[S<sub>e,d</sub>=N], ή εξισορρόπηση φόρτου.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- 2022 B: MAX-SAT -->
+  <div class="solved">
+    <div class="solved-hd">📄 2022 Β — MAX-SAT (μέγιστη ικανοποιησιμότητα)</div>
+    <div class="solved-body">
+      <p>Δοθείσας CNF (σύζευξη m προτάσεων-clauses), βρες ανάθεση true/false στα προτασιακά σύμβολα ώστε να αληθεύουν <strong>όσο το δυνατόν περισσότερες</strong> προτάσεις.</p>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong><br>
+          x<sub>k</sub> ∈ {0,1} για κάθε προτασιακό σύμβολο k=1…n &nbsp;<span class="op">// 1=true</span><br>
+          s<sub>j</sub> ∈ {0,1} για κάθε πρόταση (clause) j=1…m &nbsp;<span class="op">// 1 ⟺ ικανοποιείται</span><br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί (reification):</strong> για κάθε clause j με θετικά σύμβολα Pos<sub>j</sub> και αρνημένα Neg<sub>j</sub>:<br>
+          s<sub>j</sub> ≤ Σ<sub>k∈Pos<sub>j</sub></sub> x<sub>k</sub> + Σ<sub>k∈Neg<sub>j</sub></sub> (1 − x<sub>k</sub>)<br>
+          <span class="op">// s<sub>j</sub> μπορεί να είναι 1 μόνο αν τουλάχιστον ένα λεκτικό αληθεύει</span><br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">max</span> Σ<sub>j=1</sub><sup>m</sup> s<sub>j</sub>
+        </div>
+        <p><strong>Εμπειρική ανάθεση (το ρωτάει):</strong> για τον δοσμένο τύπο, μια ανάθεση που ικανοποιεί 6/7 προτάσεις: π.χ. <code>x1=T, x2=T, x3=T, x4=F</code> (μόνο η <code>(¬x1∨¬x2∨x3)</code>… έλεγξε γρήγορα — αρκεί να βρεις 6).</p>
+        <p><strong>Χρήσιμη δυνατότητα ECLiPSe (εκτός ic/branch&amp;bound):</strong> <strong>reification</strong> — η αντανάκλαση της αλήθειας ενός περιορισμού σε δυαδική μεταβλητή s<sub>j</sub>.</p>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:24px"><div class="hd">➕ 2 ακόμα κλασικά μοτίβα CSP (για να καλύψεις ΟΛΟΝ τον χάρτη)</div>
+    <p>Τα 5 παραπάνω καλύπτουν: <em>διαμέριση, κάλυψη, σακίδιο, χρονοπρογραμματισμό, MAX-SAT</em>. Δύο ακόμη τύποι εμφανίζονται συχνά σε τέτοια θέματα — μάθε και αυτά και μπορείς να μοντελοποιήσεις <strong>οτιδήποτε</strong>.</p>
+  </div>
+
+  <!-- EXTRA A: graph coloring -->
+  <div class="solved">
+    <div class="solved-hd">📄 Μοτίβο — Χρωματισμός γράφου / χάρτη (ελάχιστα χρώματα)</div>
+    <div class="solved-body">
+      <p>Δίνεται γράφος (κόμβοι + ακμές). Χρωμάτισε κάθε κόμβο ώστε <strong>γειτονικοί κόμβοι να έχουν διαφορετικό χρώμα</strong>, με τα <strong>λιγότερα δυνατά χρώματα</strong>. (Κλασικό: χρωματισμός χάρτη χωρών.)</p>
+      <details class="reveal" open><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong><br>
+          c<sub>i</sub> = χρώμα του κόμβου i, για κάθε κόμβο i=1…n<br>
+          y<sub>k</sub> ∈ {0,1} = «χρησιμοποιείται το χρώμα k;», για k=1…K &nbsp;<span class="op">// K = μέγιστα διαθέσιμα χρώματα</span><br><br>
+          <strong>Πεδία:</strong> c<sub>i</sub> ∈ {1,…,K} &nbsp;·&nbsp; y<sub>k</sub> ∈ {0,1}<br><br>
+          <strong>Περιορισμοί:</strong><br>
+          (1) για κάθε ακμή (i,j): &nbsp; c<sub>i</sub> ≠ c<sub>j</sub> &nbsp;<span class="op">// γείτονες ≠ χρώμα</span><br>
+          (2) σύνδεσε y με c: αν κάποιος κόμβος έχει χρώμα k, τότε y<sub>k</sub>=1 &nbsp;<span class="op">// (reification: y<sub>k</sub> = 1 ⟺ ∃i: c<sub>i</sub>=k)</span><br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">min</span> Σ<sub>k=1</sub><sup>K</sup> y<sub>k</sub> &nbsp;<span class="op">// ελαχιστοποίησε τα χρώματα που όντως χρησιμοποιείς</span>
+        </div>
+        <div class="note"><div class="hd">📖 Τρόπος σκέψης</div>
+          <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+            <li><strong>Μεταβλητή = «τι αποφασίζω για κάθε κόμβο»</strong> → το χρώμα του. Πεδίο = το σύνολο των χρωμάτων.</li>
+            <li><strong>Ο περιορισμός είναι «≠ μεταξύ γειτόνων»</strong> — μία ανισότητα ανά ακμή. Αυτό είναι όλο το «δίκτυο».</li>
+            <li><strong>«Ελάχιστα χρώματα» = κόστος.</strong> Δεν μετράς απλώς πόσα χρώματα έχεις διαθέσιμα — μετράς πόσα <em>πραγματικά</em> εμφανίζονται, με τις βοηθητικές <code>y<sub>k</sub></code>.</li>
+            <li><strong>Εναλλακτική με δυαδικές:</strong> x<sub>ik</sub>∈{0,1} «κόμβος i έχει χρώμα k», με Σ<sub>k</sub>x<sub>ik</sub>=1 (ένα χρώμα ανά κόμβο) και x<sub>ik</sub>+x<sub>jk</sub>≤1 για κάθε ακμή (i,j) (γείτονες όχι ίδιο k).</li>
+          </ul>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- EXTRA B: assignment with capacity -->
+  <div class="solved">
+    <div class="solved-hd">📄 Μοτίβο — Ανάθεση εργασιών σε πράκτορες με χωρητικότητα</div>
+    <div class="solved-body">
+      <p>n εργασίες, m πράκτορες (μηχανές/άτομα). Κάθε εργασία i πάει σε <strong>ακριβώς έναν</strong> πράκτορα, χρησιμοποιεί πόρο w<sub>i</sub>· κάθε πράκτορας j έχει χωρητικότητα C<sub>j</sub>. Κόστος c<sub>ij</sub> ανά ανάθεση. Ελαχιστοποίησε το συνολικό κόστος.</p>
+      <details class="reveal"><summary>Πλήρης λύση</summary><div class="reveal-body">
+        <div class="math" style="text-align:left">
+          <strong>Μεταβλητές:</strong><br>
+          x<sub>ij</sub> ∈ {0,1} = «η εργασία i ανατίθεται στον πράκτορα j;» &nbsp; i=1…n, j=1…m<br><br>
+          <strong>Πεδία:</strong> {0,1}<br><br>
+          <strong>Περιορισμοί:</strong><br>
+          (1) κάθε εργασία σε ΑΚΡΙΒΩΣ έναν πράκτορα: &nbsp; Σ<sub>j=1</sub><sup>m</sup> x<sub>ij</sub> = 1 &nbsp; ∀i<br>
+          (2) χωρητικότητα κάθε πράκτορα: &nbsp; Σ<sub>i=1</sub><sup>n</sup> w<sub>i</sub>·x<sub>ij</sub> ≤ C<sub>j</sub> &nbsp; ∀j<br><br>
+          <strong>Κόστος:</strong> &nbsp; <span class="quant">min</span> Σ<sub>i=1</sub><sup>n</sup> Σ<sub>j=1</sub><sup>m</sup> c<sub>ij</sub>·x<sub>ij</sub>
+        </div>
+        <div class="note"><div class="hd">📖 Τρόπος σκέψης</div>
+          <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
+            <li><strong>Δυαδικός πίνακας x<sub>ij</sub>:</strong> «ποιος πάει πού». Κλασική μορφή όποτε «αναθέτεις Α σε Β».</li>
+            <li><strong>«Ακριβώς ένας» → <code>Σ = 1</code></strong> ανά γραμμή (εργασία). Αν ήταν «το πολύ ένας» → <code>≤ 1</code>.</li>
+            <li><strong>«Χωρητικότητα» → ζυγισμένο άθροισμα ≤ όριο</strong> ανά στήλη (πράκτορα) — ίδιο μοτίβο με το σακίδιο.</li>
+            <li><strong>Κόστος = διπλό άθροισμα</strong> c<sub>ij</sub>·x<sub>ij</sub>. Αν είχες «αξία» αντί «κόστος» → <code>max</code> αντί <code>min</code>.</li>
+          </ul>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="exam" style="margin-top:24px"><div class="hd">📚 Το μοτίβο που είδες σε όλα</div>
+    <p>4/5 θέματα = «διάλεξε υποσύνολο/ανάθεσε με δυαδικές 0/1 + Σ-περιορισμοί + min/max Σ κόστους». Μόνο οι βάρδιες χρησιμοποιούν μη-δυαδικές μεταβλητές (πεδίο {M,E,N,R}). Αν θυμάσαι το template, γράφεις <strong>οποιοδήποτε</strong> νέο πρόβλημα.</p>
+  </div>
+  <p style="text-align:center;margin-top:18px"><a class="chip" href="exam_theme1_prolog.html" style="text-decoration:none">Επόμενο → Θέμα 1 · Prolog</a></p>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Θέμα 2 · Μοντελοποίηση CSP</div>
+</body>
+</html>

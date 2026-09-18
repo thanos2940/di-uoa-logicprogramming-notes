@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Θέμα 1 · Γυμναστήριο</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--odim) 55%,#0d1117 100%)}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--odim) 55%,#f8fafc 100%)}
+.hero::after{content:"?- solve(You, Intuition).";position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+<script src="../js/vendor/tau/core.js"></script>
+<script src="../js/vendor/tau/lists.js"></script>
+<script src="../js/vendor/tau/charsio.js"></script>
+<script src="../js/vendor/tau/format.js"></script>
+<script src="../js/prolog_runner.js" defer></script>
+
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Θέμα 1 · Γυμναστήριο με Prolog στον browser</div>
+  <h1>Χτίσε τη <em>διαίσθηση</em></h1>
+  <p>Πάνω από 30 ασκήσεις από παλιά θέματα, σε σειρά δυσκολίας, με editor που τρέχει Prolog και ελέγχει τη λύση σου αυτόματα.</p>
+  <div class="chips"><span class="chip">ενοποίηση</span><span class="chip">\+ βέλτιστο</span><span class="chip">== / =</span><span class="chip">αναδρομή</span><span class="chip">append</span><span class="chip">generate &amp; test</span></div>
+</div>
+
+<nav class="toc">
+  <a href="#how">Οδηγίες</a>
+  <a href="#unitA">Α. Μηχανική</a>
+  <a href="#unitB">Β. Βέλτιστο</a>
+  <a href="#unitC">Γ. == / =</a>
+  <a href="#unitD">Δ. Αναδρομή</a>
+  <a href="#unitE">Ε. append</a>
+  <a href="#unitF">ΣΤ. Παραγωγή</a>
+  <a href="#reflect">Αναστοχασμός</a>
+</nav>
+
+<div class="wrap">
+
+<section id="how">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧭</div><h2>Πώς δουλεύει το γυμναστήριο</h2></div>
+
+  <p class="lead">Κάθε άσκηση έχει έναν <strong>editor Prolog που τρέχει μέσα στη σελίδα</strong>. Γράφεις, τρέχεις, και με το <strong>✔ Έλεγχος</strong> η σελίδα συγκρίνει τις απαντήσεις σου (και τη σειρά τους) με τη λύση αναφοράς. Ό,τι γράφεις αποθηκεύεται στον browser σου.</p>
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <h4 style="color:var(--green);margin-top:0">Κουμπιά</h4>
+      <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+        <li><strong>▶ Τρέξε</strong> (ή <span class="kbd">Enter</span> στην ερώτηση): πρώτη απάντηση.</li>
+        <li><strong>; επόμενη</strong> (ή <span class="kbd">;</span>): backtracking, όπως στη SWI.</li>
+        <li><strong>Όλες</strong>: όλες οι απαντήσεις (έως 30).</li>
+        <li><strong>✔ Έλεγχος</strong>: τρέχει τις ερωτήσεις της εκφώνησης και σου λέει τι διαφέρει.</li>
+        <li><strong>Λύση στον editor</strong>: βλέπεις τη λύση, και με δεύτερο πάτημα επιστρέφει ο δικός σου κώδικας.</li>
+      </ul>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--orange)">
+      <h4 style="color:var(--orange);margin-top:0">Κανόνες για να χτιστεί διαίσθηση</h4>
+      <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+        <li>Γράψε πρώτα στο χαρτί, όπως στο γραπτό. Μετά πληκτρολόγησε και έλεγξε.</li>
+        <li>Άνοιξε την υπόδειξη μόνο αν κολλήσεις 10 λεπτά. Τη λύση μόνο αφού τη δοκιμάσεις.</li>
+        <li>Όταν ο έλεγχος αποτυγχάνει, <strong>πρόβλεψε</strong> γιατί πριν διορθώσεις.</li>
+        <li>Οι ασκήσεις με <span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> είναι ο ελάχιστος κύκλος για το 8ωρο πλάνο.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><div class="hd">ℹ️ Για τον διερμηνέα</div>
+<p style="margin:4px 0">Τρέχει το Tau Prolog (ISO Prolog σε JavaScript). Οι λύσεις εδώ έχουν επαληθευτεί και σε SWI-Prolog με τις ίδιες απαντήσεις. Είναι πιο αργό από τη SWI: το knapsack θέλει περίπου 5 δευτερόλεπτα. Αν κάτι «κολλήσει», πάτα <strong>■ Διακοπή</strong>.</p>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="how"></div>
+</section>
+
+<section id="unitA">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🔩</div><h2>Α. Μηχανική: ενοποίηση, συγκρίσεις, «τι απαντά»</h2></div>
+
+  <p class="lead">Τα «τι θα απαντήσει η Prolog» είναι γρήγορες μονάδες, αρκεί να κάνεις την ενοποίηση βήμα-βήμα και να ξέρεις ποια σύγκριση δένει μεταβλητές.</p>
+  
+<div class="drill" id="a1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Α1 · Ενοποίηση με το χέρι<span class="src">2018Α · 2019Β</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Γράψε την απάντηση για κάθε κάρτα στο χαρτί. Μετά άνοιξέ τη και επιβεβαίωσε στον editor.</div><div class="qa-grid"><div class="qa-card"><div class="qq2">?- f(X, g(Y)) = f(a, g(b)).</div><details><summary>Απάντηση</summary><div><code>X = a, Y = b</code></div></details></div><div class="qa-card"><div class="qq2">?- f(X, X) = f(a, b).</div><details><summary>Απάντηση</summary><div><strong>false</strong>: το ίδιο X θα έπρεπε να είναι και a και b.</div></details></div><div class="qa-card"><div class="qq2">?- f(a, Y) = f(X, X).</div><details><summary>Απάντηση</summary><div><code>X = a, Y = a</code>: πρώτα X = a, μετά Y = X = a.</div></details></div><div class="qa-card"><div class="qq2">?- [H|T] = [a].</div><details><summary>Απάντηση</summary><div><code>H = a, T = []</code></div></details></div><div class="qa-card"><div class="qq2">?- [X, Y | Z] = [1, 2, 3, 4].</div><details><summary>Απάντηση</summary><div><code>X = 1, Y = 2, Z = [3,4]</code></div></details></div><div class="qa-card"><div class="qq2">?- 1 + 1 = 2.</div><details><summary>Απάντηση</summary><div><strong>false</strong>: το <code>1+1</code> είναι ο όρος <code>+(1,1)</code>, όχι ο αριθμός 2.</div></details></div><div class="qa-card"><div class="qq2">?- [[X,a],X,Y|Z] = [Y,b,[b|W],c,W].  (2018 Α)</div><details><summary>Απάντηση</summary><div><code>X = b, Y = [b,a], W = [a], Z = [c,[a]]</code><br>
+      1ο στοιχείο: <code>[X,a] = Y</code> · 2ο: <code>X = b</code>, άρα <code>Y = [b,a]</code> · 3ο: <code>Y = [b|W]</code>, δηλαδή <code>[b,a] = [b|W]</code>, άρα <code>W = [a]</code> · ουρά: <code>Z = [c, W] = [c,[a]]</code>.</div></details></div><div class="qa-card"><div class="qq2">?- p(X0,X1,X2,f(Y0,Y0),f(Y1,Y1),Y2) = p(a,f(X0,X0),f(X1,X1),Y1,Y2,X2).  (2019 Β)</div><details><summary>Απάντηση</summary><div><code>X0 = a, X1 = f(a,a), X2 = f(f(a,a),f(a,a)), Y0 = a, Y1 = f(a,a), Y2 = f(f(a,a),f(a,a))</code><br>
+      Όρισμα-όρισμα: X0 = a · X1 = f(a,a) · X2 = f(X1,X1) · Y1 = f(Y0,Y0) · Y2 = f(Y1,Y1) · τέλος Y2 = X2 αναγκάζει Y0 = a.</div></details></div></div><div class="plx" data-id="a1" data-query="[[X,a],X,Y|Z] = [Y,b,[b|W],c,W]." data-title="Πειραματίσου με την ενοποίηση">
+<script type="text/plain" class="plx-src">
+% Δεν χρειάζεται πρόγραμμα: γράψε ερωτήσεις δίπλα στο ?-
+% Δοκίμασε π.χ.:
+%   f(X, g(Y)) = f(a, g(b)).
+%   f(X, X) = f(a, b).
+%   p(X0,X1,X2,f(Y0,Y0),f(Y1,Y1),Y2) = p(a,f(X0,X0),f(X1,X1),Y1,Y2,X2).
+</script>
+</div>
+  </div>
+</div>
+
+  
+<div class="drill" id="a2">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Α2 · Οι τέσσερις συγκρίσεις<span class="src">τύπος 2</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Για κάθε ζεύγος πες «ναι/όχι» για <code>=</code>, <code>==</code>, <code>\=</code>, <code>\+ \+ =</code>, και αν μένει δέσμευση.</div><details class="reveal"><summary>✅ Πίνακας απαντήσεων</summary><div class="reveal-body">
+<table class="summary-tbl">
+  <thead><tr><th>Ζεύγος</th><th><code>=</code></th><th><code>==</code></th><th><code>\=</code></th><th><code>\+ \+ =</code></th></tr></thead>
+  <tbody>
+    <tr><td><code>f(X)</code> , <code>f(5)</code></td><td>ναι, X = 5</td><td>όχι</td><td>όχι</td><td>ναι, X ελεύθερο</td></tr>
+    <tr><td><code>X</code> , <code>Y</code></td><td>ναι, X = Y</td><td>όχι</td><td>όχι</td><td>ναι</td></tr>
+    <tr><td><code>g(X)</code> , <code>g(X)</code></td><td>ναι</td><td>ναι</td><td>όχι</td><td>ναι</td></tr>
+    <tr><td><code>f(X,X)</code> , <code>f(a,b)</code></td><td>όχι</td><td>όχι</td><td>ναι</td><td>όχι</td></tr>
+    <tr><td><code>a</code> , <code>a</code></td><td>ναι</td><td>ναι</td><td>όχι</td><td>ναι</td></tr>
+  </tbody>
+</table>
+<p>Η σειρά μετράει: <code>X = Y, X == Y</code> πετυχαίνει (πρώτα ταυτίζονται), ενώ <code>X == Y, X = Y</code> αποτυγχάνει (τη στιγμή του <code>==</code> είναι δύο διαφορετικές μεταβλητές).</p>
+</div></details><div class="plx" data-id="a2" data-query="f(X) = f(5), X == 5." data-title="Οι συγκρίσεις στην πράξη">
+<script type="text/plain" class="plx-src">
+% Γράψε στο ?- ζευγάρια ερωτήσεων και δες τη διαφορά:
+%   f(X) == f(5).          f(X) = f(5).
+%   \+ f(X) \= f(5).      \+ \+ f(X) = f(5).
+%   X = Y, X == Y.         X == Y, X = Y.
+%   N = 1 + 1.             N is 1 + 1.        2 =:= 1 + 1.
+</script>
+</div>
+  </div>
+</div>
+
+  
+<div class="drill" id="a3">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Α3 · «Δύο αρνήσεις κάνουν μία κατάφαση;»<span class="src">2013Β</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Είναι ισοδύναμα τα <code>Goal</code> και <code>not not Goal</code>; Πρόβλεψε τις 6 απαντήσεις.</div><details class="reveal"><summary>✅ Απαντήσεις</summary><div class="reveal-body">
+<div class="qa-grid"><div class="qa-card"><div class="qq2">?- not not 3 = 5.</div><details><summary>Απάντηση</summary><div><strong>false</strong>. Το <code>3 = 5</code> αποτυγχάνει, το εσωτερικό <code>not</code> πετυχαίνει, το εξωτερικό αποτυγχάνει.</div></details></div><div class="qa-card"><div class="qq2">?- not not 5 = 5.</div><details><summary>Απάντηση</summary><div><strong>true</strong>.</div></details></div><div class="qa-card"><div class="qq2">?- not not X = 5.</div><details><summary>Απάντηση</summary><div><strong>true</strong>, αλλά <strong>χωρίς</strong> <code>X = 5</code>. Η δέσμευση αναιρείται όταν αποτυγχάνει το εσωτερικό <code>not</code>.</div></details></div><div class="qa-card"><div class="qq2">?- X = 5.</div><details><summary>Απάντηση</summary><div><code>X = 5</code>. Εδώ η δέσμευση μένει.</div></details></div></div><p><strong>Συμπέρασμα:</strong> όχι. Το <code>not not Goal</code> ελέγχει αν το Goal <em>μπορεί</em> να πετύχει, χωρίς να κρατά δεσμεύσεις.</p>
+</div></details><div class="plx" data-id="a3" data-query="not not X = 5." data-title="Διπλή άρνηση">
+<script type="text/plain" class="plx-src">
+% Το not είναι δηλωμένο εδώ ως τελεστής (όπως στο μάθημα).
+% Δοκίμασε: not not 3 = 5.   not not 5 = 5.   not not X = 5.   X = 5.
+</script>
+</div>
+  </div>
+</div>
+
+  
+<div class="drill" id="a4">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Α4 · Σειρά στόχων και instantiation error<span class="src">2018Β</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Τρεις ερωτήσεις με τα ίδια κομμάτια σε άλλη σειρά. Τι απαντά η καθεμία;</div><details class="reveal"><summary>✅ Απαντήσεις</summary><div class="reveal-body">
+<div class="qa-grid"><div class="qa-card"><div class="qq2">?- member(X,[1,2,3,4]), member(Y,[2,3,4,5]), X > Y.</div><details><summary>Απάντηση</summary><div><code>X=3,Y=2 ; X=4,Y=2 ; X=4,Y=3 ; false</code>. Για κάθε X δοκιμάζονται όλα τα Y με backtracking.</div></details></div><div class="qa-card"><div class="qq2">?- member(X,[1,2,3,4]), X < Y, member(Y,[2,3,4,5]).</div><details><summary>Απάντηση</summary><div><strong>instantiation error</strong>: στο <code>X &lt; Y</code> το Y δεν έχει ακόμα τιμή. Οι αριθμητικές συγκρίσεις θέλουν δεμένα και τα δύο μέλη.</div></details></div><div class="qa-card"><div class="qq2">?- X = Y, member(X,[1,2,3,4]), member(Y,[2,3,4,5]).</div><details><summary>Απάντηση</summary><div><code>2 ; 3 ; 4 ; false</code>: το X και το Y είναι η ίδια μεταβλητή, άρα ζητάμε τα κοινά στοιχεία.</div></details></div></div>
+</div></details><div class="plx" data-id="a4" data-query="member(X,[1,2,3,4]), X &lt; Y, member(Y,[2,3,4,5])." data-title="Σειρά στόχων">
+<script type="text/plain" class="plx-src">
+% Τρεις ερωτήσεις (2018 Β). Πρόβλεψε πρώτα, μετά τρέξε:
+%   member(X,[1,2,3,4]), member(Y,[2,3,4,5]), X > Y.
+%   member(X,[1,2,3,4]), X < Y, member(Y,[2,3,4,5]).
+%   X = Y, member(X,[1,2,3,4]), member(Y,[2,3,4,5]).
+</script>
+</div>
+  </div>
+</div>
+
+  
+<div class="drill" id="a5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Α5 · Βρες το bug του unifiable/3<span class="src">2014Α</span></div>
+  <div class="drill-body">
+<p>Ζητήθηκε <code>unifiable(List1, Term, List2)</code>: στη <code>List2</code> τα στοιχεία της <code>List1</code> που <strong>ενοποιούνται</strong> με το <code>Term</code>. Ο κώδικας στον editor είναι η απάντηση που δόθηκε. Δίνει σωστό αποτέλεσμα για <code>unifiable([a,f(b),c,f(d),f(e)], f(X), List)</code>; Διόρθωσέ τον με αλλαγή 3-5 χαρακτήρων.</p><div class="plx" data-id="a5" data-query="unifiable([a,f(b),c,f(d),f(e)], f(X), List)." data-title="Διόρθωσε το unifiable/3 (αλλαγή 3-5 χαρακτήρων)">
+<script type="text/plain" class="plx-src">
+unifiable([], _, []).
+unifiable([X|List1], Term, [X|List2]) :-
+    X = Term,
+    unifiable(List1, Term, List2).
+unifiable([X|List1], Term, List2) :-
+    X \= Term,
+    unifiable(List1, Term, List2).
+</script>
+<script type="text/plain" class="plx-ref">
+unifiable([], _, []).
+unifiable([X|List1], Term, [X|List2]) :-
+    \+ X \= Term,
+    unifiable(List1, Term, List2).
+unifiable([X|List1], Term, List2) :-
+    X \= Term,
+    unifiable(List1, Term, List2).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "unifiable([a,f(b),c,f(d),f(e)], f(X), List).", "n": 5}, {"q": "unifiable([f(1),g(1),f(Y)], f(2), L).", "n": 5}, {"q": "unifiable([X,Y], a, L).", "n": 5}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Τρέξε την ερώτηση και κοίτα την τιμή του X μετά το <code>f(b)</code>. Το <code>X = Term</code> <em>δένει</em> το <code>f(X)</code> σε <code>f(b)</code>, και από εκεί και πέρα κανένα <code>f(d)</code> δεν ταιριάζει. Χρειάζεσαι έλεγχο «ενοποιήσιμα» που δεν αφήνει δέσμευση.</p>
+</div></details><details class="reveal"><summary>✅ Λύση + ανάλυση</summary><div class="reveal-body">
+
+<p>Τρέχοντας το αρχικό: <code>List = [f(b)], X = b</code>, ενώ το σωστό είναι <code>List = [f(b), f(d), f(e)]</code> με το X ελεύθερο.</p>
+<div class="cb"><code><span class="fn">unifiable</span>([], _, []).
+<span class="fn">unifiable</span>([X|List1], Term, [X|List2]) <span class="kw">:-</span>
+    <span class="fill"><span class="op">\+</span> X <span class="op">\=</span> Term</span>,
+    <span class="fn">unifiable</span>(List1, Term, List2).
+<span class="fn">unifiable</span>([X|List1], Term, List2) <span class="kw">:-</span>
+    X <span class="op">\=</span> Term,
+    <span class="fn">unifiable</span>(List1, Term, List2).</code></div>
+<p>Η αλλαγή <code>X = Term</code> → <code>\+ X \= Term</code> είναι 4 χαρακτήρες (το <code>\+ </code> και το <code>\</code>). Ισοδύναμη είναι η <code>\+ \+ X = Term</code>.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="a6">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Α6 · Άρνηση ως αποτυχία και σύνολα<span class="src">2015Α</span></div>
+  <div class="drill-body">
+<p>Ποιες απαντήσεις δίνει το <code>?- s(W).</code> και ποια είναι η «φυσική σημασία» του <code>s/1</code> ως πράξη συνόλων και ως λογική πύλη;</p><div class="plx" data-id="a6" data-query="s(W)." data-title="Άρνηση ως αποτυχία">
+<script type="text/plain" class="plx-src">
+p(1). p(2). p(5). p(8).
+r(2). r(4). r(5). r(7). r(9).
+s(X) :- p(X), not r(X).
+s(X) :- r(X), not p(X).
+</script>
+<script type="text/plain" class="plx-ref">
+p(1). p(2). p(5). p(8).
+r(2). r(4). r(5). r(7). r(9).
+s(X) :- p(X), not r(X).
+s(X) :- r(X), not p(X).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "s(W).", "n": 10}, {"q": "s(2).", "n": 3}, {"q": "s(9).", "n": 3}]</script>
+</div><details class="reveal"><summary>✅ Απάντηση + ερμηνεία</summary><div class="reveal-body">
+
+<p><code>W = 1 ; W = 8 ; W = 4 ; W = 7 ; W = 9 ; false</code>. Πρώτα η 1η πρόταση δίνει τα στοιχεία του p που δεν είναι στο r (1, 8), μετά η 2η τα στοιχεία του r που δεν είναι στο p (4, 7, 9).</p>
+<p><strong>Σύνολα:</strong> συμμετρική διαφορά p Δ r. <strong>Λογικές πύλες:</strong> αποκλειστική διάζευξη (XOR). Το <code>not r(X)</code> δουλεύει σωστά επειδή το X είναι ήδη δεμένο από το <code>p(X)</code>. Αν το γράψεις ανάποδα (<code>not r(X), p(X)</code>), το <code>not r(X)</code> με ελεύθερο X αποτυγχάνει πάντα.</p>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitA"></div>
+</section>
+
+<section id="unitB">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⭐</div><h2>Β. «Βέλτιστο» με \+ (τύπος 1)</h2></div>
+
+  <p class="lead">Από το πιο απλό (μία πρόταση, Ιούνιος 2026) στο πιο σύνθετο (δύο <code>\+</code>, δικός σου generator). Ο στόχος είναι να γράφεις τη γραμμή με το <code>\+</code> χωρίς να το σκεφτείς.</p>
+  
+<div class="drill" id="b1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β1 · maxage/1 (Ιούνιος 2026)<span class="src">2026Α (α) · 10 μον.</span></div>
+  <div class="drill-body">
+<p>Συμπλήρωσε τα κενά. Επιτρέπεται μόνο αυτή η πρόταση. Αναμενόμενο: <code>jim ; bob ; ann ; tim ; false</code>.</p><div class="plx" data-id="b1" data-query="maxage(Person)." data-title="maxage/1 (Ιούνιος 2026): μία πρόταση, χωρίς βοηθητικά">
+<script type="text/plain" class="plx-src">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+maxage(Person) :- age(.............), ........................
+</script>
+<script type="text/plain" class="plx-ref">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+maxage(Person) :-
+    age(Person, A),
+    \+ ( age(_, B), B > A ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxage(Person).", "n": 10}, {"q": "maxage(tom).", "n": 3}, {"q": "maxage(tim).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Το πρώτο κενό είναι ο generator (ποιο άτομο και ποια ηλικία). Το δεύτερο κενό είναι «δεν υπάρχει κάποιος με γνήσια μεγαλύτερη ηλικία». Και τα δύο χρησιμοποιούν το <code>age/2</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">age</span>(pam, <span class="nm">17</span>). <span class="fn">age</span>(tom, <span class="nm">22</span>). <span class="fn">age</span>(jim, <span class="nm">27</span>). <span class="fn">age</span>(pat, <span class="nm">14</span>). <span class="fn">age</span>(bob, <span class="nm">27</span>).
+<span class="fn">age</span>(ann, <span class="nm">27</span>). <span class="fn">age</span>(amy, <span class="nm">26</span>). <span class="fn">age</span>(don, <span class="nm">18</span>). <span class="fn">age</span>(gus, <span class="nm">18</span>). <span class="fn">age</span>(ian, <span class="nm">25</span>).
+<span class="fn">age</span>(leo, <span class="nm">19</span>). <span class="fn">age</span>(sam, <span class="nm">23</span>). <span class="fn">age</span>(tim, <span class="nm">27</span>). <span class="fn">age</span>(zoe, <span class="nm">17</span>). <span class="fn">age</span>(ben, <span class="nm">24</span>).
+
+<span class="fn">maxage</span>(Person) <span class="kw">:-</span>
+    <span class="fn">age</span>(<span class="fill">Person, A</span>),
+    <span class="fill"><span class="op">\+</span> ( <span class="fn">age</span>(_, B), B &gt; A )</span>.</code></div><p>Η εξήγηση με trace είναι στη <a href="exam_theme1_prolog.html#pattern">θεωρία</a>.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b1v">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β1β · Τρεις παραλλαγές του maxage<span class="src">εξάσκηση</span></div>
+  <div class="drill-body">
+<p>Γράψε <code>minage/1</code>, <code>maxunder20/1</code>, <code>maxage_first/1</code> με το ίδιο μοτίβο.</p><div class="plx" data-id="b1v" data-query="minage(P)." data-title="Παραλλαγές: νεότερος, μέγιστος κάτω από 20, ισοπαλία με αλφάβητο">
+<script type="text/plain" class="plx-src">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+% (α) ο νεότερος (όλοι οι ισόπαλοι με backtracking)
+minage(P) :- ......................
+
+% (β) ο μεγαλύτερος από όσους είναι κάτω από 20
+maxunder20(P) :- ......................
+
+% (γ) μέγιστη ηλικία· αν υπάρχουν ισόπαλοι, μόνο ο αλφαβητικά πρώτος
+maxage_first(P) :- ......................
+</script>
+<script type="text/plain" class="plx-ref">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+minage(P) :-
+    age(P, A),
+    \+ ( age(_, B), B < A ).
+
+maxunder20(P) :-
+    age(P, A), A < 20,
+    \+ ( age(_, B), B < 20, B > A ).
+
+maxage_first(P) :-
+    age(P, A),
+    \+ ( age(Q, B), ( B > A ; B =:= A, Q @< P ) ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "minage(P).", "n": 10}, {"q": "maxunder20(P).", "n": 10}, {"q": "maxage_first(P).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>(α): αλλάζει μόνο η σύγκριση.</li><li>(β): ο περιορισμός <code>&lt; 20</code> μπαίνει <em>και</em> έξω <em>και</em> μέσα στο <code>\+</code>, αλλιώς ο 27χρονος «νικάει» τον 19χρονο.</li><li>(γ): «καλύτερος» = μεγαλύτερη ηλικία <em>ή</em> ίδια ηλικία και όνομα που προηγείται αλφαβητικά (<code>@&lt;</code>).</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">age</span>(pam, <span class="nm">17</span>). <span class="fn">age</span>(tom, <span class="nm">22</span>). <span class="fn">age</span>(jim, <span class="nm">27</span>). <span class="fn">age</span>(pat, <span class="nm">14</span>). <span class="fn">age</span>(bob, <span class="nm">27</span>).
+<span class="fn">age</span>(ann, <span class="nm">27</span>). <span class="fn">age</span>(amy, <span class="nm">26</span>). <span class="fn">age</span>(don, <span class="nm">18</span>). <span class="fn">age</span>(gus, <span class="nm">18</span>). <span class="fn">age</span>(ian, <span class="nm">25</span>).
+<span class="fn">age</span>(leo, <span class="nm">19</span>). <span class="fn">age</span>(sam, <span class="nm">23</span>). <span class="fn">age</span>(tim, <span class="nm">27</span>). <span class="fn">age</span>(zoe, <span class="nm">17</span>). <span class="fn">age</span>(ben, <span class="nm">24</span>).
+
+<span class="fn">minage</span>(P) <span class="kw">:-</span>
+    <span class="fn">age</span>(P, A),
+    <span class="op">\+</span> ( <span class="fn">age</span>(_, B), B &lt; A ).
+
+<span class="fn">maxunder20</span>(P) <span class="kw">:-</span>
+    <span class="fn">age</span>(P, A), A &lt; <span class="nm">20</span>,
+    <span class="op">\+</span> ( <span class="fn">age</span>(_, B), B &lt; <span class="nm">20</span>, B &gt; A ).
+
+<span class="fn">maxage_first</span>(P) <span class="kw">:-</span>
+    <span class="fn">age</span>(P, A),
+    <span class="op">\+</span> ( <span class="fn">age</span>(Q, B), ( B &gt; A ; B <span class="op">=:=</span> A, Q @&lt; P ) ).</code></div><p>Απαντήσεις: <code>pat</code> · <code>leo</code> · <code>ann</code> (από τους jim, bob, ann, tim προηγείται αλφαβητικά η ann).</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b1x">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β1γ · Τέσσερα λάθη: πρόβλεψε και τρέξε<span class="src">παγίδες</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Γράψε στο χαρτί τι θα απαντήσει το <code>wrong1(P)</code> έως <code>wrong4(P)</code>. Μετά τρέξε το καθένα.</div><div class="plx" data-id="b1x" data-query="wrong1(P)." data-title="Βρες τι φταίει: τρία λάθη που κάνουν όλοι">
+<script type="text/plain" class="plx-src">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+% Πρόβλεψε ΤΙ θα απαντήσει το καθένα και μετά τρέξε το.
+wrong1(P) :- age(P, A), \+ ( age(_, B), B >= A ).     % >= αντί για >
+wrong2(P) :- age(P, A), \+ ( age(P, B), B > A ).      % P αντί για _ μέσα στο \+
+wrong3(P) :- age(P, A), \+ ( B > A ).                 % ξέχασα τον generator μέσα στο \+
+wrong4(P) :- \+ ( age(_, B), B > A ), age(P, A).       % το \+ πριν δεσμευτεί το A
+</script>
+</div><details class="reveal"><summary>✅ Τι απαντά το καθένα</summary><div class="reveal-body">
+<table class="summary-tbl">
+<thead><tr><th>Κατηγόρημα</th><th>Απάντηση</th><th>Γιατί</th></tr></thead>
+<tbody>
+<tr><td><code>wrong1</code></td><td>false</td><td>κάθε άτομο «βρίσκει» τον εαυτό του με <code>B &gt;= A</code></td></tr>
+<tr><td><code>wrong2</code></td><td>όλα τα άτομα</td><td>το <code>P</code> είναι δεμένο μέσα στο <code>\+</code>, συγκρίνεται μόνο με τον εαυτό του</td></tr>
+<tr><td><code>wrong3</code></td><td>instantiation error</td><td>στο <code>B &gt; A</code> το B δεν έχει τιμή</td></tr>
+<tr><td><code>wrong4</code></td><td>instantiation error</td><td>το <code>\+</code> εκτελείται πριν δεθεί το A</td></tr>
+</tbody></table>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b2">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β2 · maxel/2 και longest/2<span class="src">εξάσκηση</span></div>
+  <div class="drill-body">
+<p>Χωρίς <code>max_list</code>: το μέγιστο στοιχείο μιας λίστας αριθμών, και η μεγαλύτερη λίστα μέσα σε λίστα λιστών (όλες οι ισόπαλες).</p><div class="plx" data-id="b2" data-query="maxel([3,7,7,1], X)." data-title="Μέγιστο στοιχείο &amp; μεγαλύτερη λίστα χωρίς max_list">
+<script type="text/plain" class="plx-src">
+% maxel(L, X): το X είναι μέγιστο στοιχείο της L
+maxel(L, X) :- ......................
+
+% longest(Ls, L): η L είναι λίστα μέγιστου μήκους μέσα στη λίστα λιστών Ls
+longest(Ls, L) :- ......................
+</script>
+<script type="text/plain" class="plx-ref">
+maxel(L, X) :-
+    member(X, L),
+    \+ ( member(Y, L), Y > X ).
+
+longest(Ls, L) :-
+    member(L, Ls), length(L, N),
+    \+ ( member(L2, Ls), length(L2, N2), N2 > N ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxel([3,7,7,1], X).", "n": 5}, {"q": "maxel([], X).", "n": 3}, {"q": "maxel([2], X).", "n": 3}, {"q": "longest([[a],[b,c],[d],[e,f]], L).", "n": 5}, {"q": "longest([[]], L).", "n": 3}]</script>
+</div><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">maxel</span>(L, X) <span class="kw">:-</span>
+    <span class="fn">member</span>(X, L),
+    <span class="op">\+</span> ( <span class="fn">member</span>(Y, L), Y &gt; X ).
+
+<span class="fn">longest</span>(Ls, L) <span class="kw">:-</span>
+    <span class="fn">member</span>(L, Ls), <span class="fn">length</span>(L, N),
+    <span class="op">\+</span> ( <span class="fn">member</span>(L2, Ls), <span class="fn">length</span>(L2, N2), N2 &gt; N ).</code></div><p>Στο <code>maxel([3,7,7,1], X)</code> η απάντηση <code>X = 7</code> βγαίνει <strong>δύο φορές</strong>: μία για κάθε εμφάνιση του 7 στη λίστα. Είναι σωστή συμπεριφορά του μοτίβου (κάθε υποψήφια που επιβιώνει είναι μία απάντηση).</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b3">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β3 · Ελάχιστο μήκος με length/2<span class="src">2022Α · 15/60</span></div>
+  <div class="drill-body">
+<p>Το <code>solveprob/1</code> δίνει λύσεις (λίστες). Βέλτιστη είναι μια λύση με ελάχιστο πλήθος στοιχείων. Συμπλήρωσε δύο ερωτήσεις: η πρώτη τυπώνει <em>μόνο την πρώτη</em> βέλτιστη, η δεύτερη <em>όλες</em> τις βέλτιστες. Χωρίς νέα κατηγορήματα. Ο έλεγχος συγκρίνει και ό,τι τυπώνεται.</p><div class="plx" data-id="b3" data-query="q1." data-title="2022 Α: βέλτιστες λύσεις με length/2 (οι ερωτήσεις ως q1, q2)">
+<script type="text/plain" class="plx-src">
+solveprob([a,b,c,d]).
+solveprob([k,r,w]).
+solveprob([o,e,n,m]).
+solveprob([k,m]).
+solveprob([p,u]).
+solveprob([b,o,k]).
+solveprob([n,a,z,t,r,g,h]).
+solveprob([r,e]).
+solveprob([w,w]).
+
+% Στο γραπτό αυτά ήταν ερωτήσεις ?- ... . Εδώ τα γράφουμε ως κανόνες.
+% q1: τυπώνει ΜΟΝΟ την πρώτη βέλτιστη (ελάχιστου μήκους) λύση και μετά No
+q1 :- length(..........), solveprob(..........), .....................
+
+% q2: τυπώνει ΟΛΕΣ τις βέλτιστες λύσεις και μετά No
+q2 :- length(..........), solveprob(..........), .....................
+</script>
+<script type="text/plain" class="plx-ref">
+solveprob([a,b,c,d]).
+solveprob([k,r,w]).
+solveprob([o,e,n,m]).
+solveprob([k,m]).
+solveprob([p,u]).
+solveprob([b,o,k]).
+solveprob([n,a,z,t,r,g,h]).
+solveprob([r,e]).
+solveprob([w,w]).
+
+q1 :- length(L, _), solveprob(L), write(L), nl, !, fail.
+
+q2 :- length(L, N), solveprob(L), !, length(L2, N), solveprob(L2), write(L2), nl, fail.
+</script>
+<script type="application/json" class="plx-tests">[{"q": "q1.", "n": 3, "out": true}, {"q": "q2.", "n": 3, "out": true}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Με ελεύθερο μήκος, το <code>length(L, N)</code> δοκιμάζει μήκη 0, 1, 2, … Άρα η πρώτη επιτυχία του <code>solveprob(L)</code> είναι ελάχιστου μήκους. Για «μόνο την πρώτη» χρειάζεσαι cut. Για «όλες του ίδιου μήκους» χρειάζεσαι να κλειδώσεις το N και έναν βρόχο αποτυχίας.</p>
+</div></details><details class="reveal"><summary>✅ Λύση + γιατί</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">solveprob</span>([a,b,c,d]).
+<span class="fn">solveprob</span>([k,r,w]).
+<span class="fn">solveprob</span>([o,e,n,m]).
+<span class="fn">solveprob</span>([k,m]).
+<span class="fn">solveprob</span>([p,u]).
+<span class="fn">solveprob</span>([b,o,k]).
+<span class="fn">solveprob</span>([n,a,z,t,r,g,h]).
+<span class="fn">solveprob</span>([r,e]).
+<span class="fn">solveprob</span>([w,w]).
+
+q1 <span class="kw">:-</span> <span class="fn">length</span>(<span class="fill">L, _</span>), <span class="fn">solveprob</span>(<span class="fill">L</span>), <span class="fill"><span class="fn">write</span>(L), nl, !, fail</span>.
+
+q2 <span class="kw">:-</span> <span class="fn">length</span>(<span class="fill">L, N</span>), <span class="fn">solveprob</span>(<span class="fill">L</span>), <span class="fill">!, <span class="fn">length</span>(L2, N), <span class="fn">solveprob</span>(L2), <span class="fn">write</span>(L2), nl, fail</span>.</code></div><ul style="padding-left:1.5rem">
+<li><strong>q1:</strong> τυπώνει την πρώτη, το <code>!</code> κόβει όλες τις εναλλακτικές, το <code>fail</code> δίνει «No». Χωρίς το <code>!</code>, το <code>fail</code> θα έστελνε το <code>length</code> σε μήκη 3, 4, … για πάντα.</li>
+<li><strong>q2:</strong> το <code>!</code> μετά την πρώτη λύση κλειδώνει το ελάχιστο <code>N</code>. Μετά, ο βρόχος αποτυχίας <code>length(L2, N), solveprob(L2), write(L2), nl, fail</code> τυπώνει όλες τις λύσεις αυτού του μήκους.</li>
+</ul>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β4 · knapsack/4<span class="src">2021Α · 15/60</span></div>
+  <div class="drill-body">
+<p>Αντικείμενα <code>W/V</code>, χωρητικότητα <code>Capacity</code>: υποσύνολο με μέγιστη αξία, όλες οι βέλτιστες. Ο πρώτος έλεγχος τρέχει μόνο το <code>solution</code> ώστε να ξέρεις αν ο generator σου είναι σωστός.</p><div class="plx" data-id="b4" data-query="knapsack(80, Solution, Weight, Value)." data-title="2021 Α: knapsack/4 (συμπλήρωσε τα κενά)">
+<script type="text/plain" class="plx-src">
+items([6/12, 15/10, 22/32, 14/19, 15/17, 18/11, 6/22, 14/13, 34/42, 40/7]).
+
+knapsack(Capacity, Solution, TotW, TotV) :-
+    items(Items),
+    solution(Capacity, Items, Solution, TotW, TotV),
+    \+ (....................................).
+
+solution(_, [], [], ................).
+solution(Capacity, [W/V|Items], [W/V|Solution], TotW, TotV) :-
+    solution(Capacity, Items, ................),
+    ........................................
+solution(Capacity, [_|Items], Solution, TotW, TotV) :-
+    ........................................
+</script>
+<script type="text/plain" class="plx-ref">
+items([6/12, 15/10, 22/32, 14/19, 15/17, 18/11, 6/22, 14/13, 34/42, 40/7]).
+
+knapsack(Capacity, Solution, TotW, TotV) :-
+    items(Items),
+    solution(Capacity, Items, Solution, TotW, TotV),
+    \+ (solution(Capacity, Items, _, _, TotV2), TotV2 > TotV).
+
+solution(_, [], [], 0, 0).
+solution(Capacity, [W/V|Items], [W/V|Solution], TotW, TotV) :-
+    solution(Capacity, Items, Solution, TotW1, TotV1),
+    TotW is TotW1 + W, TotW =< Capacity, TotV is TotV1 + V.
+solution(Capacity, [_|Items], Solution, TotW, TotV) :-
+    solution(Capacity, Items, Solution, TotW, TotV).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "solution(20, [6/12, 15/10, 14/19], S, W, V).", "n": 10, "label": "μόνο ο generator"}, {"q": "knapsack(80, Solution, Weight, Value).", "n": 5}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Βάση: χωρίς αντικείμενα, βάρος και αξία 0.</li><li>«Πάρε»: λύσε πρώτα για τα υπόλοιπα (<code>TotW1</code>, <code>TotV1</code>), μετά πρόσθεσε και έλεγξε τη χωρητικότητα.</li><li>«Πέτα»: απλή αναδρομή με τα ίδια ορίσματα.</li><li>Το <code>\+</code>: ο ίδιος generator με <code>_</code> για ό,τι δεν σε νοιάζει.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">items</span>([<span class="nm">6</span>/<span class="nm">12</span>, <span class="nm">15</span>/<span class="nm">10</span>, <span class="nm">22</span>/<span class="nm">32</span>, <span class="nm">14</span>/<span class="nm">19</span>, <span class="nm">15</span>/<span class="nm">17</span>, <span class="nm">18</span>/<span class="nm">11</span>, <span class="nm">6</span>/<span class="nm">22</span>, <span class="nm">14</span>/<span class="nm">13</span>, <span class="nm">34</span>/<span class="nm">42</span>, <span class="nm">40</span>/<span class="nm">7</span>]).
+
+<span class="fn">knapsack</span>(Capacity, Solution, TotW, TotV) <span class="kw">:-</span>
+    <span class="fn">items</span>(Items),
+    <span class="fn">solution</span>(Capacity, Items, Solution, TotW, TotV),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">solution</span>(Capacity, Items, _, _, TotV2), TotV2 &gt; TotV</span>).
+
+<span class="fn">solution</span>(_, [], [], <span class="fill"><span class="nm">0</span>, <span class="nm">0</span></span>).
+<span class="fn">solution</span>(Capacity, [W/V|Items], [W/V|Solution], TotW, TotV) <span class="kw">:-</span>
+    <span class="fn">solution</span>(Capacity, Items, <span class="fill">Solution, TotW1, TotV1</span>),
+    <span class="fill">TotW <span class="op">is</span> TotW1 + W, TotW <span class="op">=&lt;</span> Capacity, TotV <span class="op">is</span> TotV1 + V</span>.
+<span class="fn">solution</span>(Capacity, [_|Items], Solution, TotW, TotV) <span class="kw">:-</span>
+    <span class="fill"><span class="fn">solution</span>(Capacity, Items, Solution, TotW, TotV)</span>.</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β5 · max_clique/4<span class="src">2021Β · 15/60</span></div>
+  <div class="drill-body">
+<p>Γράφος με κόμβους 1..N και ακμές <code>I-J</code> (I &lt; J). Μέγιστη κλίκα και μέγεθος, όλες οι μέγιστες.</p><div class="plx" data-id="b5" data-query="a_graph(N, Edges), max_clique(N, Edges, Clique, Size)." data-title="2021 Β: max_clique/4 (συμπλήρωσε τα κενά)">
+<script type="text/plain" class="plx-src">
+a_graph(8, [1-4, 1-5, 1-8, 2-3, 2-5, 2-6, 2-7, 3-7, 4-5, 6-7, 7-8]).
+
+max_clique(N, Edges, MaxCl, MaxSize) :-
+    clique(N, Edges, MaxCl, MaxSize),
+    \+ (.............................................................).
+
+clique(N, Edges, Clique, Size) :-
+    findall(K, between(1, N, K), Nodes),
+    is_subset(Nodes, Clique),
+    \+ (.............................................................),
+    length(Clique, Size).
+
+....................................................................
+</script>
+<script type="text/plain" class="plx-ref">
+a_graph(8, [1-4, 1-5, 1-8, 2-3, 2-5, 2-6, 2-7, 3-7, 4-5, 6-7, 7-8]).
+
+max_clique(N, Edges, MaxCl, MaxSize) :-
+    clique(N, Edges, MaxCl, MaxSize),
+    \+ (clique(N, Edges, _, Size2), Size2 > MaxSize).
+
+clique(N, Edges, Clique, Size) :-
+    findall(K, between(1, N, K), Nodes),
+    is_subset(Nodes, Clique),
+    \+ (member(A, Clique), member(B, Clique), A < B, \+ member(A-B, Edges)),
+    length(Clique, Size).
+
+is_subset([], []).
+is_subset([X|Xs], [X|Ys]) :- is_subset(Xs, Ys).
+is_subset([_|Xs], Ys) :- is_subset(Xs, Ys).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "clique(3, [1-2, 2-3], C, S).", "n": 10, "label": "μικρός γράφος"}, {"q": "a_graph(N, Edges), clique(N, Edges, Clique, 4).", "n": 3}, {"q": "a_graph(N, Edges), max_clique(N, Edges, Clique, Size).", "n": 5}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Το εσωτερικό <code>\+</code> του <code>clique</code>: «δεν υπάρχουν δύο κόμβοι A &lt; B της κλίκας χωρίς ακμή».</li><li>Το <code>A &lt; B</code> ταιριάζει με τη μορφή των ακμών <code>I-J</code> με <code>I &lt; J</code>.</li><li>Το <code>is_subset</code> είναι το γνωστό «κράτα / πέτα».</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">a_graph</span>(<span class="nm">8</span>, [<span class="nm">1</span>-<span class="nm">4</span>, <span class="nm">1</span>-<span class="nm">5</span>, <span class="nm">1</span>-<span class="nm">8</span>, <span class="nm">2</span>-<span class="nm">3</span>, <span class="nm">2</span>-<span class="nm">5</span>, <span class="nm">2</span>-<span class="nm">6</span>, <span class="nm">2</span>-<span class="nm">7</span>, <span class="nm">3</span>-<span class="nm">7</span>, <span class="nm">4</span>-<span class="nm">5</span>, <span class="nm">6</span>-<span class="nm">7</span>, <span class="nm">7</span>-<span class="nm">8</span>]).
+
+<span class="fn">max_clique</span>(N, Edges, MaxCl, MaxSize) <span class="kw">:-</span>
+    <span class="fn">clique</span>(N, Edges, MaxCl, MaxSize),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">clique</span>(N, Edges, _, Size2), Size2 &gt; MaxSize</span>).
+
+<span class="fn">clique</span>(N, Edges, Clique, Size) <span class="kw">:-</span>
+    <span class="fn">findall</span>(K, <span class="fn">between</span>(<span class="nm">1</span>, N, K), Nodes),
+    <span class="fn">is_subset</span>(Nodes, Clique),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">member</span>(A, Clique), <span class="fn">member</span>(B, Clique), A &lt; B, <span class="op">\+</span> <span class="fn">member</span>(A-B, Edges)</span>),
+    <span class="fn">length</span>(Clique, Size).
+
+⟦<span class="fn">is_subset</span>([], []).
+<span class="fn">is_subset</span>([X|Xs], [X|Ys]) <span class="kw">:-</span> <span class="fn">is_subset</span>(Xs, Ys).
+<span class="fn">is_subset</span>([_|Xs], Ys) <span class="kw">:-</span> <span class="fn">is_subset</span>(Xs, Ys).⟧</code></div><p>Δύο <code>\+</code> με διαφορετικό ρόλο: ο εσωτερικός ελέγχει την ιδιότητα («είναι κλίκα»), ο εξωτερικός τη βελτιστότητα («καμία μεγαλύτερη»).</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b6">
+  <div class="drill-hd"><span class="lvl h">HARD</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β6 · longestordsubseq/3<span class="src">2023Α · 20/60</span></div>
+  <div class="drill-body">
+<p>Γνησίως αύξουσα (<code>Op = &lt;</code>) ή φθίνουσα (<code>Op = &gt;</code>) υπακολουθία μέγιστου μήκους, όλες οι λύσεις.</p><div class="plx" data-id="b6" data-query="longestordsubseq([3, 2, 7, 4, 5, 6, 1, 5], &lt;, SubSeq)." data-title="2023 Α: longestordsubseq/3 (συμπλήρωσε τα κενά)">
+<script type="text/plain" class="plx-src">
+longestordsubseq(Seq, Op, SubSeq) :-
+    ordsubseqlen(Seq, SubSeq, Op, N),
+    \+ (.......................................).
+
+ordsubseqlen(Seq, SubSeq, Op, N) :-
+    subseq(Seq, SubSeq), ordseq(.............),
+    ................
+
+subseq([], []).
+subseq(................) :- ................
+subseq(................) :- ................
+
+ordseq([_], _).
+ordseq(........, Op) :-
+    ................, call(Goal),
+    ordseq(........, Op).
+</script>
+<script type="text/plain" class="plx-ref">
+longestordsubseq(Seq, Op, SubSeq) :-
+    ordsubseqlen(Seq, SubSeq, Op, N),
+    \+ (ordsubseqlen(Seq, _, Op, N1), N1 > N).
+
+ordsubseqlen(Seq, SubSeq, Op, N) :-
+    subseq(Seq, SubSeq), ordseq(SubSeq, Op),
+    length(SubSeq, N).
+
+subseq([], []).
+subseq([X|Seq], [X|SubSeq]) :- subseq(Seq, SubSeq).
+subseq([_|Seq], SubSeq) :- subseq(Seq, SubSeq).
+
+ordseq([_], _).
+ordseq([X1, X2|Xs], Op) :-
+    Goal =.. [Op, X1, X2], call(Goal),
+    ordseq([X2|Xs], Op).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "subseq([a,b,c], S).", "n": 10, "label": "μόνο το subseq"}, {"q": "ordseq([1,3,4], <).", "n": 3}, {"q": "ordseq([1,3,2], <).", "n": 3}, {"q": "longestordsubseq([3, 2, 7, 4, 5, 6, 1, 5], <, SubSeq).", "n": 10}, {"q": "longestordsubseq([3, 2, 7, 4, 5, 6, 1, 5], >, SubSeq).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li><code>ordseq</code>: η κεφαλή πρέπει να «βλέπει» δύο στοιχεία, <code>[X1, X2|Xs]</code>, και η αναδρομή να συνεχίζει από το <code>X2</code>.</li><li>Ο στόχος <code>X1 Op X2</code> χτίζεται με <code>Goal =.. [Op, X1, X2]</code>.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">longestordsubseq</span>(Seq, Op, SubSeq) <span class="kw">:-</span>
+    <span class="fn">ordsubseqlen</span>(Seq, SubSeq, Op, N),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">ordsubseqlen</span>(Seq, _, Op, N1), N1 &gt; N</span>).
+
+<span class="fn">ordsubseqlen</span>(Seq, SubSeq, Op, N) <span class="kw">:-</span>
+    <span class="fn">subseq</span>(Seq, SubSeq), <span class="fn">ordseq</span>(<span class="fill">SubSeq, Op</span>),
+    <span class="fill"><span class="fn">length</span>(SubSeq, N)</span>.
+
+<span class="fn">subseq</span>([], []).
+<span class="fn">subseq</span>(<span class="fill">[X|Seq], [X|SubSeq]</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subseq</span>(Seq, SubSeq)</span>.
+<span class="fn">subseq</span>(<span class="fill">[_|Seq], SubSeq</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subseq</span>(Seq, SubSeq)</span>.
+
+<span class="fn">ordseq</span>([_], _).
+<span class="fn">ordseq</span>(<span class="fill">[X1, X2|Xs]</span>, Op) <span class="kw">:-</span>
+    <span class="fill">Goal <span class="op">=..</span> [Op, X1, X2]</span>, <span class="fn">call</span>(Goal),
+    <span class="fn">ordseq</span>(<span class="fill">[X2|Xs]</span>, Op).</code></div><p>Με τη λίστα των 14 στοιχείων της εκφώνησης ο browser αργεί πολύ (2<sup>14</sup> υπακολουθίες, και για καθεμία ξανά όλες μέσα στο <code>\+</code>). Στη SWI-Prolog τρέχει αμέσως και δίνει <code>[1,2,3,4,5]</code> για το <code>&lt;</code>, και <code>[9,8,3,2,1] ; [9,8,5,4,1]</code> για το <code>&gt;</code>.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b7">
+  <div class="drill-hd"><span class="lvl h">HARD</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Β7 · maxcntunif/2<span class="src">2022Β · 15/60 · 2015Α</span></div>
+  <div class="drill-body">
+<p>Μέγιστη υπολίστα <strong>συνεχόμενων</strong> στοιχείων που ενοποιούνται ανά δύο, <strong>χωρίς να γίνει η ενοποίηση</strong>.</p><div class="plx" data-id="b7" data-query="maxcntunif([f(1),f(X),g(X),g(2),g(Y),g(3),g(Z),h(X),h(Y),h(Z)], MaxSub)." data-title="2022 Β / 2015 Α: maxcntunif/2 (συμπλήρωσε τα κενά)">
+<script type="text/plain" class="plx-src">
+maxcntunif(List, MaxSub) :-
+    cntunif(N, MaxSub, List),
+    \+ (...................).
+
+cntunif(N, Sublist, List) :-
+    append(...................),
+    append(...................),
+    unifall(Sublist),
+    ...................
+
+unifall([_]).
+unifall([X|L]) :-
+    unifone(X, L),
+    ...................
+
+unifone(...................).
+unifone(...................) :-
+    ...................
+</script>
+<script type="text/plain" class="plx-ref">
+maxcntunif(List, MaxSub) :-
+    cntunif(N, MaxSub, List),
+    \+ (cntunif(N1, _, List), N1 > N).
+
+cntunif(N, Sublist, List) :-
+    append(_, L1, List),
+    append(Sublist, _, L1),
+    unifall(Sublist),
+    length(Sublist, N).
+
+unifall([_]).
+unifall([X|L]) :-
+    unifone(X, L),
+    unifall(L).
+
+unifone(_, []).
+unifone(X, [Y|L]) :-
+    \+ X \= Y, unifone(X, L).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxcntunif([a,a,b,b,b,b,c,d,d,d,e,e,e,e,f], MaxSub).", "n": 10}, {"q": "maxcntunif([f(1),f(X),g(X),g(2),g(Y),g(3),g(Z),h(X),h(Y),h(Z)], MaxSub).", "n": 10}, {"q": "maxcntunif([1,2,3], MaxSub).", "n": 10}, {"q": "maxcntunif([X,Y,Z,W,Y,W], MaxSub).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Τα δύο <code>append</code>: πρώτα πετάς ένα πρόθεμα, μετά κρατάς ένα πρόθεμα από ό,τι έμεινε.</li><li><code>unifone(X, L)</code>: το X ενοποιείται (χωρίς δέσμευση) με κάθε στοιχείο της L. Βάση: άδεια L.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">maxcntunif</span>(List, MaxSub) <span class="kw">:-</span>
+    <span class="fn">cntunif</span>(N, MaxSub, List),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">cntunif</span>(N1, _, List), N1 &gt; N</span>).
+
+<span class="fn">cntunif</span>(N, Sublist, List) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">_, L1, List</span>),
+    <span class="fn">append</span>(<span class="fill">Sublist, _, L1</span>),
+    <span class="fn">unifall</span>(Sublist),
+    <span class="fill"><span class="fn">length</span>(Sublist, N)</span>.
+
+<span class="fn">unifall</span>([_]).
+<span class="fn">unifall</span>([X|L]) <span class="kw">:-</span>
+    <span class="fn">unifone</span>(X, L),
+    <span class="fill"><span class="fn">unifall</span>(L)</span>.
+
+<span class="fn">unifone</span>(<span class="fill">_, []</span>).
+<span class="fn">unifone</span>(<span class="fill">X, [Y|L]</span>) <span class="kw">:-</span>
+    <span class="fill"><span class="op">\+</span> X <span class="op">\=</span> Y, <span class="fn">unifone</span>(X, L)</span>.</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b8">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Β8 · maxrep/2<span class="src">2012Α</span></div>
+  <div class="drill-body">
+<p>Μέγιστη υπολίστα ίδιων συνεχόμενων στοιχείων, ως όρος <code>X/N</code>. Γράψ' το από την αρχή.</p><div class="plx" data-id="b8" data-query="maxrep([a,a,b,c,c,c,c,d,d,d,e,e,e,e], Maxrep)." data-title="2012 Α: maxrep/2 (γράψ&#x27; το από την αρχή)">
+<script type="text/plain" class="plx-src">
+% maxrep(List, X/N): η μέγιστη υπολίστα ΙΔΙΩΝ συνεχόμενων στοιχείων
+% είναι το X επαναλαμβανόμενο N φορές (όλες οι ισόπαλες με backtracking)
+maxrep(List, Maxrep) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+maxrep(List, X/N) :-
+    run(List, X, N),
+    \+ ( run(List, _, N2), N2 > N ).
+
+% run(List, X, N): συνεχόμενο κομμάτι της List με N φορές το X
+run(List, X, N) :-
+    append(_, Rest, List),
+    append(Sub, _, Rest),
+    Sub = [X|_],
+    same(Sub, X),
+    length(Sub, N).
+
+same([], _).
+same([Y|Ys], X) :- Y == X, same(Ys, X).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxrep([a,a,b,c,c,c,c,d,d,d,e,e,e,e], Maxrep).", "n": 10}, {"q": "maxrep([a,b,c], Maxrep).", "n": 10}, {"q": "maxrep([x,x,x,x,x,x,x,x,x,x,x,x,x,x], Maxrep).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Φτιάξε ένα <code>run(List, X, N)</code> που παράγει κάθε συνεχόμενο κομμάτι με ίδια στοιχεία, και το X και το N του. Μετά εφάρμοσε το μοτίβο. Τα μη-μέγιστα κομμάτια (π.χ. <code>c,c,c</code> μέσα στο <code>c,c,c,c</code>) απορρίπτονται μόνα τους από το <code>\+</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">maxrep</span>(List, X/N) <span class="kw">:-</span>
+    <span class="fn">run</span>(List, X, N),
+    <span class="op">\+</span> ( <span class="fn">run</span>(List, _, N2), N2 &gt; N ).
+
+<span class="cm">% run(List, X, N): συνεχόμενο κομμάτι της List με N φορές το X</span>
+<span class="fn">run</span>(List, X, N) <span class="kw">:-</span>
+    <span class="fn">append</span>(_, Rest, List),
+    <span class="fn">append</span>(Sub, _, Rest),
+    Sub = [X|_],
+    <span class="fn">same</span>(Sub, X),
+    <span class="fn">length</span>(Sub, N).
+
+<span class="fn">same</span>([], _).
+<span class="fn">same</span>([Y|Ys], X) <span class="kw">:-</span> Y <span class="op">==</span> X, <span class="fn">same</span>(Ys, X).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="b9">
+  <div class="drill-hd"><span class="lvl h">HARD</span> Β9 · maxcsl/3<span class="src">2013Α</span></div>
+  <div class="drill-body">
+<p>Μέγιστη κοινή υπολίστα συνεχόμενων στοιχείων δύο λιστών. Αν δεν υπάρχει, αποτυχία. Μέχρι 400 χαρακτήρες, μόνο <code>member</code>, <code>length</code>, <code>append</code>.</p><div class="plx" data-id="b9" data-query="maxcsl([a,b,c,d,e,f,g],[h,f,g,i,b,c,d,j,d,e,f],Maxcsl)." data-title="2013 Α: maxcsl/3 (≤ 400 χαρακτήρες, μόνο member/length/append)">
+<script type="text/plain" class="plx-src">
+% μέγιστη ΚΟΙΝΗ υπολίστα συνεχόμενων στοιχείων των L1, L2
+maxcsl(L1, L2, M) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+maxcsl(L1, L2, M) :-
+    csl(L1, L2, M, N),
+    \+ ( csl(L1, L2, _, N2), N2 > N ).
+
+csl(L1, L2, S, N) :-
+    append(_, T1, L1), append(S, _, T1), S = [_|_],
+    append(_, T2, L2), append(S, _, T2),
+    length(S, N).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxcsl([a,b,c,d,e,f,g],[h,f,g,i,b,c,d,j,d,e],Maxcsl).", "n": 10}, {"q": "maxcsl([a,b,c,d,e,f,g],[h,f,g,i,b,c,d,j,d,e,f],Maxcsl).", "n": 10}, {"q": "maxcsl([a,b,c,d],[e,f],Maxcsl).", "n": 10}, {"q": "maxcsl([b,c,b,c,b,c],[c,b,c,b,c,b],Maxcsl).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Κοινή υπολίστα = παράθυρο της L1 που είναι <em>και</em> παράθυρο της L2. Δύο ζευγάρια <code>append</code>, ένα για κάθε λίστα, με το ίδιο S. Το <code>S = [_|_]</code> αποκλείει την κενή (αλλιώς το <code>[a,b,c,d]</code>/<code>[e,f]</code> θα έδινε <code>[]</code> αντί για αποτυχία).</p>
+</div></details><details class="reveal"><summary>✅ Λύση (περίπου 250 χαρακτήρες)</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">maxcsl</span>(L1, L2, M) <span class="kw">:-</span>
+    <span class="fn">csl</span>(L1, L2, M, N),
+    <span class="op">\+</span> ( <span class="fn">csl</span>(L1, L2, _, N2), N2 &gt; N ).
+
+<span class="fn">csl</span>(L1, L2, S, N) <span class="kw">:-</span>
+    <span class="fn">append</span>(_, T1, L1), <span class="fn">append</span>(S, _, T1), S = [_|_],
+    <span class="fn">append</span>(_, T2, L2), <span class="fn">append</span>(S, _, T2),
+    <span class="fn">length</span>(S, N).</code></div>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitB"></div>
+</section>
+
+<section id="unitC">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⚖️</div><h2>Γ. Ταυτότητα ή ενοποίηση μέσα σε αναδρομή (τύπος 2)</h2></div>
+
+  <p class="lead">Εδώ κρίθηκαν 25 μονάδες τον Ιούνιο. Η ίδια λογική εμφανίζεται ως «τι θα παίρνατε αν τα στοιχεία είχαν μεταβλητές».</p>
+  
+<div class="drill" id="c1">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ1 · special_palindrome (i): ακριβώς ίδια<span class="src">2026Α (β)i · 10 μον.</span></div>
+  <div class="drill-body">
+<p>Αναμενόμενο στις ερωτήσεις της εκφώνησης: <code>No · Yes · No · No</code>.</p><div class="plx" data-id="c1" data-query="special_palindrome([f(X), g(3), h(Y), g(3), f(X)])." data-title="Ιούνιος 2026 (β)i: special_palindrome, συμμετρικά ΑΚΡΙΒΩΣ ίδια">
+<script type="text/plain" class="plx-src">
+% επιτυγχάνει όταν τα συμμετρικά ως προς το κέντρο στοιχεία είναι ακριβώς ίδια
+special_palindrome(List) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    First == Last,
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Δύο βάσεις (άδεια, ένα στοιχείο). Στο αναδρομικό βήμα κόψε πρώτο και τελευταίο με <code>append</code>, σύγκρινέ τα με <code>==</code> και συνέχισε με το μεσαίο κομμάτι.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">special_palindrome</span>([]).
+<span class="fn">special_palindrome</span>([_]).
+<span class="fn">special_palindrome</span>([First|Rest]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Middle, [Last], Rest),
+    First <span class="op">==</span> Last,
+    <span class="fn">special_palindrome</span>(Middle).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c2">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ2 · (ii): η ελάχιστη αλλαγή για «ενοποιήσιμα»<span class="src">2026Α (β)ii · 5 μον.</span></div>
+  <div class="drill-body">
+<p>Ο editor έχει τη λύση του (i). Άλλαξε <strong>μόνο</strong> τη σύγκριση ώστε <strong>και οι 4</strong> ερωτήσεις να απαντούν Yes. Δοκίμασε πρώτα το σκέτο <code>=</code> και δες τι γίνεται.</p><div class="plx" data-id="c2" data-query="special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)])." data-title="Ιούνιος 2026 (β)ii: η ελάχιστη αλλαγή για «ενοποιήσιμα»">
+<script type="text/plain" class="plx-src">
+% Άλλαξε ΜΟΝΟ τη σύγκριση ώστε και οι 4 ερωτήσεις να πετυχαίνουν.
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    First == Last,
+    special_palindrome(Middle).
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    \+ First \= Last,
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div><details class="reveal"><summary>✅ Λύση + γιατί όχι σκέτο =</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">special_palindrome</span>([]).
+<span class="fn">special_palindrome</span>([_]).
+<span class="fn">special_palindrome</span>([First|Rest]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Middle, [Last], Rest),
+    <span class="fill"><span class="op">\+</span> First <span class="op">\=</span> Last</span>,
+    <span class="fn">special_palindrome</span>(Middle).</code></div><p>Με σκέτο <code>First = Last</code> η 4η ερώτηση αποτυγχάνει: τα δύο πρώτα ζευγάρια δένουν X = Y = 3 και το τρίτο ζητάει X = 5. Δοκίμασέ το στον editor για να το δεις. Η πλήρης ανάλυση είναι στη <a href="exam_theme1_prolog.html#june">θεωρία</a>.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c3">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ3 · (iii): πρόβλεψε το reverse(List, List)<span class="src">2026Α (β)iii · 5 μον.</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Γράψε τις 4 απαντήσεις με τις δεσμεύσεις τους. Μετά τρέξε τις 4 ερωτήσεις μία-μία.</div><div class="plx" data-id="c3" data-query="special_palindrome([f(X), g(5), g(X), f(5)])." data-title="Ιούνιος 2026 (β)iii: πρόβλεψε τι απαντά το reverse(List, List)">
+<script type="text/plain" class="plx-src">
+special_palindrome(List) :- reverse(List, List).
+
+% Πρόβλεψε πρώτα στο χαρτί τις 4 απαντήσεις (και τις δεσμεύσεις!),
+% μετά τρέξε μία-μία τις ερωτήσεις.
+</script>
+</div><details class="reveal"><summary>✅ Απαντήσεις</summary><div class="reveal-body">
+<p><span class="ans-line">Yes (X = 5) · Yes · Yes (X = 3, Y = 3) · No</span>. Το <code>reverse(List, List)</code> ενοποιεί τη λίστα με την αντίστροφή της, με κοινές δεσμεύσεις σε όλα τα ζευγάρια.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ4 · (iv): χωρίς reverse/2<span class="src">2026Α (β)iv · 5 μον.</span></div>
+  <div class="drill-body">
+<p>Ο έλεγχος συγκρίνει και τις δεσμεύσεις (π.χ. <code>X = 5</code>) με αυτές του (iii).</p><div class="plx" data-id="c4" data-query="special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)])." data-title="Ιούνιος 2026 (β)iv: ίδια συμπεριφορά με το (iii), χωρίς reverse/2">
+<script type="text/plain" class="plx-src">
+% ίδιες απαντήσεις (και ίδιες δεσμεύσεις) με το
+%   special_palindrome(List) :- reverse(List, List).
+special_palindrome(List) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [First], Rest),
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Το (iii) ενοποιεί κάθε στοιχείο με το συμμετρικό του. Γράψε τη <em>ίδια μεταβλητή</em> στις δύο άκρες: <code>[First|Rest]</code> και <code>append(Middle, [First], Rest)</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">special_palindrome</span>([]).
+<span class="fn">special_palindrome</span>([_]).
+<span class="fn">special_palindrome</span>([First|Rest]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Middle, [First], Rest),
+    <span class="fn">special_palindrome</span>(Middle).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ5 · packcons/2<span class="src">2023Β · 20/60 · 2018Α</span></div>
+  <div class="drill-body">
+<p>Λίστα με τις λίστες των συνεχόμενων ίδιων στοιχείων: <code>[a,a,a,b,c,c,…]</code> → <code>[[a,a,a],[b],[c,c],…]</code>.</p><div class="plx" data-id="c5" data-query="packcons([a,a,a,b,c,c,d,d,d,d,a,e,c,c], List)." data-title="2023 Β / 2018 Α: packcons/2 (συμπλήρωσε τα κενά)">
+<script type="text/plain" class="plx-src">
+packcons([], []).
+packcons([X|Xs], [Z|Zs]) :-
+    packone(.................),
+    packcons(................).
+
+packone(X, [], ........, ........).
+packone(X, [Y|Xs], ........, ........) :-
+    .............
+packone(X, [Y|Xs], ........, ........) :-
+    ............,
+    packone(X, Xs, ........, ........).
+</script>
+<script type="text/plain" class="plx-ref">
+packcons([], []).
+packcons([X|Xs], [Z|Zs]) :-
+    packone(X, Xs, Z, Rest),
+    packcons(Rest, Zs).
+
+packone(X, [], [X], []).
+packone(X, [Y|Xs], [X], [Y|Xs]) :-
+    X \== Y.
+packone(X, [Y|Xs], [X|Zs], Rest) :-
+    X == Y,
+    packone(X, Xs, Zs, Rest).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "packcons([a,a,a,b,c,c,d,d,d,d,a,e,c,c], List).", "n": 5}, {"q": "packcons([f(1),g(2),g(2),g(1),f(1),f(1),g(2)], List).", "n": 5}, {"q": "packcons([], List).", "n": 3}, {"q": "packcons([z], List).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li><code>packone(X, Xs, Group, Rest)</code>: η <code>Group</code> είναι η ομάδα που ξεκινά με X, η <code>Rest</code> ό,τι μένει μετά την ομάδα.</li><li>Τρεις περιπτώσεις: τέλος λίστας · επόμενο διαφορετικό (κλείνει η ομάδα) · επόμενο ίδιο (μεγαλώνει η ομάδα).</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">packcons</span>([], []).
+<span class="fn">packcons</span>([X|Xs], [Z|Zs]) <span class="kw">:-</span>
+    <span class="fn">packone</span>(<span class="fill">X, Xs, Z, Rest</span>),
+    <span class="fn">packcons</span>(<span class="fill">Rest, Zs</span>).
+
+<span class="fn">packone</span>(X, [], <span class="fill">[X]</span>, <span class="fill">[]</span>).
+<span class="fn">packone</span>(X, [Y|Xs], <span class="fill">[X]</span>, <span class="fill">[Y|Xs]</span>) <span class="kw">:-</span>
+    <span class="fill">X <span class="op">\==</span> Y</span>.
+<span class="fn">packone</span>(X, [Y|Xs], <span class="fill">[X|Zs]</span>, <span class="fill">Rest</span>) <span class="kw">:-</span>
+    <span class="fill">X <span class="op">==</span> Y</span>,
+    <span class="fn">packone</span>(X, Xs, <span class="fill">Zs</span>, <span class="fill">Rest</span>).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c6">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Γ6 · «Τι θα παίρνατε με μεταβλητές;»<span class="src">2023Β · 2018Α</span></div>
+  <div class="drill-body">
+<div class="try"><div class="hd">✍️ Δοκίμασε πρώτα (5 έως 10 λεπτά)</div>Πρόβλεψε για τις δύο εκδοχές (== και =) την απάντηση στις δύο ερωτήσεις της εκφώνησης. Μετά τρέξε.</div><div class="plx" data-id="c6" data-query="packcons_eq([f(1),f(X),f(2),f(Y),f(2)], List)." data-title="Με μεταβλητές: η εκδοχή με == και η εκδοχή με =">
+<script type="text/plain" class="plx-src">
+% εκδοχή Α: σύγκριση με == / \==
+packcons_eq([], []).
+packcons_eq([X|Xs], [Z|Zs]) :- pack_eq(X, Xs, Z, Rest), packcons_eq(Rest, Zs).
+pack_eq(X, [], [X], []).
+pack_eq(X, [Y|Xs], [X], [Y|Xs]) :- X \== Y.
+pack_eq(X, [Y|Xs], [X|Zs], Rest) :- X == Y, pack_eq(X, Xs, Zs, Rest).
+
+% εκδοχή Β: σύγκριση με = / \=
+packcons_un([], []).
+packcons_un([X|Xs], [Z|Zs]) :- pack_un(X, Xs, Z, Rest), packcons_un(Rest, Zs).
+pack_un(X, [], [X], []).
+pack_un(X, [Y|Xs], [X], [Y|Xs]) :- X \= Y.
+pack_un(X, [Y|Xs], [X|Zs], Rest) :- X = Y, pack_un(X, Xs, Zs, Rest).
+
+% Τρέξε και τις δύο με:
+%   packcons_eq([f(1),f(X),f(2),f(Y),f(2)], List).
+%   packcons_un([f(1),f(X),f(2),f(Y),f(2)], List).
+%   packcons_eq([f(X),f(Y),g(X),g(1),g(2),g(Y)], List).
+%   packcons_un([f(X),f(Y),g(X),g(1),g(2),g(Y)], List).
+</script>
+</div><details class="reveal"><summary>✅ Τι δίνει η κάθε εκδοχή</summary><div class="reveal-body">
+<table class="summary-tbl">
+<thead><tr><th>Ερώτηση</th><th>με ==</th><th>με =</th></tr></thead>
+<tbody>
+<tr><td><code>[f(1),f(X),f(2),f(Y),f(2)]</code></td><td><code>[[f(1)],[f(X)],[f(2)],[f(Y)],[f(2)]]</code></td><td><code>[[f(1),f(1)],[f(2),f(2),f(2)]]</code> με X = 1, Y = 2</td></tr>
+<tr><td><code>[f(X),f(Y),g(X),g(1),g(2),g(Y)]</code></td><td>κάθε στοιχείο μόνο του</td><td><code>[[f(1),f(1)],[g(1),g(1)],[g(2)],[g(1)]]</code> με X = Y = 1</td></tr>
+</tbody></table>
+<p>Στη δεύτερη με <code>=</code>: <code>f(X) = f(Y)</code> δένει X = Y. Μετά <code>g(X) = g(1)</code> δένει X = Y = 1, άρα και το τελευταίο <code>g(Y)</code> γίνεται <code>g(1)</code>. Στο γραπτό γράφεις την απάντηση που αντιστοιχεί στη <em>δική σου</em> υλοποίηση και εξηγείς γιατί.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c7">
+  <div class="drill-hd"><span class="lvl e">EASY</span> Γ7 · compr/2<span class="src">2014Β</span></div>
+  <div class="drill-body">
+<p>Κάθε σειρά ίδιων συνεχόμενων στοιχείων γίνεται μία εμφάνιση: <code>[a,a,a,b,c,c,d,d,d,d,e]</code> → <code>[a,b,c,d,e]</code>.</p><div class="plx" data-id="c7" data-query="compr([a,a,a,b,c,c,d,d,d,d,e], List)." data-title="2014 Β: compr/2 (γράψ&#x27; το από την αρχή)">
+<script type="text/plain" class="plx-src">
+% αντικαθιστά κάθε σειρά ίδιων συνεχόμενων στοιχείων με μία εμφάνιση
+compr(List1, List2) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+compr([], []).
+compr([X], [X]).
+compr([X,Y|Rest], L) :-
+    X == Y,
+    compr([Y|Rest], L).
+compr([X,Y|Rest], [X|L]) :-
+    X \== Y,
+    compr([Y|Rest], L).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "compr([a,a,a,b,c,c,d,d,d,d,e], List).", "n": 5}, {"q": "compr([f(1),g(2),g(2),g(1),f(1),f(1),g(2)], List).", "n": 5}, {"q": "compr([], List).", "n": 3}]</script>
+</div><details class="reveal"><summary>✅ Λύση + με μεταβλητές</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">compr</span>([], []).
+<span class="fn">compr</span>([X], [X]).
+<span class="fn">compr</span>([X,Y|Rest], L) <span class="kw">:-</span>
+    X <span class="op">==</span> Y,
+    <span class="fn">compr</span>([Y|Rest], L).
+<span class="fn">compr</span>([X,Y|Rest], [X|L]) <span class="kw">:-</span>
+    X <span class="op">\==</span> Y,
+    <span class="fn">compr</span>([Y|Rest], L).</code></div><p>Με μεταβλητές (όπως ρωτάει η εκφώνηση):</p>
+<ul style="padding-left:1.5rem">
+<li>με <code>==</code>: <code>compr([f(1),f(X),f(2),g(X),g(1)], L)</code> → η λίστα μένει ίδια· το ίδιο και η δεύτερη ερώτηση.</li>
+<li>με <code>=</code>: <code>L = [f(1),f(2),g(1)]</code> με X = 1 · και <code>L = [f(1),g(1),g(2),g(1)]</code> με X = Y = 1.</li>
+</ul>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="c8">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Γ8 · decode_rl/2 και encode_rl/2<span class="src">2016Β</span></div>
+  <div class="drill-body">
+<p>Κωδικοποίηση τρέχοντος μήκους: <code>[a,a,a,b,b,c,d,d,d,d,e]</code> ↔ <code>[(a,3),(b,2),c,(d,4),e]</code>.</p><div class="plx" data-id="c8" data-query="encode_rl([a,a,a,b,b,c,d,d,d,d,e], L)." data-title="2016 Β: decode_rl/2 και encode_rl/2">
+<script type="text/plain" class="plx-src">
+% decode_rl: [(a,3),(b,2),c,(d,4),e]  ->  [a,a,a,b,b,c,d,d,d,d,e]
+decode_rl(Coded, List) :-
+    ......................
+
+% encode_rl: το αντίστροφο (τα σύμβολα δεν είναι μεταβλητές)
+encode_rl(List, Coded) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+decode_rl([], []).
+decode_rl([(X,N)|Rest], L) :-
+    expand(X, N, L, L1),
+    decode_rl(Rest, L1).
+decode_rl([X|Rest], [X|L]) :-
+    X \= (_,_),
+    decode_rl(Rest, L).
+
+% expand(X, N, L, L1): η L είναι N φορές το X και μετά η L1
+expand(_, 0, L, L).
+expand(X, N, [X|L], L1) :-
+    N > 0, N1 is N - 1,
+    expand(X, N1, L, L1).
+
+encode_rl([], []).
+encode_rl([X|Xs], [C|Cs]) :-
+    count_same(X, Xs, 1, N, Rest),
+    code(X, N, C),
+    encode_rl(Rest, Cs).
+
+% count_same(X, L, K, N, Rest): μετράω πόσα ίδια με το X ακολουθούν
+count_same(_, [], N, N, []).
+count_same(X, [Y|Ys], K, N, Rest) :-
+    X == Y, K1 is K + 1,
+    count_same(X, Ys, K1, N, Rest).
+count_same(X, [Y|Ys], N, N, [Y|Ys]) :-
+    X \== Y.
+
+code(X, 1, X).
+code(X, N, (X,N)) :- N > 1.
+</script>
+<script type="application/json" class="plx-tests">[{"q": "decode_rl([(a,3),(b,2),c,(d,4),e], L).", "n": 5}, {"q": "decode_rl([(f(5,a),7)], L).", "n": 5}, {"q": "decode_rl([g(X),(h(Y),3),k(Z),(m(W),4),n(U)], L).", "n": 5}, {"q": "encode_rl([a,a,a,b,b,c,d,d,d,d,e], L).", "n": 5}, {"q": "encode_rl([f(5,a),f(5,a),f(5,a),f(5,a),f(5,a),f(5,a),f(5,a)], L).", "n": 5}, {"q": "encode_rl([g(X),h(Y),h(Y),h(Y),k(Z),m(W),m(W),m(W),m(W),n(U)], L).", "n": 5}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>decode: δύο περιπτώσεις για το πρώτο στοιχείο, <code>(X,N)</code> ή απλό σύμβολο. Για το απλό βάλε <code>X \= (_,_)</code> ώστε να μη «διαβαστεί» και ένα ζεύγος ως σύμβολο.</li><li>encode: μέτρα πόσα ίδια (<code>==</code>) ακολουθούν και γράψε <code>X</code> αν είναι 1, αλλιώς <code>(X,N)</code>.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">decode_rl</span>([], []).
+<span class="fn">decode_rl</span>([(X,N)|Rest], L) <span class="kw">:-</span>
+    <span class="fn">expand</span>(X, N, L, L1),
+    <span class="fn">decode_rl</span>(Rest, L1).
+<span class="fn">decode_rl</span>([X|Rest], [X|L]) <span class="kw">:-</span>
+    X <span class="op">\=</span> (_,_),
+    <span class="fn">decode_rl</span>(Rest, L).
+
+<span class="cm">% expand(X, N, L, L1): η L είναι N φορές το X και μετά η L1</span>
+<span class="fn">expand</span>(_, <span class="nm">0</span>, L, L).
+<span class="fn">expand</span>(X, N, [X|L], L1) <span class="kw">:-</span>
+    N &gt; <span class="nm">0</span>, N1 <span class="op">is</span> N - <span class="nm">1</span>,
+    <span class="fn">expand</span>(X, N1, L, L1).
+
+<span class="fn">encode_rl</span>([], []).
+<span class="fn">encode_rl</span>([X|Xs], [C|Cs]) <span class="kw">:-</span>
+    <span class="fn">count_same</span>(X, Xs, <span class="nm">1</span>, N, Rest),
+    <span class="fn">code</span>(X, N, C),
+    <span class="fn">encode_rl</span>(Rest, Cs).
+
+<span class="cm">% count_same(X, L, K, N, Rest): μετράω πόσα ίδια με το X ακολουθούν</span>
+<span class="fn">count_same</span>(_, [], N, N, []).
+<span class="fn">count_same</span>(X, [Y|Ys], K, N, Rest) <span class="kw">:-</span>
+    X <span class="op">==</span> Y, K1 <span class="op">is</span> K + <span class="nm">1</span>,
+    <span class="fn">count_same</span>(X, Ys, K1, N, Rest).
+<span class="fn">count_same</span>(X, [Y|Ys], N, N, [Y|Ys]) <span class="kw">:-</span>
+    X <span class="op">\==</span> Y.
+
+<span class="fn">code</span>(X, <span class="nm">1</span>, X).
+<span class="fn">code</span>(X, N, (X,N)) <span class="kw">:-</span> N &gt; <span class="nm">1</span>.</code></div><p><strong>Η ερώτηση με μεταβλητές</strong> <code>encode_rl([p(3),p(X),q(X),q(Y),q(4)], L)</code>: με <code>==</code> η λίστα μένει όπως είναι (κανένα ζεύγος δεν είναι ταυτόσημο). Με <code>=</code>: <code>L = [(p(3),2),(q(3),2),q(4)]</code>, X = Y = 3.</p>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitC"></div>
+</section>
+
+<section id="unitD">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🔁</div><h2>Δ. Αναδρομή που χτίζει λίστα (τύπος 4)</h2></div>
+
+  <p class="lead">Η εξίσωση που λύνει σχεδόν όλες: <strong>έξοδος(όλη η λίστα) = συνδυασμός(πρώτο στοιχείο, έξοδος(ουρά))</strong>. Βρες τη βάση, μετά το «ένα βήμα».</p>
+  
+<div class="drill" id="d1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Δ1 · evenlength/oddlength με 3 προτάσεις<span class="src">2019Α</span></div>
+  <div class="drill-body">
+<p>Χωρίς αριθμητική και χωρίς αλλαγή στα δοσμένα κομμάτια.</p><div class="plx" data-id="d1" data-query="evenlength([a,b,c,d])." data-title="2019 Α: evenlength/1 &amp; oddlength/1 (τρεις προτάσεις, χωρίς αριθμητική)">
+<script type="text/plain" class="plx-src">
+...................
+evenlength(L) :- ...................
+oddlength(L) :- ...................
+</script>
+<script type="text/plain" class="plx-ref">
+evenlength([]).
+evenlength(L) :- L = [_|T], oddlength(T).
+oddlength(L) :- L = [_|T], evenlength(T).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "evenlength([a,b,c,d]).", "n": 3}, {"q": "evenlength([a,b,c]).", "n": 3}, {"q": "evenlength([]).", "n": 3}, {"q": "oddlength([a,b,c]).", "n": 3}, {"q": "oddlength([]).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Οι κεφαλές <code>evenlength(L)</code> και <code>oddlength(L)</code> είναι δεδομένες, άρα το σπάσιμο της λίστας γίνεται στο σώμα με <code>L = [_|T]</code>. Η πρώτη (κενή) γραμμή είναι η βάση. Αμοιβαία αναδρομή: «άρτια αν η ουρά είναι περιττή».</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fill"><span class="fn">evenlength</span>([]).</span>
+<span class="fn">evenlength</span>(L) <span class="kw">:-</span> <span class="fill">L = [_|T], <span class="fn">oddlength</span>(T).</span>
+<span class="fn">oddlength</span>(L) <span class="kw">:-</span> <span class="fill">L = [_|T], <span class="fn">evenlength</span>(T).</span></code></div><p>Η <code>oddlength</code> δεν έχει βάση: η άδεια λίστα δεν είναι περιττού μήκους, άρα σωστά αποτυγχάνει.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d3">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Δ2 · drop/3<span class="src">2014Α</span></div>
+  <div class="drill-body">
+<p>Διαγραφή κάθε N-οστού στοιχείου: με N = 3 σβήνονται το 3ο, 6ο, 9ο, …</p><div class="plx" data-id="d3" data-query="drop([a,b,c,d,e,f,g,h,i,j,k,l,m,n], 4, L)." data-title="2014 Α: drop/3">
+<script type="text/plain" class="plx-src">
+% διαγράφει κάθε N-οστό στοιχείο
+drop(List1, N, List2) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+drop(L1, N, L2) :- drop(L1, N, N, L2).
+
+% drop(L1, N, K, L2): K = πόσα στοιχεία μένουν μέχρι το επόμενο που σβήνεται
+drop([], _, _, []).
+drop([_|Xs], N, 1, L2) :-
+    drop(Xs, N, N, L2).
+drop([X|Xs], N, K, [X|L2]) :-
+    K > 1, K1 is K - 1,
+    drop(Xs, N, K1, L2).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "drop([a,b,c,d,e,f,g,h,i,j,k,l,m,n], 4, L).", "n": 3}, {"q": "drop([a,b,c,d,e,f,g,h,i,j,k,l,m,n], 3, L).", "n": 3}, {"q": "drop([1,2,3,4,5,6,7], 1, L).", "n": 3}, {"q": "drop([], 2, L).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Χρειάζεσαι μετρητή: πρόσθεσε όρισμα K = «πόσα απομένουν μέχρι το επόμενο που σβήνεται». Όταν K = 1 σβήνεις και ξαναγεμίζεις με N.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">drop</span>(L1, N, L2) <span class="kw">:-</span> <span class="fn">drop</span>(L1, N, N, L2).
+
+<span class="cm">% drop(L1, N, K, L2): K = πόσα στοιχεία μένουν μέχρι το επόμενο που σβήνεται</span>
+<span class="fn">drop</span>([], _, _, []).
+<span class="fn">drop</span>([_|Xs], N, <span class="nm">1</span>, L2) <span class="kw">:-</span>
+    <span class="fn">drop</span>(Xs, N, N, L2).
+<span class="fn">drop</span>([X|Xs], N, K, [X|L2]) <span class="kw">:-</span>
+    K &gt; <span class="nm">1</span>, K1 <span class="op">is</span> K - <span class="nm">1</span>,
+    <span class="fn">drop</span>(Xs, N, K1, L2).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Δ3 · emo/2<span class="src">2009Α</span></div>
+  <div class="drill-body">
+<p><code>[1,2,3,4,5,6,7]</code> → <code>[1,7,2,6,3,5,4]</code> (πρώτο, τελευταίο, δεύτερο, προτελευταίο, …).</p><div class="plx" data-id="d4" data-query="emo([1,2,3,4,5,6,7], L)." data-title="2009 Α: emo/2 (πρώτο, τελευταίο, δεύτερο, προτελευταίο, …)">
+<script type="text/plain" class="plx-src">
+emo(L1, L2) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+emo([], []).
+emo([X], [X]).
+emo([X|Xs], [X,Y|Zs]) :-
+    append(Mid, [Y], Xs),
+    emo(Mid, Zs).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "emo([1,2,3,4,5,6,7], L).", "n": 3}, {"q": "emo([a,b,c,d,e,f,g,h,i,j], L).", "n": 3}, {"q": "emo([], L).", "n": 3}, {"q": "emo([a], L).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Κράτα το πρώτο, βγάλε το τελευταίο με <code>append(Mid, [Y], Xs)</code>, και συνέχισε στο <code>Mid</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">emo</span>([], []).
+<span class="fn">emo</span>([X], [X]).
+<span class="fn">emo</span>([X|Xs], [X,Y|Zs]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Mid, [Y], Xs),
+    <span class="fn">emo</span>(Mid, Zs).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Δ4 · spliteq/2<span class="src">2017Α</span></div>
+  <div class="drill-body">
+<p>Όλοι οι τρόποι να κοπεί η λίστα σε κομμάτια ίσου μήκους: <code>[[a],[b],…]</code>, <code>[[a,b],[c,d],[e,f]]</code>, …</p><div class="plx" data-id="d5" data-query="spliteq([a,b,c,d,e,f], SL)." data-title="2017 Α: spliteq/2 (κομμάτια ίσου μήκους)">
+<script type="text/plain" class="plx-src">
+spliteq(L, SL) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+spliteq(L, SL) :-
+    length(L, N),
+    between(1, N, K),
+    N mod K =:= 0,
+    chunks(L, K, SL).
+
+% chunks(L, K, SL): κόβω την L σε κομμάτια μήκους K
+chunks([], _, []).
+chunks(L, K, [C|Cs]) :-
+    length(C, K),
+    append(C, Rest, L),
+    chunks(Rest, K, Cs).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "spliteq([a,b,c,d,e,f], SL).", "n": 10}, {"q": "spliteq([1,2,3,4,5,6,7], SL).", "n": 10}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Διάλεξε μήκος κομματιού K που διαιρεί το μήκος της λίστας (<code>between</code> + <code>mod</code>), και κόψε τη λίστα σε κομμάτια μήκους K με <code>length</code> + <code>append</code>. Η σειρά των λύσεων βγαίνει από τη σειρά του <code>between</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">spliteq</span>(L, SL) <span class="kw">:-</span>
+    <span class="fn">length</span>(L, N),
+    <span class="fn">between</span>(<span class="nm">1</span>, N, K),
+    N mod K <span class="op">=:=</span> <span class="nm">0</span>,
+    <span class="fn">chunks</span>(L, K, SL).
+
+<span class="cm">% chunks(L, K, SL): κόβω την L σε κομμάτια μήκους K</span>
+<span class="fn">chunks</span>([], _, []).
+<span class="fn">chunks</span>(L, K, [C|Cs]) <span class="kw">:-</span>
+    <span class="fn">length</span>(C, K),
+    <span class="fn">append</span>(C, Rest, L),
+    <span class="fn">chunks</span>(Rest, K, Cs).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d6">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Δ5 · substodd/4<span class="src">2010Β</span></div>
+  <div class="drill-body">
+<p>Αντικατάσταση του X με Y μόνο στις περιττές θέσεις (1η, 3η, 5η, …).</p><div class="plx" data-id="d6" data-query="substodd(c, [a,b,c,c,d,c,c,e,c,f], z, L)." data-title="2010 Β: substodd/4 (αντικατάσταση σε περιττές θέσεις)">
+<script type="text/plain" class="plx-src">
+substodd(X, L1, Y, L2) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+substodd(X, L1, Y, L2) :- odd_pos(X, L1, Y, L2).
+
+% odd_pos: το πρώτο στοιχείο είναι σε περιττή θέση
+odd_pos(_, [], _, []).
+odd_pos(X, [Z|Zs], Y, [Y|Ws]) :-
+    Z == X,
+    even_pos(X, Zs, Y, Ws).
+odd_pos(X, [Z|Zs], Y, [Z|Ws]) :-
+    Z \== X,
+    even_pos(X, Zs, Y, Ws).
+
+% even_pos: το πρώτο στοιχείο είναι σε άρτια θέση (μένει ως έχει)
+even_pos(_, [], _, []).
+even_pos(X, [Z|Zs], Y, [Z|Ws]) :-
+    odd_pos(X, Zs, Y, Ws).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "substodd(c, [a,b,c,c,d,c,c,e,c,f], z, L).", "n": 3}, {"q": "substodd(4, [4,4,5,2,4], 0, L).", "n": 3}, {"q": "substodd(f, [a,b,c,d,e], g, L).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Δύο κατηγορήματα που καλούν το ένα το άλλο (όπως even/odd): ένα για «είμαι σε περιττή θέση» (εκεί αντικαθιστάς) και ένα για «είμαι σε άρτια θέση».</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">substodd</span>(X, L1, Y, L2) <span class="kw">:-</span> <span class="fn">odd_pos</span>(X, L1, Y, L2).
+
+<span class="cm">% odd_pos: το πρώτο στοιχείο είναι σε περιττή θέση</span>
+<span class="fn">odd_pos</span>(_, [], _, []).
+<span class="fn">odd_pos</span>(X, [Z|Zs], Y, [Y|Ws]) <span class="kw">:-</span>
+    Z <span class="op">==</span> X,
+    <span class="fn">even_pos</span>(X, Zs, Y, Ws).
+<span class="fn">odd_pos</span>(X, [Z|Zs], Y, [Z|Ws]) <span class="kw">:-</span>
+    Z <span class="op">\==</span> X,
+    <span class="fn">even_pos</span>(X, Zs, Y, Ws).
+
+<span class="cm">% even_pos: το πρώτο στοιχείο είναι σε άρτια θέση (μένει ως έχει)</span>
+<span class="fn">even_pos</span>(_, [], _, []).
+<span class="fn">even_pos</span>(X, [Z|Zs], Y, [Z|Ws]) <span class="kw">:-</span>
+    <span class="fn">odd_pos</span>(X, Zs, Y, Ws).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d2">
+  <div class="drill-hd"><span class="lvl h">HARD</span> Δ6 · Αριθμοί ως λίστες<span class="src">2019Α (β)</span></div>
+  <div class="drill-body">
+<p>Ο αριθμός n είναι λίστα n στοιχείων. Όρισε πρόσθεση, αφαίρεση, πολλαπλασιασμό, πηλίκο, υπόλοιπο χωρίς αριθμητική. (Ο έλεγχος χρησιμοποιεί <code>length</code> μόνο για να τυπώσει το αποτέλεσμα.)</p><div class="plx" data-id="d2" data-query="mlt([_,_],[_,_,_,_],N), length(N, K)." data-title="2019 Α: αριθμοί ως λίστες: add, sbt, mlt, dvd, mdl">
+<script type="text/plain" class="plx-src">
+% ο αριθμός n είναι μια λίστα με n στοιχεία (αδιάφορα ποια)
+add(X, Y, Z) :- ......................
+sbt(X, Y, Z) :- ......................
+mlt(X, Y, Z) :- ......................
+dvd(X, Y, Z) :- ......................
+mdl(X, Y, Z) :- ......................
+</script>
+<script type="text/plain" class="plx-ref">
+add(X, Y, Z) :- append(X, Y, Z).
+
+% X - Y = Z  αν  Z + Y = X
+sbt(X, Y, Z) :- append(Z, Y, X).
+
+mlt([], _, []).
+mlt([_|X], Y, Z) :-
+    mlt(X, Y, Z1),
+    append(Y, Z1, Z).
+
+% πηλίκο: πόσες φορές «χωράει» το Y μέσα στο X
+dvd(X, Y, [_|Q]) :-
+    Y = [_|_],
+    append(Y, R, X),
+    dvd(R, Y, Q).
+dvd(X, Y, []) :-
+    Y = [_|_],
+    \+ append(Y, _, X).
+
+% υπόλοιπο: αφαιρώ το Y όσο χωράει
+mdl(X, Y, R) :-
+    Y = [_|_],
+    append(Y, X1, X),
+    mdl(X1, Y, R).
+mdl(X, Y, X) :-
+    Y = [_|_],
+    \+ append(Y, _, X).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "add([_,_,_],[_,_,_,_],N), length(N, K).", "n": 3}, {"q": "sbt([_,_,_,_,_],[_,_],N), length(N, K).", "n": 3}, {"q": "sbt([_,_,_],[_,_,_,_],N).", "n": 3}, {"q": "mlt([_,_],[_,_,_,_],N), length(N, K).", "n": 3}, {"q": "dvd([_,_,_,_,_,_,_],[_,_,_],N), length(N, K).", "n": 3}, {"q": "mdl([_,_,_,_,_,_,_],[_,_,_],N), length(N, K).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Πρόσθεση = συνένωση. Αφαίρεση: X − Y = Z όταν Z + Y = X.</li><li>Πολλαπλασιασμός: για κάθε στοιχείο του X, πρόσθεσε ένα αντίγραφο του Y.</li><li>Διαίρεση/υπόλοιπο: «αφαίρεσε το Y όσο χωράει» με <code>append(Y, R, X)</code>.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">add</span>(X, Y, Z) <span class="kw">:-</span> <span class="fn">append</span>(X, Y, Z).
+
+<span class="cm">% X - Y = Z  αν  Z + Y = X</span>
+<span class="fn">sbt</span>(X, Y, Z) <span class="kw">:-</span> <span class="fn">append</span>(Z, Y, X).
+
+<span class="fn">mlt</span>([], _, []).
+<span class="fn">mlt</span>([_|X], Y, Z) <span class="kw">:-</span>
+    <span class="fn">mlt</span>(X, Y, Z1),
+    <span class="fn">append</span>(Y, Z1, Z).
+
+<span class="cm">% πηλίκο: πόσες φορές «χωράει» το Y μέσα στο X</span>
+<span class="fn">dvd</span>(X, Y, [_|Q]) <span class="kw">:-</span>
+    Y = [_|_],
+    <span class="fn">append</span>(Y, R, X),
+    <span class="fn">dvd</span>(R, Y, Q).
+<span class="fn">dvd</span>(X, Y, []) <span class="kw">:-</span>
+    Y = [_|_],
+    <span class="op">\+</span> <span class="fn">append</span>(Y, _, X).
+
+<span class="cm">% υπόλοιπο: αφαιρώ το Y όσο χωράει</span>
+<span class="fn">mdl</span>(X, Y, R) <span class="kw">:-</span>
+    Y = [_|_],
+    <span class="fn">append</span>(Y, X1, X),
+    <span class="fn">mdl</span>(X1, Y, R).
+<span class="fn">mdl</span>(X, Y, X) <span class="kw">:-</span>
+    Y = [_|_],
+    <span class="op">\+</span> <span class="fn">append</span>(Y, _, X).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="d7">
+  <div class="drill-hd"><span class="lvl h">HARD</span> Δ7 · repeated/3 προς όλες τις κατευθύνσεις<span class="src">2009Β</span></div>
+  <div class="drill-body">
+<p>Το <code>repeated(L1, L2, N)</code> πετυχαίνει όταν η L2 είναι N αντίγραφα της L1, και πρέπει να δουλεύει με άγνωστα L1, N ή L2.</p><div class="plx" data-id="d7" data-query="repeated(L1, [a,b,c,d,a,b,c,d,a,b,c,d], N)." data-title="2009 Β: repeated/3 σε όλες τις κατευθύνσεις">
+<script type="text/plain" class="plx-src">
+repeated(L1, L2, N) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+repeated(L1, L2, N) :- rep(L1, L2, 0, N).
+
+% rep(L1, L2, K, N): έχω ήδη «φάει» K αντίγραφα της L1
+rep(_, [], N, N).
+rep(L1, L2, K, N) :-
+    L1 = [_|_],
+    ( var(N) -> true ; K < N ),
+    append(L1, Rest, L2),
+    K1 is K + 1,
+    rep(L1, Rest, K1, N).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "repeated([a,b,c,d], [a,b,c,d,a,b,c,d,a,b,c,d], 3).", "n": 3}, {"q": "repeated(L1, [a,b,c,d,a,b,c,d,a,b,c,d], 3).", "n": 3}, {"q": "repeated([a,b,c,d], [a,b,c,d,a,b,c,d,a,b,c,d], N).", "n": 3}, {"q": "repeated(L1, [a,b,c,d,a,b,c,d,a,b,c,d], N).", "n": 5}, {"q": "repeated([a,b,c,d], L2, 3).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Μέτρα με συσσωρευτή πόσα αντίγραφα της L1 έχεις «φάει» από την L2 με <code>append(L1, Rest, L2)</code>. Όταν το N είναι δοσμένο, σταμάτα στο N, αλλιώς το <code>repeated([a,b,c,d], L2, 3)</code> ψάχνει για πάντα μετά την πρώτη απάντηση.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">repeated</span>(L1, L2, N) <span class="kw">:-</span> <span class="fn">rep</span>(L1, L2, <span class="nm">0</span>, N).
+
+<span class="cm">% rep(L1, L2, K, N): έχω ήδη «φάει» K αντίγραφα της L1</span>
+<span class="fn">rep</span>(_, [], N, N).
+<span class="fn">rep</span>(L1, L2, K, N) <span class="kw">:-</span>
+    L1 = [_|_],
+    ( <span class="fn">var</span>(N) <span class="op">-&gt;</span> true ; K &lt; N ),
+    <span class="fn">append</span>(L1, Rest, L2),
+    K1 <span class="op">is</span> K + <span class="nm">1</span>,
+    <span class="fn">rep</span>(L1, Rest, K1, N).</code></div>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitD"></div>
+</section>
+
+<section id="unitE">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🔪</div><h2>Ε. append ως μαχαίρι (τύπος 5)</h2></div>
+
+  
+<div class="drill" id="e1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> Ε1 · Μέρες της εβδομάδας<span class="src">2017Α</span></div>
+  <div class="drill-body">
+<p>Μόνο με <code>append/3</code>: πρώτη και τελευταία μέρα · πριν και μετά την Τρίτη · ακριβώς πριν και μετά την Παρασκευή · οι μέρες ανάμεσα σε Δευτέρα και Παρασκευή (με δύο append).</p><div class="plx" data-id="e1" data-query="q1(FirstDay, LastDay)." data-title="2017 Α: μέρες της εβδομάδας μόνο με append/3">
+<script type="text/plain" class="plx-src">
+% Στο γραπτό ήταν ερωτήσεις. Εδώ κάθε ερώτηση είναι κανόνας q1..q4.
+q1(FirstDay, LastDay) :-
+    append(.........., .........., [sun,mon,tue,wed,thu,fri,sat]).
+q2(AllBeforeTuesday, AllAfterTuesday) :-
+    append(.........., .........., [sun,mon,tue,wed,thu,fri,sat]).
+q3(JustBeforeFriday, JustAfterFriday) :-
+    append(.........., .........., [sun,mon,tue,wed,thu,fri,sat]).
+q4(SomeDays, AllBetweenMondayAndFriday) :-
+    append(.........., .........., [sun,mon,tue,wed,thu,fri,sat]),
+    append(.........., .........., SomeDays).
+</script>
+<script type="text/plain" class="plx-ref">
+q1(FirstDay, LastDay) :-
+    append([FirstDay|_], [LastDay], [sun,mon,tue,wed,thu,fri,sat]).
+q2(AllBeforeTuesday, AllAfterTuesday) :-
+    append(AllBeforeTuesday, [tue|AllAfterTuesday], [sun,mon,tue,wed,thu,fri,sat]).
+q3(JustBeforeFriday, JustAfterFriday) :-
+    append(_, [JustBeforeFriday, fri, JustAfterFriday|_], [sun,mon,tue,wed,thu,fri,sat]).
+q4(SomeDays, AllBetweenMondayAndFriday) :-
+    append(_, [mon|SomeDays], [sun,mon,tue,wed,thu,fri,sat]),
+    append(AllBetweenMondayAndFriday, [fri|_], SomeDays).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "q1(FirstDay, LastDay).", "n": 3}, {"q": "q2(Before, After).", "n": 3}, {"q": "q3(Before, After).", "n": 3}, {"q": "q4(SomeDays, Between).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Το 2ο όρισμα του append είναι «ό,τι ακολουθεί». Βάλε μέσα του το στοιχείο που ψάχνεις: <code>[tue|After]</code>, <code>[Prev, fri, Next|_]</code>. Για το τελευταίο: 2ο όρισμα <code>[LastDay]</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">q1</span>(FirstDay, LastDay) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">[FirstDay|_]</span>, <span class="fill">[LastDay]</span>, [sun,mon,tue,wed,thu,fri,sat]).
+<span class="fn">q2</span>(AllBeforeTuesday, AllAfterTuesday) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">AllBeforeTuesday</span>, <span class="fill">[tue|AllAfterTuesday]</span>, [sun,mon,tue,wed,thu,fri,sat]).
+<span class="fn">q3</span>(JustBeforeFriday, JustAfterFriday) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">_</span>, <span class="fill">[JustBeforeFriday, fri, JustAfterFriday|_]</span>, [sun,mon,tue,wed,thu,fri,sat]).
+<span class="fn">q4</span>(SomeDays, AllBetweenMondayAndFriday) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">_</span>, <span class="fill">[mon|SomeDays]</span>, [sun,mon,tue,wed,thu,fri,sat]),
+    <span class="fn">append</span>(<span class="fill">AllBetweenMondayAndFriday</span>, <span class="fill">[fri|_]</span>, SomeDays).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="e2">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> Ε2 · strangey/1 και strangen/1<span class="src">2012Β</span></div>
+  <div class="drill-body">
+<p>Λίστα L 10 στοιχείων τέτοια ώστε <code>[a,b,c]</code> μπροστά της να δίνει το ίδιο με τη L ακολουθούμενη από <code>[b,c,a]</code>. Και το ίδιο με <code>[b,a,c]</code>. Τι απαντά το καθένα;</p><div class="plx" data-id="e2" data-query="strangey(L)." data-title="2012 Β: strangey/1 και strangen/1">
+<script type="text/plain" class="plx-src">
+% L με 10 στοιχεία: [a,b,c] ++ L  ==  L ++ [b,c,a]
+strangey(L) :- ......................
+
+% ίδιο, αλλά με [b,a,c] στο τέλος
+strangen(L) :- ......................
+</script>
+<script type="text/plain" class="plx-ref">
+strangey(L) :-
+    length(L, 10),
+    append([a,b,c], L, R),
+    append(L, [b,c,a], R).
+
+strangen(L) :-
+    length(L, 10),
+    append([a,b,c], L, R),
+    append(L, [b,a,c], R).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "strangey(L).", "n": 3}, {"q": "strangen(L).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Δεν χρειάζεται αναζήτηση: φτιάξε μια λίστα 10 μεταβλητών και ζήτα οι δύο συνενώσεις να είναι το <em>ίδιο</em> R. Η ενοποίηση κάνει όλη τη δουλειά.</p>
+</div></details><details class="reveal"><summary>✅ Λύση + γιατί</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">strangey</span>(L) <span class="kw">:-</span>
+    <span class="fn">length</span>(L, <span class="nm">10</span>),
+    <span class="fn">append</span>([a,b,c], L, R),
+    <span class="fn">append</span>(L, [b,c,a], R).
+
+<span class="fn">strangen</span>(L) <span class="kw">:-</span>
+    <span class="fn">length</span>(L, <span class="nm">10</span>),
+    <span class="fn">append</span>([a,b,c], L, R),
+    <span class="fn">append</span>(L, [b,a,c], R).</code></div><p><code>strangey</code>: <code>L = [a,b,c,a,b,c,a,b,c,a]</code>. Η ισότητα <code>[a,b,c|L] = L ++ [b,c,a]</code> δίνει L<sub>1..3</sub> = a,b,c και L<sub>k+3</sub> = L<sub>k</sub>, και τα τελευταία τρία της L πρέπει να είναι b,c,a, κάτι που ισχύει. <code>strangen</code>: <strong>No</strong>. Θα έπρεπε το 9ο στοιχείο να είναι ταυτόχρονα c (από την περιοδικότητα) και a (από το τέλος), άρα η ενοποίηση αποτυγχάνει.</p>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitE"></div>
+</section>
+
+<section id="unitF">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧪</div><h2>ΣΤ. Παραγωγή & έλεγχος (τύπος 6)</h2></div>
+
+  <p class="lead">Δεδομένα σε γεγονότα, «δώσε όλες τις εφικτές λύσεις». Η δομή είναι πάντα: μάζεψε δεδομένα → για κάθε στοιχείο διάλεξε τιμή (<code>between</code>, <code>member</code>) → έλεγξε συμβατότητα με όσα διάλεξες ήδη.</p>
+  
+<div class="drill" id="f1">
+  <div class="drill-hd"><span class="lvl e">EASY</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> ΣΤ1 · allsubsets/2<span class="src">2019Β</span></div>
+  <div class="drill-body">
+<p>Λίστα όλων των υποσυνόλων ενός συνόλου.</p><div class="plx" data-id="f1" data-query="allsubsets([a,b,c], Subsets)." data-title="2019 Β: allsubsets/2 (findall + κράτα/πέτα)">
+<script type="text/plain" class="plx-src">
+allsubsets(Set, Subsets) :- findall(......, subs(.............), ......).
+subs(..............).
+subs(..............) :- ............................
+subs(..............) :- ............................
+</script>
+<script type="text/plain" class="plx-ref">
+allsubsets(Set, Subsets) :- findall(Sub, subs(Set, Sub), Subsets).
+subs([], []).
+subs([X|Xs], [X|Sub]) :- subs(Xs, Sub).
+subs([_|Xs], Sub) :- subs(Xs, Sub).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "allsubsets([a,b,c], Subsets).", "n": 3}, {"q": "allsubsets([], S).", "n": 3}]</script>
+</div><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">allsubsets</span>(Set, Subsets) <span class="kw">:-</span> <span class="fn">findall</span>(<span class="fill">Sub</span>, <span class="fn">subs</span>(<span class="fill">Set, Sub</span>), <span class="fill">Subsets</span>).
+<span class="fn">subs</span>(<span class="fill">[], []</span>).
+<span class="fn">subs</span>(<span class="fill">[X|Xs], [X|Sub]</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subs</span>(Xs, Sub)</span>.
+<span class="fn">subs</span>(<span class="fill">[_|Xs], Sub</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subs</span>(Xs, Sub)</span>.</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="f2">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span><span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> ΣΤ2 · tsched/2<span class="src">2020Α · 25/75</span></div>
+  <div class="drill-body">
+<p>Εργασίες μίας μονάδας χρόνου με πόρους. Δύο εργασίες με κοινό πόρο δεν μπαίνουν στην ίδια σχισμή. Πρόγραμμα <code>Tid/Slot</code> με σχισμές 1..Deadline.</p><div class="plx" data-id="f2" data-query="tsched(4, S)." data-title="2020 Α: tsched/2 (εργασίες σε σχισμές χωρίς κοινούς πόρους)">
+<script type="text/plain" class="plx-src">
+task(t1, [a,b,c]).
+task(t2, [a,d]).
+task(t3, [b,d,e,f]).
+task(t4, [c,e]).
+task(t5, [f]).
+
+tsched(Deadline, Schedule) :-
+    ......................................
+    schall(Tasks, Deadline, [], Schedule).
+
+schall([], _, Schedule, Schedule).
+schall([T/Rs|Tasks], Deadline, SoFarSchedule, Schedule) :-
+    ......................................
+    append(SoFarSchedule, [T/N], NewSoFarSchedule),
+    schall(Tasks, Deadline, NewSoFarSchedule, Schedule).
+
+.........................................
+</script>
+<script type="text/plain" class="plx-ref">
+task(t1, [a,b,c]).
+task(t2, [a,d]).
+task(t3, [b,d,e,f]).
+task(t4, [c,e]).
+task(t5, [f]).
+
+tsched(Deadline, Schedule) :-
+    findall(T/Rs, task(T, Rs), Tasks),
+    schall(Tasks, Deadline, [], Schedule).
+
+schall([], _, Schedule, Schedule).
+schall([T/Rs|Tasks], Deadline, SoFarSchedule, Schedule) :-
+    between(1, Deadline, N),
+    \+ conflict(Rs, N, SoFarSchedule),
+    append(SoFarSchedule, [T/N], NewSoFarSchedule),
+    schall(Tasks, Deadline, NewSoFarSchedule, Schedule).
+
+% conflict: κάποια ήδη προγραμματισμένη εργασία στη σχισμή N μοιράζεται πόρο
+conflict(Rs, N, Schedule) :-
+    member(T2/N, Schedule),
+    task(T2, Rs2),
+    member(R, Rs),
+    member(R, Rs2).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "tsched(4, S).", "n": 3}, {"q": "tsched(2, S).", "n": 3}, {"q": "findall(S, tsched(4, S), L), length(L, N).", "n": 1}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Στο <code>tsched</code> μάζεψε τις εργασίες ως <code>T/Rs</code> με <code>findall</code>.</li><li>Στο <code>schall</code>: διάλεξε σχισμή <code>N</code> με <code>between</code> και έλεγξε ότι καμία ήδη προγραμματισμένη εργασία στην ίδια σχισμή δεν μοιράζεται πόρο.</li><li>Η τελευταία κενή γραμμή είναι για το βοηθητικό σου κατηγόρημα.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">task</span>(t1, [a,b,c]).
+<span class="fn">task</span>(t2, [a,d]).
+<span class="fn">task</span>(t3, [b,d,e,f]).
+<span class="fn">task</span>(t4, [c,e]).
+<span class="fn">task</span>(t5, [f]).
+
+<span class="fn">tsched</span>(Deadline, Schedule) <span class="kw">:-</span>
+    <span class="fill"><span class="fn">findall</span>(T/Rs, <span class="fn">task</span>(T, Rs), Tasks),</span>
+    <span class="fn">schall</span>(Tasks, Deadline, [], Schedule).
+
+<span class="fn">schall</span>([], _, Schedule, Schedule).
+<span class="fn">schall</span>([T/Rs|Tasks], Deadline, SoFarSchedule, Schedule) <span class="kw">:-</span>
+    ⟦<span class="fn">between</span>(<span class="nm">1</span>, Deadline, N),
+    <span class="op">\+</span> <span class="fn">conflict</span>(Rs, N, SoFarSchedule),⟧
+    <span class="fn">append</span>(SoFarSchedule, [T/N], NewSoFarSchedule),
+    <span class="fn">schall</span>(Tasks, Deadline, NewSoFarSchedule, Schedule).
+
+⟦<span class="cm">% conflict: κάποια ήδη προγραμματισμένη εργασία στη σχισμή N μοιράζεται πόρο</span>
+<span class="fn">conflict</span>(Rs, N, Schedule) <span class="kw">:-</span>
+    <span class="fn">member</span>(T2/N, Schedule),
+    <span class="fn">task</span>(T2, Rs2),
+    <span class="fn">member</span>(R, Rs),
+    <span class="fn">member</span>(R, Rs2).⟧</code></div><p>Το <code>tsched(4, S)</code> έχει 144 λύσεις. Το <code>tsched(2, S)</code> αποτυγχάνει: η t3 συγκρούεται και με την t1 και με την t2.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="f3">
+  <div class="drill-hd"><span class="lvl h">HARD</span> ΣΤ3 · assignment/2<span class="src">2020Β · 25/75</span></div>
+  <div class="drill-body">
+<p>Δραστηριότητες <code>act(Start, End)</code> σε άτομα. Κανείς δεν αναλαμβάνει επικαλυπτόμενες, και ανάμεσα σε δύο δραστηριότητες του ίδιου ατόμου μεσολαβεί τουλάχιστον μία μονάδα χρόνου.</p><div class="plx" data-id="f3" data-query="assignment(3, Assignment)." data-title="2020 Β: assignment/2 (δραστηριότητες σε άτομα)">
+<script type="text/plain" class="plx-src">
+activity(1, act(0,3)).
+activity(2, act(0,4)).
+activity(3, act(1,5)).
+activity(4, act(4,6)).
+activity(5, act(6,8)).
+activity(6, act(6,9)).
+activity(7, act(9,10)).
+activity(8, act(9,13)).
+activity(9, act(11,14)).
+
+assignment(NPersons, Assignment) :-
+    ..................................,
+    % Gather all activities in list AIds
+    assign(AIds, NPersons, Assignment).
+
+assign([], _, []).
+assign([AId|AIds], NPersons, [AId-PId|Assignment]) :-
+    assign(AIds, NPersons, Assignment),
+    ..................................,
+    % Select a person PId for activity AId
+    activity(AId, act(Ab, Ae)),
+    ..................................,
+    % Gather in list APIds so far activities of PId
+    valid(Ab, Ae, APIds).
+
+% Is current assignment consistent with previous ones?
+valid(_, _, []).
+valid(Ab1, Ae1, [APId|APIds]) :-
+    activity(APId, act(Ab2, Ae2)),
+    ..................................,
+    valid(Ab1, Ae1, APIds).
+</script>
+<script type="text/plain" class="plx-ref">
+activity(1, act(0,3)).
+activity(2, act(0,4)).
+activity(3, act(1,5)).
+activity(4, act(4,6)).
+activity(5, act(6,8)).
+activity(6, act(6,9)).
+activity(7, act(9,10)).
+activity(8, act(9,13)).
+activity(9, act(11,14)).
+
+assignment(NPersons, Assignment) :-
+    findall(AId, activity(AId, _), AIds),
+    assign(AIds, NPersons, Assignment).
+
+assign([], _, []).
+assign([AId|AIds], NPersons, [AId-PId|Assignment]) :-
+    assign(AIds, NPersons, Assignment),
+    between(1, NPersons, PId),
+    activity(AId, act(Ab, Ae)),
+    findall(APId, member(APId-PId, Assignment), APIds),
+    valid(Ab, Ae, APIds).
+
+valid(_, _, []).
+valid(Ab1, Ae1, [APId|APIds]) :-
+    activity(APId, act(Ab2, Ae2)),
+    ( Ab2 > Ae1 ; Ab1 > Ae2 ),
+    valid(Ab1, Ae1, APIds).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "assignment(3, Assignment).", "n": 2}, {"q": "assignment(2, Assignment).", "n": 3}, {"q": "findall(A, assignment(3, A), As), length(As, N).", "n": 1}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem"><li>Προσοχή: η αναδρομή γίνεται <em>πριν</em> την επιλογή ατόμου, άρα οι δραστηριότητες ανατίθενται από την τελευταία προς την πρώτη. Γι' αυτό η πρώτη απάντηση ξεκινά με <code>1-2</code>.</li><li>«Τουλάχιστον μία μονάδα χρόνου ανάμεσα» σημαίνει γνήσια ανισότητα: η μία αρχίζει μετά το τέλος της άλλης.</li></ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">activity</span>(<span class="nm">1</span>, <span class="fn">act</span>(<span class="nm">0</span>,<span class="nm">3</span>)).
+<span class="fn">activity</span>(<span class="nm">2</span>, <span class="fn">act</span>(<span class="nm">0</span>,<span class="nm">4</span>)).
+<span class="fn">activity</span>(<span class="nm">3</span>, <span class="fn">act</span>(<span class="nm">1</span>,<span class="nm">5</span>)).
+<span class="fn">activity</span>(<span class="nm">4</span>, <span class="fn">act</span>(<span class="nm">4</span>,<span class="nm">6</span>)).
+<span class="fn">activity</span>(<span class="nm">5</span>, <span class="fn">act</span>(<span class="nm">6</span>,<span class="nm">8</span>)).
+<span class="fn">activity</span>(<span class="nm">6</span>, <span class="fn">act</span>(<span class="nm">6</span>,<span class="nm">9</span>)).
+<span class="fn">activity</span>(<span class="nm">7</span>, <span class="fn">act</span>(<span class="nm">9</span>,<span class="nm">10</span>)).
+<span class="fn">activity</span>(<span class="nm">8</span>, <span class="fn">act</span>(<span class="nm">9</span>,<span class="nm">13</span>)).
+<span class="fn">activity</span>(<span class="nm">9</span>, <span class="fn">act</span>(<span class="nm">11</span>,<span class="nm">14</span>)).
+
+<span class="fn">assignment</span>(NPersons, Assignment) <span class="kw">:-</span>
+    <span class="fill"><span class="fn">findall</span>(AId, <span class="fn">activity</span>(AId, _), AIds)</span>,
+    <span class="fn">assign</span>(AIds, NPersons, Assignment).
+
+<span class="fn">assign</span>([], _, []).
+<span class="fn">assign</span>([AId|AIds], NPersons, [AId-PId|Assignment]) <span class="kw">:-</span>
+    <span class="fn">assign</span>(AIds, NPersons, Assignment),
+    <span class="fill"><span class="fn">between</span>(<span class="nm">1</span>, NPersons, PId)</span>,
+    <span class="fn">activity</span>(AId, <span class="fn">act</span>(Ab, Ae)),
+    <span class="fill"><span class="fn">findall</span>(APId, <span class="fn">member</span>(APId-PId, Assignment), APIds)</span>,
+    <span class="fn">valid</span>(Ab, Ae, APIds).
+
+<span class="fn">valid</span>(_, _, []).
+<span class="fn">valid</span>(Ab1, Ae1, [APId|APIds]) <span class="kw">:-</span>
+    <span class="fn">activity</span>(APId, <span class="fn">act</span>(Ab2, Ae2)),
+    <span class="fill">( Ab2 &gt; Ae1 ; Ab1 &gt; Ae2 )</span>,
+    <span class="fn">valid</span>(Ab1, Ae1, APIds).</code></div><p>Με 3 άτομα υπάρχουν 48 λύσεις (όπως στην εκφώνηση). Με 2 άτομα καμία.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="f4">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> ΣΤ4 · hbaltr/2<span class="src">2018Α</span></div>
+  <div class="drill-body">
+<p>Όλα τα ισοζυγισμένα καθ' ύψος δυαδικά δέντρα ύψους H (τα υποδέντρα κάθε κόμβου διαφέρουν σε ύψος το πολύ 1).</p><div class="plx" data-id="f4" data-query="hbaltr(2, T)." data-title="2018 Α: hbaltr/2 (ισοζυγισμένα δέντρα ύψους H)">
+<script type="text/plain" class="plx-src">
+% nil = κενό δέντρο, t(L, x, R) = κόμβος
+hbaltr(H, T) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+hbaltr(0, nil).
+hbaltr(H, t(L, x, R)) :-
+    H > 0, H1 is H - 1, H2 is H - 2,
+    (   hbaltr(H1, L), hbaltr(H1, R)
+    ;   H2 >= 0, hbaltr(H1, L), hbaltr(H2, R)
+    ;   H2 >= 0, hbaltr(H2, L), hbaltr(H1, R)
+    ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "hbaltr(0, T).", "n": 3}, {"q": "hbaltr(1, T).", "n": 3}, {"q": "hbaltr(2, T).", "n": 5}, {"q": "hbaltr(3, T).", "n": 7}, {"q": "findall(T, hbaltr(3, T), Ts), length(Ts, N).", "n": 1}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Ένα δέντρο ύψους H έχει υποδέντρα ύψους (H−1, H−1), (H−1, H−2) ή (H−2, H−1). Η σειρά των τριών περιπτώσεων καθορίζει τη σειρά των απαντήσεων της εκφώνησης.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">hbaltr</span>(<span class="nm">0</span>, nil).
+<span class="fn">hbaltr</span>(H, <span class="fn">t</span>(L, x, R)) <span class="kw">:-</span>
+    H &gt; <span class="nm">0</span>, H1 <span class="op">is</span> H - <span class="nm">1</span>, H2 <span class="op">is</span> H - <span class="nm">2</span>,
+    (   <span class="fn">hbaltr</span>(H1, L), <span class="fn">hbaltr</span>(H1, R)
+    ;   H2 <span class="op">&gt;=</span> <span class="nm">0</span>, <span class="fn">hbaltr</span>(H1, L), <span class="fn">hbaltr</span>(H2, R)
+    ;   H2 <span class="op">&gt;=</span> <span class="nm">0</span>, <span class="fn">hbaltr</span>(H2, L), <span class="fn">hbaltr</span>(H1, R)
+    ).</code></div><p>Ύψος 3: 15 δέντρα, με τη σειρά της εκφώνησης.</p>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="f5">
+  <div class="drill-hd"><span class="lvl m">MEDIUM</span> ΣΤ5 · matching/2<span class="src">2019Α (β)</span></div>
+  <div class="drill-body">
+<p>Σχήματα με 0, 1 και <code>*</code>. Όλα τα δυαδικά άτομα που ταιριάζουν με όλα τα σχήματα.</p><div class="plx" data-id="f5" data-query="matching([[1,0,*,*,0,*,1,0],[1,*,*,0,0,*,*,*],[*,0,1,*,*,*,1,*]], A)." data-title="2019 Α: matching/2 (άτομα που ταιριάζουν με όλα τα σχήματα)">
+<script type="text/plain" class="plx-src">
+matching(Schemas, A) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+matching(Schemas, A) :-
+    Schemas = [S|_],
+    length(S, N), length(A, N),
+    all_match(Schemas, A),
+    bits(A).
+
+all_match([], _).
+all_match([S|Ss], A) :- match(S, A), all_match(Ss, A).
+
+% το * ταιριάζει με οτιδήποτε, το 0/1 μόνο με τον εαυτό του
+match([], []).
+match([*|Xs], [_|Bs]) :- match(Xs, Bs).
+match([B|Xs], [B|Bs]) :- B \== *, match(Xs, Bs).
+
+% ό,τι έμεινε ελεύθερο παίρνει 0 ή 1
+bits([]).
+bits([B|Bs]) :- member(B, [0,1]), bits(Bs).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "matching([[1,0,*,*,0,*,1,0],[1,*,*,0,0,*,*,*],[*,0,1,*,*,*,1,*]], A).", "n": 5}, {"q": "matching([[1,*],[0,*]], A).", "n": 3}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Περιόρισε-και-γέννα: πρώτα κάνε το άτομο να ταιριάζει με όλα τα σχήματα (οι θέσεις με 0/1 δένονται, τα <code>*</code> αφήνουν ελεύθερη θέση) και μετά δώσε 0/1 στις ελεύθερες.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">matching</span>(Schemas, A) <span class="kw">:-</span>
+    Schemas = [S|_],
+    <span class="fn">length</span>(S, N), <span class="fn">length</span>(A, N),
+    <span class="fn">all_match</span>(Schemas, A),
+    <span class="fn">bits</span>(A).
+
+<span class="fn">all_match</span>([], _).
+<span class="fn">all_match</span>([S|Ss], A) <span class="kw">:-</span> <span class="fn">match</span>(S, A), <span class="fn">all_match</span>(Ss, A).
+
+<span class="cm">% το * ταιριάζει με οτιδήποτε, το 0/1 μόνο με τον εαυτό του</span>
+<span class="fn">match</span>([], []).
+<span class="fn">match</span>([*|Xs], [_|Bs]) <span class="kw">:-</span> <span class="fn">match</span>(Xs, Bs).
+<span class="fn">match</span>([B|Xs], [B|Bs]) <span class="kw">:-</span> B <span class="op">\==</span> *, <span class="fn">match</span>(Xs, Bs).
+
+<span class="cm">% ό,τι έμεινε ελεύθερο παίρνει 0 ή 1</span>
+<span class="fn">bits</span>([]).
+<span class="fn">bits</span>([B|Bs]) <span class="kw">:-</span> <span class="fn">member</span>(B, [<span class="nm">0</span>,<span class="nm">1</span>]), <span class="fn">bits</span>(Bs).</code></div>
+</div></details>
+  </div>
+</div>
+
+  
+<div class="drill" id="f6">
+  <div class="drill-hd"><span class="lvl h">HARD</span> ΣΤ6 · langford/1<span class="src">2015Α</span></div>
+  <div class="drill-body">
+<p>Λίστα 14 στοιχείων με τους 1..7 από δύο φορές, ώστε ανάμεσα στα δύο N να υπάρχουν ακριβώς N στοιχεία. Ο έλεγχος ζητάει τις 4 πρώτες λύσεις της εκφώνησης.</p><div class="plx" data-id="f6" data-query="langford(List)." data-title="2015 Α: langford/1 (Prolog χωρίς περιορισμούς)">
+<script type="text/plain" class="plx-src">
+langford(List) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+langford(L) :-
+    length(L, 14),
+    place(7, L).
+
+% place(N, L): τοποθετώ τα N, N-1, ..., 1
+place(0, _).
+place(N, L) :-
+    N > 0,
+    nth1(I, L, N),
+    J is I + N + 1,
+    nth1(J, L, N),
+    N1 is N - 1,
+    place(N1, L).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "langford(List).", "n": 4}]</script>
+</div><details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Λίστα 14 μεταβλητών. Τοποθέτησε το 7, μετά το 6, …, το 1: διάλεξε θέση I για το πρώτο N με <code>nth1(I, L, N)</code> και απαίτησε το δεύτερο N στη θέση I + N + 1. Η σειρά 7 → 1 δίνει ακριβώς τις απαντήσεις της εκφώνησης.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">langford</span>(L) <span class="kw">:-</span>
+    <span class="fn">length</span>(L, <span class="nm">14</span>),
+    <span class="fn">place</span>(<span class="nm">7</span>, L).
+
+<span class="cm">% place(N, L): τοποθετώ τα N, N-1, ..., 1</span>
+<span class="fn">place</span>(<span class="nm">0</span>, _).
+<span class="fn">place</span>(N, L) <span class="kw">:-</span>
+    N &gt; <span class="nm">0</span>,
+    <span class="fn">nth1</span>(I, L, N),
+    J <span class="op">is</span> I + N + <span class="nm">1</span>,
+    <span class="fn">nth1</span>(J, L, N),
+    N1 <span class="op">is</span> N - <span class="nm">1</span>,
+    <span class="fn">place</span>(N1, L).</code></div><p>Υπάρχουν 52 λύσεις (26 και οι κατοπτρικές τους).</p>
+</div></details>
+  </div>
+</div>
+
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="unitF"></div>
+</section>
+
+<section id="reflect">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🪞</div><h2>Μετά από κάθε άσκηση</h2></div>
+
+  <ol class="steps">
+    <li><strong>Ποιος τύπος ήταν;</strong> βέλτιστο · σύγκριση · τι απαντά · αναδρομή σε λίστα · append · παραγωγή &amp; έλεγχος.</li>
+    <li><strong>Τι κρατούσε κάθε όρισμα, και πού ήταν η βάση;</strong></li>
+    <li><strong>Θα την ξανάγραφα χωρίς να δω τη λύση;</strong> Αν όχι, πάτα <strong>↺ Αρχικό</strong> και ξαναγράψε τη σε 10 λεπτά.</li>
+    <li><strong>Ποιο λάθος έκανα;</strong> Κράτα σημείωση: τα λάθη σου είναι το προσωπικό σου cheat-sheet.</li>
+  </ol>
+  <div class="exam"><div class="hd">🎯 Στόχος για το 8ωρο</div>
+<p style="margin:4px 0">Όλες οι ασκήσεις με <span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> με <strong>✔</strong> στον έλεγχο. Οι υπόλοιπες αν περισσέψει χρόνος. Τα μπλοκ που πέρασαν τον έλεγχο αποκτούν πράσινο περίγραμμα και το κρατούν.</p>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t1_gym" data-section="reflect"></div>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Θέμα 1 · Γυμναστήριο</div>
+</body>
+</html>

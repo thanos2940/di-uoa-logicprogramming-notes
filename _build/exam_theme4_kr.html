@@ -7,296 +7,835 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles/base.css">
 <link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
 <style>
 .hero{background:linear-gradient(150deg,#0d1117 0%,var(--cdim) 55%,#0d1117 100%)}
-.hero::after{content:'isa(X, Y).';position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(57,212,200,.08);pointer-events:none;font-weight:700}
-.net{display:block;margin:14px auto;max-width:520px}
-.net .node{fill:var(--surf2);stroke:var(--cyan);stroke-width:2}
-.net .leaf{fill:var(--surf2);stroke:var(--purple);stroke-width:2}
-.net .nlabel{fill:var(--txt);font-family:'JetBrains Mono',monospace;font-size:12px;text-anchor:middle}
-.net .edge{stroke:var(--dim);stroke-width:1.5}
-.net .elabel{fill:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10px;text-anchor:middle}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--cdim) 55%,#f8fafc 100%)}
+.hero::after{content:"is_true(P, SoFar)";position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
 </style>
 <script src="../js/nav_exam.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+<script src="../js/vendor/tau/core.js"></script>
+<script src="../js/vendor/tau/lists.js"></script>
+<script src="../js/vendor/tau/charsio.js"></script>
+<script src="../js/vendor/tau/format.js"></script>
+<script src="../js/prolog_runner.js" defer></script>
+
 </head>
 <body>
 <div id="site-nav"></div>
 
 <div class="hero">
-  <div class="hero-label">Θέμα 4 · ~15 μονάδες · <strong>ΑΝ ΕΜΦΑΝΙΣΤΕΙ</strong></div>
+  <div class="hero-label">Θέμα 4 · 20/100 · ΣΥΜΠΛΗΡΩΣΗ ΚΩΔΙΚΑ ΣΗΜΕΙΩΣΕΩΝ</div>
   <h1>Αναπαράσταση <em>Γνώσης</em></h1>
-  <p>Θέμα <strong>κώδικα</strong>, αλλά πιο «βατό» απ' όσο φαίνεται. Πέφτει σε <strong>2 μορφές</strong> — εστίασε στα <strong>σημασιολογικά δίκτυα</strong> (η συχνότερη &amp; ευκολότερη) και άρπαξε σίγουρες μονάδες.</p>
-  <div class="chips">
-    <span class="chip">σημασιολογικά δίκτυα</span><span class="chip">isa</span><span class="chip">κληρονομικότητα</span><span class="chip">βεβαιότητες</span><span class="chip">forward chaining</span>
-  </div>
+  <p>Μία ώρα για 20 μονάδες: το θέμα του Ιουνίου λυμένο και εκτελέσιμο, οι τέσσερις μέθοδοι των σημειώσεων και όλες οι παραλλαγές που έχουν πέσει.</p>
+  <div class="chips"><span class="chip">is_true/2</span><span class="chip">why / how</span><span class="chip">σημασιολογικά δίκτυα</span><span class="chip">πλαίσια</span><span class="chip">forward</span><span class="chip">certainty</span></div>
 </div>
 
 <nav class="toc">
-  <a href="#intro">Τι είναι &amp; οι 2 μορφές</a>
-  <a href="#semnet">Σημασιολογικά Δίκτυα</a>
-  <a href="#forward">Μηχανή Συμπερασμού</a>
-  <a href="#solved">Λυμένα Παλιά Θέματα</a>
+  <a href="#plan">Πλάνο</a>
+  <a href="#map">Χάρτης</a>
+  <a href="#june">Ιούνιος 2026</a>
+  <a href="#backward">Οπίσθια</a>
+  <a href="#forward">Εμπρόσθια</a>
+  <a href="#nets">Δίκτυα</a>
+  <a href="#frames">Πλαίσια</a>
+  <a href="#uncert">Αβεβαιότητα</a>
+  <a href="#theory">Θεωρία</a>
   <a href="#partial">Μερική βαθμολογία</a>
 </nav>
 
 <div class="wrap">
 
-<!-- ============ INTRO ============ -->
-<section id="intro">
-  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🧠</div><h2>Τι είναι &amp; οι 2 μορφές που πέφτουν</h2></div>
-  <p class="lead"><strong>Αναπαράσταση γνώσης</strong> = κωδικοποιούμε «τι ξέρουμε για τον κόσμο» (οντότητες, ιδιότητες, σχέσεις) σε μορφή που μπορεί ένα πρόγραμμα να <em>συμπεράνει</em> νέα πράγματα. Στην Prolog αυτό σημαίνει: <strong>γεγονότα</strong> + <strong>έναν αναδρομικό κανόνα</strong> που «κληρονομεί» ή «αλυσιδώνει» πληροφορία.</p>
+<section id="plan">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">⏱️</div><h2>Θέμα 4 σε μία ώρα</h2></div>
 
-  <div class="exam"><div class="hd">🧭 Διάβασε πρώτα αυτό — πού να βάλεις την ενέργειά σου</div>
-    <p>Το Θέμα 4 εμφανίστηκε σε <strong>2021Α, 2022Α, 2022Β</strong> (στις 2023 ΔΕΝ υπήρχε). Πέφτει σε δύο μορφές:</p>
-    <ul style="margin:6px 0">
-      <li><strong>① Σημασιολογικά δίκτυα</strong> (2021Α, 2022Β) — <span class="pill" style="background:var(--cdim);color:var(--cyan)">η ΕΥΚΟΛΗ &amp; συχνότερη</span>. Γεγονότα <code>σχέση(Α,Β)</code> + κανόνας κληρονομικότητας μέσω <code>isa</code>. <strong>Εδώ ρίξε το βάρος.</strong></li>
-      <li><strong>② Μηχανή συμπερασμού forward</strong> (2022Α) — <span class="pill" style="background:var(--odim);color:var(--orange)">η ΔΥΣΚΟΛΗ</span>. if-then κανόνες + εμπρόσθια αλυσίδωση. Στόχευσε <strong>μερική βαθμολογία</strong>.</li>
-    </ul>
+  <p class="lead">Τον Ιούνιο το Θέμα 4 έδωσε <strong>20 μονάδες</strong>: 5 για μια ερώτηση θεωρίας και 15 για να συμπληρώσεις κώδικα των σημειώσεων. Ο κώδικας είναι πάντα μια παραλλαγή από τέσσερα μικρά προγράμματα, άρα μία ώρα αρκεί για να μην το αφήσεις λευκό.</p>
+  <div class="plan">
+<div class="plan-blk"><div class="ph"><span class="time">0:00 – 0:20</span><span class="ttl">Ιούνιος 2026 (= 2017Α)</span><span class="dur">20′</span></div><div class="pb"><p style="margin:4px 0">Γράψε τα δύο κενά στο χαρτί, μετά στον editor, και πέρασε τον έλεγχο. <span class="must">★ ΟΠΩΣΔΗΠΟΤΕ</span> <a href="#june">→</a></p></div></div><div class="plan-blk"><div class="ph"><span class="time">0:20 – 0:30</span><span class="ttl">Θεωρία σε μία πρόταση</span><span class="dur">10′</span></div><div class="pb"><p style="margin:4px 0">how/why, οπίσθια ή εμπρόσθια, δίκτυα ή πλαίσια, αβεβαιότητα. <a href="#theory">→</a></p></div></div><div class="plan-blk"><div class="ph"><span class="time">0:30 – 0:45</span><span class="ttl">Σημασιολογικά δίκτυα</span><span class="dur">15′</span></div><div class="pb"><p style="margin:4px 0">fact/1 των σημειώσεων, certainty/4 (2021Α), value/4 (2021Β). <a href="#nets">→</a></p></div></div><div class="plan-blk"><div class="ph"><span class="time">0:45 – 1:00</span><span class="ttl">Εμπρόσθια, πλαίσια, αβεβαιότητα</span><span class="dur">15′</span></div><div class="pb"><p style="margin:4px 0">Διάβασε και τρέξε τις λύσεις· αν μείνει χρόνος, λύσε το 2022Α. <a href="#forward">→</a></p></div></div>
   </div>
-
-  <div class="def"><div class="hd">⚡ Μικρό λεξιλόγιο</div>
-    <ul style="margin:6px 0">
-      <li><strong>Οντότητα (entity):</strong> ένα «πράγμα» — π.χ. <code>bird</code>, <code>albatross</code>, <code>ross</code>.</li>
-      <li><strong><code>isa</code> (is-a):</strong> σύνδεσμος «είναι ένα / είναι εξειδίκευση». <code>isa(albatross, bird)</code> = «το άλμπατρος είναι (είδος) πουλί».</li>
-      <li><strong>Κληρονομικότητα (inheritance):</strong> ό,τι ισχύει για το γενικό (<code>bird</code>) ισχύει και για το ειδικό (<code>albatross</code>), εκτός αν δηλωθεί αλλιώς.</li>
-      <li><strong>Βαθμός βεβαιότητας (certainty):</strong> αριθμός 0–1 που λέει «πόσο σίγουρα» ισχύει μια σχέση.</li>
-      <li><strong>Forward chaining (εμπρόσθια αλυσίδωση):</strong> ξεκινάς από γνωστά γεγονότα και εφαρμόζεις κανόνες <em>προς τα εμπρός</em> για να βγάλεις νέα συμπεράσματα.</li>
-    </ul>
-  </div>
+  <h3>Τι έχει πέσει</h3>
+<table class="summary-tbl">
+  <thead><tr><th>Εξέταση</th><th>Τι ζητήθηκε</th><th>Ενότητα εδώ</th></tr></thead>
+  <tbody>
+    <tr><td><strong>2026 Α (Ιούνιος)</strong></td><td>(α) τι είναι οι ερωτήσεις how/why · (β) is_true/2 με askable και why</td><td><a href="#june">Ιούνιος 2026</a></td></tr>
+    <tr><td>2017 Α (3β)</td><td>ίδιο ακριβώς με το 2026 Α</td><td><a href="#june">Ιούνιος 2026</a></td></tr>
+    <tr><td>2022 Α</td><td>μηχανή εμπρόσθιας συλλογιστικής με «ένα βήμα πίσω»</td><td><a href="#forward">Εμπρόσθια</a></td></tr>
+    <tr><td>2018 Α (3β)</td><td>εμπρόσθια συλλογιστική χωρίς assert/1, πλεονεκτήματα και μειονεκτήματα</td><td><a href="#forward">Εμπρόσθια</a></td></tr>
+    <tr><td>2021 Α</td><td>certainty/4 σε σημασιολογικό δίκτυο με βεβαιότητες</td><td><a href="#nets">Δίκτυα</a></td></tr>
+    <tr><td>2021 Β</td><td>έμφαση των δικτύων και μηχανισμός συμπερασμού · value/4 με μονοπάτι («πώς»)</td><td><a href="#nets">Δίκτυα</a></td></tr>
+    <tr><td>2022 Β · 2018 Β (3β)</td><td>σχήμα ή δικό σου παράδειγμα → μεθοδολογία και υλοποίηση σε Prolog</td><td><a href="#nets">Δίκτυα</a></td></tr>
+    <tr><td>2020 Α · 2016 Α (3β)</td><td>πότε χρησιμεύουν τα πλαίσια · άλλη αναπαράσταση και συμπερασμός</td><td><a href="#frames">Πλαίσια</a></td></tr>
+    <tr><td>2019 Β (3β)</td><td>ομοιότητες δικτύων και πλαισίων · μετατροπή από το ένα στο άλλο</td><td><a href="#frames">Πλαίσια</a></td></tr>
+    <tr><td>2020 Β</td><td>τι είναι η αβεβαιότητα · certainty/2 που δεν αποτυγχάνει ποτέ</td><td><a href="#uncert">Αβεβαιότητα</a></td></tr>
+  </tbody>
+</table>
+  <div class="section-quiz" data-topic="exam_t4" data-section="plan"></div>
 </section>
 
-<!-- ============ SEMANTIC NETWORKS ============ -->
-<section id="semnet">
-  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🕸️</div><h2>① Σημασιολογικά Δίκτυα (μάθε ΚΑΛΑ αυτό)</h2></div>
+<section id="map">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🗺️</div><h2>Τέσσερις μέθοδοι σε έναν πίνακα</h2></div>
 
-  <p class="lead">Ένα σημασιολογικό δίκτυο είναι ένας <strong>γράφος</strong>: κόμβοι = οντότητες, ακμές = σχέσεις με ετικέτα. Στην Prolog κάθε <strong>ακμή γίνεται ένα γεγονός</strong>.</p>
-
-  <svg class="net" viewBox="0 0 480 230" xmlns="http://www.w3.org/2000/svg">
-    <line class="edge" x1="240" y1="55" x2="150" y2="120"/>
-    <line class="edge" x1="150" y1="150" x2="150" y2="120"/>
-    <text class="elabel" x="180" y="92">isa</text>
-    <text class="elabel" x="120" y="142">isa</text>
-    <line class="edge" x1="240" y1="40" x2="380" y2="40"/>
-    <text class="elabel" x="310" y="32">moving_method → fly</text>
-    <ellipse class="node" cx="240" cy="40" rx="48" ry="20"/><text class="nlabel" x="240" y="44">bird</text>
-    <ellipse class="node" cx="150" cy="135" rx="55" ry="20"/><text class="nlabel" x="150" y="139">albatross</text>
-    <ellipse class="leaf" cx="150" cy="195" rx="40" ry="20"/><text class="nlabel" x="150" y="199">ross</text>
-  </svg>
-
-  <p>Διαβάζεται: <code>ross</code> <strong>isa</strong> <code>albatross</code> <strong>isa</strong> <code>bird</code>, και τα πουλιά πετάνε. Άρα — με <em>κληρονομικότητα</em> — και ο <code>ross</code> πετάει, χωρίς να το πούμε ρητά.</p>
-
-  <h3 style="font-family:'Syne',sans-serif;color:var(--cyan);margin-top:24px">Το template (αποστήθισέ το)</h3>
-  <p>Κάθε σχέση = γεγονός. Μία ιδιότητα ισχύει για μια οντότητα <strong>(α)</strong> αν δηλώνεται άμεσα, <strong>(β)</strong> ή αν την κληρονομεί μέσω <code>isa</code>:</p>
-
-  <div class="cb"><code><span class="cm">% --- ΓΕΓΟΝΟΤΑ: μία ακμή = ένα γεγονός ---</span>
-isa(albatross, bird).        <span class="cm">% το άλμπατρος είναι πουλί</span>
-isa(ross, albatross).        <span class="cm">% ο ross είναι άλμπατρος</span>
-moving_method(bird, fly).    <span class="cm">% τα πουλιά πετάνε</span>
-colour(albatross, white).    <span class="cm">% τα άλμπατρος είναι λευκά</span>
-
-<span class="cm">% --- ΚΛΗΡΟΝΟΜΙΚΟΤΗΤΑ (το κλειδί) ---</span>
-<span class="cm">% (α) άμεση: η ιδιότητα δηλώνεται κατευθείαν</span>
-prop(Rel, Ent, Val) :- Goal =.. [Rel, Ent, Val], call(Goal).
-<span class="cm">% (β) κληρονομούμενη: ανέβα ένα σκαλί isa και ξαναρώτα</span>
-prop(Rel, Ent, Val) :- isa(Ent, Super), prop(Rel, Super, Val).</code></div>
-
-  <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-      <li><strong><code>Goal =.. [Rel, Ent, Val]</code>:</strong> το <code>=..</code> («univ») χτίζει δυναμικά τον στόχο. Αν <code>Rel=colour, Ent=albatross</code> → φτιάχνει <code>colour(albatross, Val)</code>. Το <code>call(Goal)</code> τον εκτελεί. Έτσι ένας κανόνας δουλεύει για <em>όποια</em> σχέση.</li>
-      <li><strong>1η πρόταση (άμεση):</strong> «ξέρω την ιδιότητα κατευθείαν;» π.χ. <code>colour(albatross, white)</code> → ναι.</li>
-      <li><strong>2η πρόταση (κληρονομικότητα):</strong> «αν δεν την ξέρω άμεσα, ανέβα στον “γονιό” μέσω <code>isa</code> και ρώτα ξανά». Είναι <strong>αναδρομική</strong> → καλύπτει οσοδήποτε βαθιά ιεραρχία (<code>ross→albatross→bird</code>).</li>
-    </ul>
-    <p style="margin:4px 0 0">Μνημονικό: <strong>«Δεν το ξέρω; → ρώτα τον γονιό (isa)»</strong>.</p>
+  <p class="lead">Κάθε μέθοδος έχει μια <strong>αναπαράσταση</strong> (πώς γράφεις τη γνώση ως γεγονότα) και έναν <strong>μηχανισμό συμπερασμού</strong> (ένα μικρό αναδρομικό κατηγόρημα). Αν τα θυμάσαι σε ζεύγη, αναγνωρίζεις αμέσως τι ζητάει η εκφώνηση.</p>
+  <table class="summary-tbl">
+    <thead><tr><th>Μέθοδος</th><th>Αναπαράσταση</th><th>Συμπερασμός (σημειώσεις)</th><th>Βασική ιδέα</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Σημασιολογικά δίκτυα</strong></td><td><code>isa(ross, albatross).</code><br><code>colour(albatross, black_and_white).</code></td><td><code>fact/1</code> με <code>=..</code></td><td>κληρονομικότητα μέσω <code>isa</code></td></tr>
+      <tr><td><strong>Πλαίσια</strong></td><td><code>albatross(a_kind_of, bird).</code><br><code>albert(instance_of, albatross).</code></td><td><code>value/3</code> + <code>parent/2</code></td><td>τοπική τιμή πρώτα (με <code>!</code>), αλλιώς από τον γονιό</td></tr>
+      <tr><td><strong>If-then κανόνες</strong></td><td><code>:- op(800, fx, if).</code><br><code>if hall_wet then problem_in_kitchen.</code></td><td><code>is_true/1</code> (οπίσθια) · <code>forward/0</code> (εμπρόσθια) · <code>is_true/2</code> (how)</td><td>οι κανόνες είναι <em>δεδομένα</em> και τους «εκτελεί» ένας μετα-διερμηνέας</td></tr>
+      <tr><td><strong>Αβεβαιότητα</strong></td><td><code>given(no_rain, 0.8).</code><br><code>if A then B : 0.9.</code></td><td><code>certainty/2</code></td><td>and → min, or → max, κανόνας → γινόμενο</td></tr>
+    </tbody>
+  </table>
+  <div class="compare-grid">
+    <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">Λεξιλόγιο</h4>
+    <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+      <li><strong>isa</strong>: «είναι ένα». Δηλώνει και υποκλάσεις και στιγμιότυπα.</li>
+      <li><strong>Κληρονομικότητα</strong>: ό,τι ισχύει για τη γενική οντότητα ισχύει και για την ειδική, εκτός αν δηλωθεί άλλη τιμή.</li>
+      <li><strong>askable</strong>: πρόταση που ο χρήστης μπορεί να επιβεβαιώσει.</li>
+      <li><strong>SoFar</strong>: οι στόχοι που «κρέμονται» πάνω από τον τρέχοντα. Αυτό τυπώνει το why.</li>
+    </ul></div>
+    <div class="compare-cell good" style="border-color:var(--orange)"><h4 style="color:var(--orange);margin-top:0">Οι τελεστές που θα ξαναδείς</h4>
+<div class="cb"><code><span class="cm">% από τις σημειώσεις</span>
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">700</span>, xfx, then).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">300</span>, xfy, or).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">200</span>, xfy, and).</code></div>
+    <p style="font-size:0.9rem">Μικρότερος αριθμός = δένει πιο σφιχτά. Έτσι το <code>if a and b then c</code> διαβάζεται ως <code>if(then(and(a,b), c))</code>.</p></div>
   </div>
 
-  <div class="tip-box"><div class="hd">💡 Παραλλαγή: αν δεν χρειάζεσαι «όποια σχέση»</div>
-    <p>Αν το θέμα ζητάει <em>συγκεκριμένη</em> ιδιότητα (π.χ. μόνο χρώμα), γράφεις πιο απλά — χωρίς <code>=..</code>:</p>
-    <div class="cb"><code>colour_of(Ent, C) :- colour(Ent, C).
-colour_of(Ent, C) :- isa(Ent, Super), colour_of(Super, C).</code></div>
-    <p style="margin:6px 0 0">Ίδια ιδέα, λιγότερος «δυναμισμός». Γράψε ό,τι σε βολεύει — και τα δύο παίρνουν μονάδες.</p>
-  </div>
+  <div class="section-quiz" data-topic="exam_t4" data-section="map"></div>
 </section>
 
-<!-- ============ FORWARD ENGINE ============ -->
+<section id="june">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🆕</div><h2>Ιούνιος 2026 (= 2017Α): is_true/2 με askable και why</h2></div>
+
+  <p class="lead">Δίνεται ο μετα-διερμηνέας οπίσθιας συλλογιστικής με ένα δεύτερο όρισμα, το ιστορικό <code>SoFar</code>. Ζητείται να συμπληρωθεί ώστε (1) να χρησιμοποιεί κανόνες με απλές προϋποθέσεις, (2) να ρωτάει τον χρήστη για τις <code>askable</code> προτάσεις και (3) να απαντάει σε «γιατί».</p>
+  <h3>(α) Τι είναι οι ερωτήσεις how και why (5 μονάδες)</h3>
+  <div class="compare-grid">
+    <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">how (πώς)</h4><p style="font-size:0.93rem">Ο χρήστης ρωτάει <strong>πώς βγήκε ένα συμπέρασμα</strong>. Το σύστημα δείχνει την αλυσίδα κανόνων και γεγονότων που το απέδειξαν (το δέντρο απόδειξης). Αφορά απάντηση που έχει ήδη δοθεί.</p></div>
+    <div class="compare-cell good" style="border-color:var(--purple)"><h4 style="color:var(--purple);margin-top:0">why (γιατί)</h4><p style="font-size:0.93rem">Ο χρήστης ρωτάει <strong>γιατί του ζητείται μια πληροφορία</strong> κατά τη διάρκεια της συλλογιστικής. Το σύστημα απαντά ποιον στόχο προσπαθεί να αποδείξει και σε ποιον ανώτερο στόχο αυτός οδηγεί.</p></div>
+  </div>
+  <h3>(β) Συμπλήρωση κώδικα (15 μονάδες)</h3>
+  <p>Για να περάσει ο αυτόματος έλεγχος, ρώτα τον χρήστη με <code>write(P), writeln('?')</code>. Η είσοδος κάτω από την ερώτηση (<code>why.</code> και μετά <code>yes.</code>) παίζει τον ρόλο του χρήστη· άλλαξέ την για να δεις το <code>no.</code>.</p>
+<div class="plx" data-id="kr_june" data-query="is_true(leak_in_kitchen)." data-title="Ιούνιος 2026 / 2017Α: is_true/2 με askable και why">
+<script type="text/plain" class="plx-src">
+% Ιούνιος 2026, Θέμα 4 (β): οπίσθια συλλογιστική με askable και why
+:- op(800, fx, if).
+:- op(700, xfx, then).
+
+% μικρή βάση γνώσης: οι προϋποθέσεις είναι απλές προτάσεις
+if hall_wet then problem_in_kitchen.
+if problem_in_kitchen then leak_in_kitchen.
+if window_closed then no_water_from_outside.
+fact(bathroom_dry).
+askable(hall_wet).
+askable(window_closed).
+
+is_true(P) :- is_true(P, [P]).
+
+is_true(P, _) :- fact(P), !.
+is_true(P, SoFar) :- if Cond then P, ..................
+..................
+
+answer(yes, _).
+answer(no, _) :- fail.
+answer(why, SoFar) :- write('I need it to prove '), writeln(SoFar),
+                      writeln('Is it true? '), read(NA), answer(NA, SoFar).
+</script>
+<script type="text/plain" class="plx-ref">
+% Ιούνιος 2026, Θέμα 4 (β): οπίσθια συλλογιστική με askable και why
+:- op(800, fx, if).
+:- op(700, xfx, then).
+
+% μικρή βάση γνώσης: οι προϋποθέσεις είναι απλές προτάσεις
+if hall_wet then problem_in_kitchen.
+if problem_in_kitchen then leak_in_kitchen.
+if window_closed then no_water_from_outside.
+fact(bathroom_dry).
+askable(hall_wet).
+askable(window_closed).
+
+is_true(P) :- is_true(P, [P]).
+
+is_true(P, _) :- fact(P), !.
+is_true(P, SoFar) :- if Cond then P, is_true(Cond, [Cond|SoFar]).
+is_true(P, SoFar) :- askable(P), write(P), writeln('?'), read(A), answer(A, SoFar).
+
+answer(yes, _).
+answer(no, _) :- fail.
+answer(why, SoFar) :- write('I need it to prove '), writeln(SoFar),
+                      writeln('Is it true? '), read(NA), answer(NA, SoFar).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "is_true(bathroom_dry).", "n": 2, "label": "γεγονός, χωρίς ερώτηση"}, {"q": "is_true(leak_in_kitchen).", "n": 2, "out": true, "label": "ρωτάει hall_wet, απαντάμε why και μετά yes"}, {"q": "is_true(no_water_from_outside).", "n": 2, "out": true}, {"q": "is_true(leak_in_bathroom).", "n": 2, "label": "ούτε κανόνας ούτε askable"}]</script>
+<script type="text/plain" class="plx-stdin">
+why.
+yes.
+</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem">
+  <li>Το πρώτο κενό συνεχίζει τον κανόνα: μετά το <code>if Cond then P</code> πρέπει να αποδειχθεί το <code>Cond</code>. Τι μπαίνει στο ιστορικό;</li>
+  <li>Το δεύτερο κενό είναι μια <strong>ολόκληρη νέα πρόταση</strong> του <code>is_true/2</code>, για την περίπτωση που ο χρήστης μπορεί να απαντήσει.</li>
+</ul>
+</div></details><details class="reveal"><summary>✅ Λύση και εκτέλεση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% Ιούνιος 2026, Θέμα 4 (β): οπίσθια συλλογιστική με askable και why</span>
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">700</span>, xfx, then).
+
+<span class="cm">% μικρή βάση γνώσης: οι προϋποθέσεις είναι απλές προτάσεις</span>
+if hall_wet then problem_in_kitchen.
+if problem_in_kitchen then leak_in_kitchen.
+if window_closed then no_water_from_outside.
+<span class="fn">fact</span>(bathroom_dry).
+<span class="fn">askable</span>(hall_wet).
+<span class="fn">askable</span>(window_closed).
+
+<span class="fn">is_true</span>(P) <span class="kw">:-</span> <span class="fn">is_true</span>(P, [P]).
+
+<span class="fn">is_true</span>(P, _) <span class="kw">:-</span> <span class="fn">fact</span>(P), !.
+<span class="fn">is_true</span>(P, SoFar) <span class="kw">:-</span> if Cond then P, <span class="fill"><span class="fn">is_true</span>(Cond, [Cond|SoFar])</span>.
+<span class="fill"><span class="fn">is_true</span>(P, SoFar) <span class="kw">:-</span> <span class="fn">askable</span>(P), <span class="fn">write</span>(P), <span class="fn">writeln</span>(<span class="str">'?'</span>), <span class="fn">read</span>(A), <span class="fn">answer</span>(A, SoFar).</span>
+
+<span class="fn">answer</span>(yes, _).
+<span class="fn">answer</span>(no, _) <span class="kw">:-</span> fail.
+<span class="fn">answer</span>(why, SoFar) <span class="kw">:-</span> <span class="fn">write</span>(<span class="str">'I need it to prove '</span>), <span class="fn">writeln</span>(SoFar),
+                      <span class="fn">writeln</span>(<span class="str">'Is it true? '</span>), <span class="fn">read</span>(NA), <span class="fn">answer</span>(NA, SoFar).</code></div><div class="cb"><code>?- is_true(leak_in_kitchen).
+is_true(leak_in_kitchen, [leak_in_kitchen])
+  fact(leak_in_kitchen)?  όχι
+  κανόνας: if problem_in_kitchen then leak_in_kitchen
+  is_true(problem_in_kitchen, [problem_in_kitchen, leak_in_kitchen])
+    fact?  όχι
+    κανόνας: if hall_wet then problem_in_kitchen
+    is_true(hall_wet, [hall_wet, problem_in_kitchen, leak_in_kitchen])
+      fact?  όχι      κανόνας;  όχι      askable(hall_wet)  ✓
+      τυπώνει  hall_wet?          διαβάζει  why
+      answer(why, SoFar)  τυπώνει  I need it to prove [hall_wet,problem_in_kitchen,leak_in_kitchen]
+      διαβάζει  yes   →   answer(yes, _)  ✓
+true.</code></div><p><strong>Γιατί <code>[Cond|SoFar]</code>:</strong> το ιστορικό είναι στοίβα. Κάθε φορά που κατεβαίνεις σε προϋπόθεση, τη βάζεις μπροστά, οπότε το why τυπώνει «τι χρειάζομαι τώρα, για ποιο, για ποιο».</p>
+<p><strong>Γιατί το <code>!</code> στο <code>fact(P)</code>:</strong> αν το P είναι ήδη γνωστό, δεν ψάχνει κανόνες και δεν ρωτάει τον χρήστη.</p>
+</div></details><div class="warn"><div class="hd">⚠️ Συχνά λάθη σε αυτό το θέμα</div>
+<ul style="padding-left:1.5rem;margin:4px 0">
+  <li><code>is_true(Cond, SoFar)</code> χωρίς να προσθέσεις το <code>Cond</code>: το why θα τυπώνει λιγότερους στόχους από όσους «κρέμονται».</li>
+  <li>Ερώτηση στον χρήστη χωρίς <code>askable(P)</code>: ρωτάει για οτιδήποτε δεν αποδεικνύεται.</li>
+  <li><code>read(A)</code> χωρίς να τυπώσεις πρώτα το <code>P</code>: ο χρήστης δεν ξέρει τι του ζητάς.</li>
+  <li><code>answer(A, _)</code> αντί για <code>answer(A, SoFar)</code>: το why δεν έχει τι να τυπώσει.</li>
+</ul></div>
+  <div class="section-quiz" data-topic="exam_t4" data-section="june"></div>
+</section>
+
+<section id="backward">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">↩️</div><h2>Οπίσθια συλλογιστική των σημειώσεων και το «πώς»</h2></div>
+
+  <p class="lead">Η οπίσθια συλλογιστική ξεκινά από τον <strong>στόχο</strong> και ψάχνει κανόνες που τον συμπεραίνουν (goal driven). Στις σημειώσεις γράφεται ως μετα-διερμηνέας: οι κανόνες είναι όροι <code>if … then …</code> και τους «εκτελεί» το <code>is_true/1</code>.</p>
+<div class="cb"><code><span class="cm">% οπίσθια συλλογιστική σε μετα-επίπεδο (σημειώσεις)</span>
+<span class="fn">is_true</span>(P) <span class="kw">:-</span> <span class="fn">fact</span>(P).
+<span class="fn">is_true</span>(P) <span class="kw">:-</span> if Condition then P, <span class="fn">is_true</span>(Condition).
+<span class="fn">is_true</span>(P1 and P2) <span class="kw">:-</span> <span class="fn">is_true</span>(P1), <span class="fn">is_true</span>(P2).
+<span class="fn">is_true</span>(P1 or P2) <span class="kw">:-</span> <span class="fn">is_true</span>(P1) ; <span class="fn">is_true</span>(P2).</code></div>
+  <p>Για απαντήσεις «πώς», το δεύτερο όρισμα χτίζει το <strong>δέντρο απόδειξης</strong> με τον τελεστή <code>&lt;=</code>. Τρέξε το και διάβασε το αποτέλεσμα: <code>leak_in_kitchen</code> αποδείχθηκε από <code>problem_in_kitchen</code> (που βγήκε από δύο γεγονότα) και από <code>no_water_from_outside</code> (που βγήκε από το <code>window_closed</code>).</p>
+<div class="plx" data-id="kr_how" data-query="is_true(leak_in_kitchen, Proof)." data-title="Οπίσθια συλλογιστική με δέντρο απόδειξης (how)">
+<script type="text/plain" class="plx-src">
+% Οπίσθια συλλογιστική με εξηγήσεις «πώς» (σημειώσεις)
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+:- op(800, xfx, <=).
+
+if kitchen_dry and hall_wet then leak_in_bathroom.
+if hall_wet and bathroom_dry then problem_in_kitchen.
+if window_closed or no_rain then no_water_from_outside.
+if problem_in_kitchen and no_water_from_outside then leak_in_kitchen.
+fact(hall_wet).
+fact(bathroom_dry).
+fact(window_closed).
+
+% is_true(P, Proof): το Proof είναι το «πώς» (δέντρο απόδειξης)
+is_true(P, P) :- fact(P).
+is_true(P, P <= CondProof) :- if Cond then P, is_true(Cond, CondProof).
+is_true(P1 and P2, Proof1 and Proof2) :- is_true(P1, Proof1), is_true(P2, Proof2).
+is_true(P1 or P2, Proof) :- is_true(P1, Proof) ; is_true(P2, Proof).
+
+% Δοκίμασε:  is_true(leak_in_kitchen, Proof).   is_true(leak_in_bathroom, Proof).
+</script>
+</div>
+  <div class="note"><div class="hd">📝 «Γιατί η οπίσθια συλλογιστική με απλή Prolog δεν είναι ευέλικτη;» (ερώτηση των σημειώσεων)</div>
+  <p style="margin:4px 0">Αν γράψεις τους κανόνες ως προτάσεις Prolog (<code>leak_in_kitchen :- problem_in_kitchen, …</code>), ο έλεγχος είναι αυτός της Prolog: δεν μπορείς εύκολα να δώσεις εξηγήσεις (how/why), να ρωτήσεις τον χρήστη, να προσθέσεις βεβαιότητες ή να αλλάξεις στρατηγική (π.χ. εμπρόσθια). Με τους κανόνες ως <strong>δεδομένα</strong> και έναν μετα-διερμηνέα, όλα αυτά είναι λίγες γραμμές.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t4" data-section="backward"></div>
+</section>
+
 <section id="forward">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⚙️</div><h2>② Μηχανή Συμπερασμού forward (η δύσκολη — στόχευσε μερική)</h2></div>
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">↪️</div><h2>Εμπρόσθια συλλογιστική: σημειώσεις, 2022Α, 2018Α</h2></div>
 
-  <p class="lead">Εδώ η γνώση είναι <strong>κανόνες if-then</strong>: <code>if a and b then e.</code> Ξεκινάς από γνωστά γεγονότα και «πυροδοτείς» κανόνες προς τα εμπρός για να βγάλεις νέα συμπεράσματα.</p>
+  <p class="lead">Η εμπρόσθια συλλογιστική ξεκινά από τα <strong>γεγονότα</strong> και εφαρμόζει κανόνες μέχρι να μη βγαίνει τίποτα νέο (data driven). Στις σημειώσεις κάθε νέο συμπέρασμα γράφεται στη βάση με <code>assert</code>.</p>
+<div class="cb"><code><span class="cm">% εμπρόσθια συλλογιστική σε μετα-επίπεδο (σημειώσεις)</span>
+forward <span class="kw">:-</span> <span class="fn">new_derived_fact</span>(P), !, <span class="fn">write</span>(<span class="str">'Derived: '</span>), <span class="fn">write</span>(P), nl,
+           <span class="fn">assert</span>(<span class="fn">fact</span>(P)), forward ;
+           <span class="fn">write</span>(<span class="str">'No more facts'</span>).
 
-  <div class="warn"><div class="hd">⚠️ Είναι το δυσκολότερο κομμάτι όλης της ύλης για αρχάριο</div>
-    <p>Η εκφώνηση (2022Α) λέει «βασιστείτε στον κώδικα των σημειώσεων». Αν δεν τον θυμάσαι λέξη-προς-λέξη, <strong>μην πανικοβάλλεσαι</strong>: γράψε τους τελεστές + τη βασική λογική επιλογής κανόνα και πάρε μερική. Οι σίγουρες μονάδες είναι αλλού.</p>
-  </div>
+<span class="fn">new_derived_fact</span>(Concl) <span class="kw">:-</span> if Cond then Concl,
+                           not <span class="fn">fact</span>(Concl),
+                           <span class="fn">composed_fact</span>(Cond).
 
-  <h3 style="font-family:'Syne',sans-serif;color:var(--orange);margin-top:20px">Βήμα 1 — Δήλωσε τους τελεστές</h3>
-  <p>Για να γράφεις <code>if a and b then e</code> σαν όρο, ορίζεις τους τελεστές (μεγαλύτερος αριθμός = πιο «χαλαρά» δένει):</p>
-  <div class="cb"><code><span class="op">:-</span> op(960, fx,  if).
-<span class="op">:-</span> op(950, xfx, then).
-<span class="op">:-</span> op(940, xfy, and).</code></div>
-  <p>Έτσι το <code>if a and b then e</code> διαβάζεται ως <code>if( (a and b) then e )</code>. Κάθε κανόνας γίνεται γεγονός με κατηγόρημα <code>if/1</code>.</p>
+<span class="fn">composed_fact</span>(Cond) <span class="kw">:-</span> <span class="fn">fact</span>(Cond).
+<span class="fn">composed_fact</span>(Cond1 and Cond2) <span class="kw">:-</span> <span class="fn">composed_fact</span>(Cond1), <span class="fn">composed_fact</span>(Cond2).
+<span class="fn">composed_fact</span>(Cond1 or Cond2) <span class="kw">:-</span> <span class="fn">composed_fact</span>(Cond1) ; <span class="fn">composed_fact</span>(Cond2).</code></div>
+  <table class="summary-tbl">
+    <thead><tr><th>Οπίσθια (goal driven)</th><th>Εμπρόσθια (data driven)</th></tr></thead>
+    <tbody>
+      <tr><td>θέλω να αποδείξω κάτι συγκεκριμένο</td><td>δεν ξέρω τι θα βγει, θέλω όλα τα συμπεράσματα</td></tr>
+      <tr><td>δεν έχω όλα τα δεδομένα, τα ζητάω όταν χρειαστούν (askable)</td><td>έχω όλα τα δεδομένα από την αρχή</td></tr>
+      <tr><td>ο AND-OR γράφος έχει λίγους τελικούς στόχους και πολλά αρχικά δεδομένα</td><td>λίγα αρχικά δεδομένα και πολλοί πιθανοί στόχοι</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.9rem;color:var(--muted)">Οι σημειώσεις προσθέτουν ότι η επιλογή εξαρτάται από το πρόβλημα, ότι συχνά βοηθά ο συνδυασμός των δύο, και ότι μετράει τι υποστηρίζει το κέλυφος έμπειρου συστήματος που θα χρησιμοποιήσεις.</p>
+  <h3>2022Α: ένα συμπέρασμα τη φορά, με «ένα βήμα πίσω»</h3>
+  <p>Ένας κανόνας πυροδοτείται αν (α) όλη η προϋπόθεση είναι αληθής, ή (β) σε σύζευξη η <strong>πρώτη</strong> πρόταση είναι αληθής και καθεμία από τις υπόλοιπες είναι αληθής ή συμπέρασμα κανόνα με <strong>μία</strong> πρόταση που είναι αληθής. Με <code>a</code> αληθές, ο <code>if a and b then e</code> δίνει <code>e</code>, γιατί το <code>b</code> βγαίνει από τον <code>if a then b</code>.</p>
+<div class="plx" data-id="kr_fwd" data-query="forward." data-title="2022Α: forward με «ένα βήμα πίσω» για τις υπόλοιπες προτάσεις">
+<script type="text/plain" class="plx-src">
+% 2022Α: εμπρόσθια συλλογιστική, ένα συμπέρασμα τη φορά
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(200, xfy, and).
+:- dynamic(fact/1).
 
-  <h3 style="font-family:'Syne',sans-serif;color:var(--orange);margin-top:20px">Βήμα 2 — Γεγονότα &amp; κανόνες</h3>
-  <div class="cb"><code><span class="cm">% τι ξέρουμε ότι ισχύει</span>
-fact(a).
-
-<span class="cm">% οι κανόνες γνώσης (αποθηκεύονται ως γεγονότα if/1)</span>
 if a and b then e.
 if a then b.
-if b and c and d then f.</code></div>
+if b and c and d then f.
+if e and b and g then k.
+if b then g.
+fact(a).
 
-  <h3 style="font-family:'Syne',sans-serif;color:var(--orange);margin-top:20px">Βήμα 3 — Η μηχανή (forward)</h3>
-  <div class="cb"><code><span class="cm">% ένα συμπέρασμα: διάλεξε κανόνα, έλεγξε αν ισχύει η προϋπόθεση</span>
-forward(Concl) :-
-    (if Cond then Concl),
-    cond_holds(Cond).
+% ο κώδικας των σημειώσεων, με το holds/1 στη θέση του composed_fact/1
+forward :- new_derived_fact(P), !, write('Derived: '), writeln(P), assert(fact(P)), forward.
+forward :- writeln('No more facts').
 
-<span class="cm">% η προϋπόθεση ισχύει:</span>
-cond_holds(First and Rest) :- <span class="op">!</span>,
-    known(First),          <span class="cm">% η ΠΡΩΤΗ πρόταση πρέπει να ισχύει</span>
-    rest_holds(Rest).
-cond_holds(Single) :-
-    known(Single).         <span class="cm">% απλή προϋπόθεση μίας πρότασης</span>
+new_derived_fact(Concl) :- if Cond then Concl, \+ fact(Concl), holds(Cond).
 
-<span class="cm">% οι ΥΠΟΛΟΙΠΕΣ προτάσεις: είτε γνωστές, είτε συμπέρασμα κανόνα-ενός-βήματος</span>
-rest_holds(P and Rest) :- <span class="op">!</span>, one_of(P), rest_holds(Rest).
-rest_holds(P) :- one_of(P).
+% (α) όλη η προϋπόθεση είναι αληθής
+holds(Cond) :- composed_fact(Cond).
+% (β) σύζευξη: η πρώτη αληθής, καθεμία από τις υπόλοιπες αληθής
+%     ή συμπέρασμα κανόνα με μία μόνο πρόταση που είναι αληθής
+holds(First and Rest) :- ..................
 
-known(P) :- fact(P).
+composed_fact(P and Rest) :- !, fact(P), composed_fact(Rest).
+composed_fact(P) :- fact(P).
 
-one_of(P) :- known(P).
-one_of(P) :- (if Q then P), Q <span class="op">\=</span> (_ and _), known(Q).   <span class="cm">% 1-βήμα οπίσθια</span></code></div>
+..................
+</script>
+<script type="text/plain" class="plx-ref">
+% 2022Α: εμπρόσθια συλλογιστική, ένα συμπέρασμα τη φορά
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(200, xfy, and).
+:- dynamic(fact/1).
 
-  <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-      <li><strong><code>forward(Concl)</code>:</strong> διαλέγει έναν κανόνα <code>if Cond then Concl</code> και ελέγχει αν η <code>Cond</code> ικανοποιείται. Αν ναι → το <code>Concl</code> είναι νέο συμπέρασμα.</li>
-      <li><strong><code>cond_holds</code>:</strong> αν η προϋπόθεση είναι σύζευξη <code>First and Rest</code>, η <strong>πρώτη</strong> πρόταση πρέπει να είναι γνωστή· για τις υπόλοιπες αρκεί το «πιο χαλαρό» <code>one_of</code>.</li>
-      <li><strong><code>one_of(P)</code>:</strong> το <code>P</code> περνάει αν είναι γνωστό, <em>ή</em> αν υπάρχει κανόνας <code>if Q then P</code> με <strong>μία μόνο</strong> πρόταση <code>Q</code> (το <code>Q \= (_ and _)</code> το εξασφαλίζει) που είναι γνωστή — αυτό είναι το «ένα βήμα προς τα πίσω».</li>
-      <li><strong>Παράδειγμα:</strong> με <code>fact(a)</code>, ο κανόνας <code>if a and b then e</code> πυροδοτείται: <code>a</code> γνωστό, και <code>b</code> προκύπτει από <code>if a then b</code> (ένα βήμα πίσω) → άρα συμπεραίνεται το <code>e</code>.</li>
-    </ul>
-  </div>
+if a and b then e.
+if a then b.
+if b and c and d then f.
+if e and b and g then k.
+if b then g.
+fact(a).
+
+% ο κώδικας των σημειώσεων, με το holds/1 στη θέση του composed_fact/1
+forward :- new_derived_fact(P), !, write('Derived: '), writeln(P), assert(fact(P)), forward.
+forward :- writeln('No more facts').
+
+new_derived_fact(Concl) :- if Cond then Concl, \+ fact(Concl), holds(Cond).
+
+% (α) όλη η προϋπόθεση είναι αληθής
+holds(Cond) :- composed_fact(Cond).
+% (β) σύζευξη: η πρώτη αληθής, καθεμία από τις υπόλοιπες αληθής
+%     ή συμπέρασμα κανόνα με μία μόνο πρόταση που είναι αληθής
+holds(First and Rest) :- fact(First), rest_ok(Rest).
+
+composed_fact(P and Rest) :- !, fact(P), composed_fact(Rest).
+composed_fact(P) :- fact(P).
+
+rest_ok(P and Rest) :- !, ok1(P), rest_ok(Rest).
+rest_ok(P) :- ok1(P).
+ok1(P) :- fact(P).
+ok1(P) :- if Q then P, Q \= (_ and _), fact(Q).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "forward.", "n": 1, "out": true, "label": "σειρά παραγωγής: e, b, k, g"}, {"q": "forward, findall(X, fact(X), L).", "n": 1}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<ul style="padding-left:1.5rem">
+  <li>Το <code>and</code> είναι <code>xfy</code>, άρα το <code>b and c and d</code> είναι <code>and(b, and(c, d))</code>: «μία πρόταση και τα υπόλοιπα».</li>
+  <li>Γράψε ένα <code>rest_ok/1</code> που διατρέχει τα υπόλοιπα και ένα <code>ok1/1</code> για μία πρόταση: αληθής ή συμπέρασμα κανόνα <code>if Q then P</code> με <code>Q</code> που δεν είναι σύζευξη.</li>
+  <li>Με τη σωστή λύση η σειρά είναι <code>e, b, k, g</code>. Ο κώδικας των σημειώσεων χωρίς το (β) δίνει <code>b, e, g, k</code>.</li>
+</ul>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% 2022Α: εμπρόσθια συλλογιστική, ένα συμπέρασμα τη φορά</span>
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">700</span>, xfx, then).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">200</span>, xfy, and).
+<span class="kw">:-</span> <span class="fn">dynamic</span>(fact/<span class="nm">1</span>).
+
+if a and b then e.
+if a then b.
+if b and c and d then f.
+if e and b and g then k.
+if b then g.
+<span class="fn">fact</span>(a).
+
+<span class="cm">% ο κώδικας των σημειώσεων, με το holds/1 στη θέση του composed_fact/1</span>
+forward <span class="kw">:-</span> <span class="fn">new_derived_fact</span>(P), !, <span class="fn">write</span>(<span class="str">'Derived: '</span>), <span class="fn">writeln</span>(P), <span class="fn">assert</span>(<span class="fn">fact</span>(P)), forward.
+forward <span class="kw">:-</span> <span class="fn">writeln</span>(<span class="str">'No more facts'</span>).
+
+<span class="fn">new_derived_fact</span>(Concl) <span class="kw">:-</span> if Cond then Concl, <span class="op">\+</span> <span class="fn">fact</span>(Concl), <span class="fn">holds</span>(Cond).
+
+<span class="cm">% (α) όλη η προϋπόθεση είναι αληθής</span>
+<span class="fn">holds</span>(Cond) <span class="kw">:-</span> <span class="fn">composed_fact</span>(Cond).
+<span class="cm">% (β) σύζευξη: η πρώτη αληθής, καθεμία από τις υπόλοιπες αληθής</span>
+<span class="cm">%     ή συμπέρασμα κανόνα με μία μόνο πρόταση που είναι αληθής</span>
+<span class="fn">holds</span>(First and Rest) <span class="kw">:-</span> <span class="fill"><span class="fn">fact</span>(First), <span class="fn">rest_ok</span>(Rest)</span>.
+
+<span class="fn">composed_fact</span>(P and Rest) <span class="kw">:-</span> !, <span class="fn">fact</span>(P), <span class="fn">composed_fact</span>(Rest).
+<span class="fn">composed_fact</span>(P) <span class="kw">:-</span> <span class="fn">fact</span>(P).
+
+<span class="fill"><span class="fn">rest_ok</span>(P and Rest) <span class="kw">:-</span> !, <span class="fn">ok1</span>(P), <span class="fn">rest_ok</span>(Rest).</span>
+<span class="fill"><span class="fn">rest_ok</span>(P) <span class="kw">:-</span> <span class="fn">ok1</span>(P).</span>
+<span class="fill"><span class="fn">ok1</span>(P) <span class="kw">:-</span> <span class="fn">fact</span>(P).</span>
+<span class="fill"><span class="fn">ok1</span>(P) <span class="kw">:-</span> if Q then P, Q <span class="op">\=</span> (_ and _), <span class="fn">fact</span>(Q).</span></code></div>
+</div></details>
+  <h3>2018Α: εμπρόσθια χωρίς assert/1</h3>
+  <p>Τα γνωστά γεγονότα ταξιδεύουν σε μια λίστα-συσσωρευτή. Κάθε νέο συμπέρασμα μπαίνει μπροστά στη λίστα και η αναδρομή συνεχίζει.</p>
+<div class="plx" data-id="kr_fwd2" data-query="run(All)." data-title="2018Α: εμπρόσθια συλλογιστική χωρίς assert">
+<script type="text/plain" class="plx-src">
+% 2018Α (β): εμπρόσθια συλλογιστική χωρίς assert/1
+% τα γνωστά γεγονότα ταξιδεύουν σε μια λίστα (συσσωρευτής)
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+
+if hall_wet and bathroom_dry then problem_in_kitchen.
+if window_closed or no_rain then no_water_from_outside.
+if problem_in_kitchen and no_water_from_outside then leak_in_kitchen.
+initial([hall_wet, bathroom_dry, window_closed]).
+
+run(All) :- initial(Facts), forward(Facts, All).
+
+forward(Known, All) :-
+    new_fact(Known, P), !,
+    write('Derived: '), writeln(P),
+    forward([P|Known], All).
+forward(Known, Known) :- writeln('No more facts').
+
+new_fact(Known, Concl) :- if Cond then Concl, \+ member(Concl, Known), holds(Cond, Known).
+
+holds(P, Known) :- member(P, Known).
+holds(P1 and P2, Known) :- holds(P1, Known), holds(P2, Known).
+holds(P1 or P2, Known) :- holds(P1, Known) ; holds(P2, Known).
+
+% Δοκίμασε:  run(All).
+</script>
+</div>
+<div class="compare-grid">
+  <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">Καλύτερο</h4>
+  <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+    <li>Χωρίς παρενέργειες: η βάση δεν αλλάζει, η ερώτηση ξανατρέχει με το ίδιο αποτέλεσμα.</li>
+    <li>Μπορείς να ξεκινήσεις από διαφορετικά αρχικά γεγονότα χωρίς <code>retract</code>.</li>
+    <li>Παίζει σωστά με την οπισθοδρόμηση.</li>
+  </ul></div>
+  <div class="compare-cell good" style="border-color:var(--orange)"><h4 style="color:var(--orange);margin-top:0">Χειρότερο</h4>
+  <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.7">
+    <li>Η λίστα γεγονότων περνάει παντού ως όρισμα.</li>
+    <li>Το <code>member/2</code> ψάχνει γραμμικά, ενώ τα γεγονότα της βάσης έχουν ευρετήριο.</li>
+    <li>Τα συμπεράσματα δεν μένουν διαθέσιμα σε επόμενες ερωτήσεις.</li>
+  </ul></div>
+</div>
+  <div class="section-quiz" data-topic="exam_t4" data-section="forward"></div>
 </section>
 
-<!-- ============ SOLVED ============ -->
-<section id="solved">
-  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">📂</div><h2>Λυμένα Παλιά Θέματα</h2></div>
+<section id="nets">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🕸️</div><h2>Σημασιολογικά δίκτυα: fact/1, certainty/4, value/4</h2></div>
 
-  <div class="exam"><div class="hd">🧭 Πώς να «επιτεθείς» στο Θέμα 4 (ήρεμα, 4 βήματα)</div>
-    <ol style="margin:6px 0">
-      <li><strong>Διάγνωση μορφής:</strong> βλέπεις <code>isa</code> / γράφο / «βεβαιότητα»; → <strong>σημασιολογικό δίκτυο</strong> (εύκολο). Βλέπεις <code>if … then …</code>; → <strong>forward engine</strong> (δύσκολο).</li>
-      <li><strong>Γράψε τα γεγονότα</strong> — κάθε σχέση/ακμή = ένα γεγονός. Σίγουρες μονάδες.</li>
-      <li><strong>Γράψε τον αναδρομικό κανόνα</strong>: «άμεσο» + «μέσω isa» (ή «forward + κανόνας»).</li>
-      <li><strong>Σχολίασε τα πάντα.</strong> Σωστή ιδέα = μονάδες, ακόμη κι αν το σύνταγμα δεν είναι τέλειο.</li>
-    </ol>
-  </div>
+  <p class="lead">Ένα σημασιολογικό δίκτυο είναι γράφος: κόμβοι οι οντότητες, ακμές οι σχέσεις με ετικέτα. Στην Prolog <strong>κάθε ακμή είναι ένα γεγονός</strong> και η νέα γνώση παράγεται με <strong>κληρονομικότητα</strong> μέσω των ακμών <code>isa</code>.</p>
+<ul class="kr-tree">
+ <li><span class="kr-node">animal</span>
+  <ul>
+   <li><span class="kr-isa">isa</span><span class="kr-node">bird</span><span class="kr-attr">active_at: daylight</span><span class="kr-attr">moving_method: fly</span>
+    <ul>
+     <li><span class="kr-isa">isa</span><span class="kr-node">albatross</span><span class="kr-attr">colour: black_and_white</span>
+      <ul>
+       <li><span class="kr-isa">isa</span><span class="kr-node inst">albert</span></li>
+       <li><span class="kr-isa">isa</span><span class="kr-node inst">ross</span></li>
+      </ul></li>
+     <li><span class="kr-isa">isa</span><span class="kr-node">kiwi</span><span class="kr-attr">active_at: night</span><span class="kr-attr">moving_method: walk</span><span class="kr-attr">colour: brown</span>
+      <ul>
+       <li><span class="kr-isa">isa</span><span class="kr-node inst">kim</span></li>
+      </ul></li>
+    </ul></li>
+  </ul></li>
+</ul>
+<div class="kr-legend">Κυανό περίγραμμα: κλάσεις · μωβ: στιγμιότυπα · διακεκομμένα: ιδιότητες (μία ακμή του δικτύου = ένα γεγονός)</div>
+  <h3>Ο συμπερασμός των σημειώσεων</h3>
+  <p>Η στοιχειώδης προσέγγιση γράφει έναν κανόνα ανά ιδιότητα (<code>moving_method(X, M) :- isa(X, S), moving_method(S, M).</code>). Η γενικευμένη χρησιμοποιεί το <code>=..</code> για να δουλέψει για κάθε σχέση:</p>
+<div class="plx" data-id="kr_net" data-query="fact(moving_method(kim, M))." data-title="Σημασιολογικό δίκτυο των σημειώσεων: fact/1 με κληρονομικότητα">
+<script type="text/plain" class="plx-src">
+% Σημασιολογικό δίκτυο (σημειώσεις): κάθε ακμή είναι ένα γεγονός
+isa(bird, animal).
+isa(albatross, bird).
+isa(albert, albatross).
+isa(ross, albatross).
+isa(kiwi, bird).
+isa(kim, kiwi).
+active_at(bird, daylight).
+active_at(kiwi, night).
+moving_method(bird, fly).
+moving_method(kiwi, walk).
+colour(albatross, black_and_white).
+colour(kiwi, brown).
 
-  <!-- 2021 A certainty/4 -->
-  <div class="solved">
-    <div class="solved-hd">📄 2021 Α — certainty/4 (σημασιολογικό δίκτυο + βεβαιότητες) ⭐ το πιο πιθανό</div>
-    <div class="solved-body">
-      <p>Δίνονται γεγονότα <code>isa(Ειδ, Γεν, C)</code> και ιδιότητες <code>σχέση(Οντ, Τιμή, C)</code> με βαθμό βεβαιότητας <code>C∈[0,1]</code>. Στην κληρονομικότητα οι βεβαιότητες <strong>πολλαπλασιάζονται</strong> σε κάθε βήμα της ιεραρχίας. Ζητείται <code>certainty(Σχέση, Οντ, Τιμή, Βεβ)</code>.</p>
-      <p class="lead" style="font-size:0.92rem">Ζητούμενο: <code>?- certainty(moving_method, ross, Val, Cert).</code> → <code>Val=fly, Cert=0.72</code> &nbsp;(<code>0.72 = 0.9 × 1 × 0.8</code>).</p>
-      <details class="reveal" open><summary>Λύση (πλήρης &amp; σωστή)</summary><div class="reveal-body">
-      <div class="cb"><code><span class="cm">% --- τα δεδομένα γεγονότα ---</span>
+% συμπερασμός: η σχέση ισχύει άμεσα, αλλιώς κληρονομείται μέσω isa
+fact(Fact) :- call(Fact), !.
+fact(Fact) :-
+    Fact =.. [Rel, Arg1, Arg2],
+    isa(Arg1, SuperArg),
+    SuperFact =.. [Rel, SuperArg, Arg2],
+    fact(SuperFact).
+
+% Δοκίμασε:  fact(moving_method(kim, M)).   fact(moving_method(albert, M)).   fact(colour(ross, C)).
+</script>
+</div>
+  <p style="font-size:0.9rem;color:var(--muted)">Το <code>!</code> της πρώτης πρότασης σταματά την αναζήτηση όταν η ιδιότητα δηλώνεται άμεσα. Έτσι το <code>kiwi</code> κρατά το <code>walk</code> και δεν κληρονομεί το <code>fly</code>.</p>
+  <h3>2021Α: certainty/4</h3>
+  <p>Κάθε ακμή έχει τρίτο όρισμα, τη βεβαιότητα. Στην κληρονομικότητα οι βεβαιότητες πολλαπλασιάζονται: <code>moving_method</code> του <code>ross</code> = <code>fly</code> με 0.9 × 1 × 0.8 = 0.72.</p>
+<div class="plx" data-id="kr_cert" data-query="certainty(moving_method, ross, Val, Cert)." data-title="2021Α: certainty/4">
+<script type="text/plain" class="plx-src">
+% 2021Α: σημασιολογικό δίκτυο με βαθμούς βεβαιότητας
 isa(albatross, bird, 1).
 isa(ross, albatross, 0.9).
 active_at(bird, daylight, 0.75).
 moving_method(bird, fly, 0.8).
 colour(albatross, black_and_white, 0.95).
 
-<span class="cm">% (1) ΑΜΕΣΗ συσχέτιση: δηλώνεται κατευθείαν για την οντότητα</span>
-certainty(Rel, Ent, Val, Cert) :-
-    <span class="fill">Goal =.. [Rel, Ent, Val, Cert], call(Goal)</span>.
+% certainty(RelName, EntName, Val, Cert)
+certainty(Rel, Ent, Val, Cert) :- ..................
+certainty(Rel, Ent, Val, Cert) :- ..................
+</script>
+<script type="text/plain" class="plx-ref">
+% 2021Α: σημασιολογικό δίκτυο με βαθμούς βεβαιότητας
+isa(albatross, bird, 1).
+isa(ross, albatross, 0.9).
+active_at(bird, daylight, 0.75).
+moving_method(bird, fly, 0.8).
+colour(albatross, black_and_white, 0.95).
 
-<span class="cm">% (2) ΚΛΗΡΟΝΟΜΙΚΟΤΗΤΑ: Ent isa Super με βεβ. C1,</span>
-<span class="cm">%     η Super έχει την ιδιότητα με βεβ. C2  →  Cert = C1*C2</span>
-certainty(Rel, Ent, Val, Cert) :-
-    <span class="fill">isa(Ent, Super, C1),
-    certainty(Rel, Super, Val, C2),
-    Cert is C1 * C2</span>.</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>Πρόταση (1):</strong> χτίζει δυναμικά τον στόχο <code>moving_method(ross, Val, Cert)</code> με <code>=..</code> και τον τρέχει. Αν υπάρχει άμεσο γεγονός, τέλος.</li>
-          <li><strong>Πρόταση (2) — το κλειδί:</strong> «ανέβα ένα σκαλί <code>isa</code> (κρατώντας τη βεβαιότητα <code>C1</code>), βρες την ιδιότητα στον γονιό (<code>C2</code>), πολλαπλασίασε».</li>
-          <li><strong>Παρακολούθησε το <code>ross</code>:</strong> <code>ross→albatross</code> (0.9) · <code>albatross→bird</code> (1) · <code>moving_method(bird,fly,0.8)</code>. Πολλαπλασιασμός: <code>0.9 × 1 × 0.8 = 0.72</code>. ✓</li>
-          <li><strong>Γιατί αναδρομή;</strong> Η ιεραρχία μπορεί να έχει πολλά επίπεδα — η αναδρομή τα διασχίζει αυτόματα, πολλαπλασιάζοντας βήμα-βήμα.</li>
-        </ul>
-      </div>
-      </div></details>
-    </div>
-  </div>
+% certainty(RelName, EntName, Val, Cert)
+% άμεση συσχέτιση
+certainty(Rel, Ent, Val, Cert) :- Goal =.. [Rel, Ent, Val, Cert], call(Goal).
+% κληρονομικότητα: γινόμενο των βεβαιοτήτων
+certainty(Rel, Ent, Val, Cert) :- isa(Ent, Super, C1), certainty(Rel, Super, Val, C2), Cert is C1 * C2.
+</script>
+<script type="application/json" class="plx-tests">[{"q": "certainty(moving_method, ross, Val, Cert).", "n": 5}, {"q": "certainty(colour, ross, Val, Cert).", "n": 5}, {"q": "certainty(active_at, albatross, Val, Cert).", "n": 5}, {"q": "certainty(colour, bird, Val, Cert).", "n": 5}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Δύο προτάσεις, όπως στο <code>fact/1</code>: άμεση (χτίσε τον στόχο με <code>=..</code>, τώρα με τέσσερα ορίσματα) και μέσω <code>isa(Ent, Super, C1)</code>, με αναδρομή στον <code>Super</code> και πολλαπλασιασμό.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% 2021Α: σημασιολογικό δίκτυο με βαθμούς βεβαιότητας</span>
+<span class="fn">isa</span>(albatross, bird, <span class="nm">1</span>).
+<span class="fn">isa</span>(ross, albatross, <span class="nm">0.9</span>).
+<span class="fn">active_at</span>(bird, daylight, <span class="nm">0.75</span>).
+<span class="fn">moving_method</span>(bird, fly, <span class="nm">0.8</span>).
+<span class="fn">colour</span>(albatross, black_and_white, <span class="nm">0.95</span>).
 
-  <!-- 2022 B semantic net diagram -->
-  <div class="solved">
-    <div class="solved-hd">📄 2022 Β — σχήμα δικτύου → Prolog (ονομασία + υλοποίηση)</div>
-    <div class="solved-body">
-      <p>Δίνεται <strong>σχήμα</strong> ενός δικτύου. Ζητείται: (α) δώσε ονόματα στους κόμβους/ακμές, (β) ποια μεθοδολογία είναι, (γ) γράψε Prolog που υλοποιεί τη γνώση του σχήματος.</p>
-      <details class="reveal"><summary>Λύση (μοτίβο — προσαρμόζεις στο δικό σου σχήμα)</summary><div class="reveal-body">
-      <p><strong>(β) Μεθοδολογία:</strong> «<strong>Σημασιολογικά δίκτυα</strong> (semantic networks)»: κόμβοι = οντότητες/κλάσεις, ακμές = σχέσεις με ετικέτα· οι σχέσεις <code>isa</code> ορίζουν ιεραρχία και υπάρχει <strong>κληρονομικότητα ιδιοτήτων</strong>.</p>
-      <p><strong>(α)+(γ)</strong> Κάθε ακμή του σχήματος γίνεται ένα γεγονός· πρόσθεσε κανόνα κληρονομικότητας:</p>
-      <div class="cb"><code><span class="cm">% κάθε ακμή του σχήματος = ένα γεγονός (ονομάζεις κόμβους όπως θες)</span>
-isa(sparrow, bird).
-isa(bird, animal).
-isa(penguin, bird).
+<span class="cm">% certainty(RelName, EntName, Val, Cert)</span>
+<span class="cm">% άμεση συσχέτιση</span>
+<span class="fn">certainty</span>(Rel, Ent, Val, Cert) <span class="kw">:-</span> <span class="fill">Goal <span class="op">=..</span> [Rel, Ent, Val, Cert], <span class="fn">call</span>(Goal)</span>.
+<span class="cm">% κληρονομικότητα: γινόμενο των βεβαιοτήτων</span>
+<span class="fn">certainty</span>(Rel, Ent, Val, Cert) <span class="kw">:-</span> <span class="fill"><span class="fn">isa</span>(Ent, Super, C1), <span class="fn">certainty</span>(Rel, Super, Val, C2), Cert <span class="op">is</span> C1 * C2</span>.</code></div><div class="note"><div class="hd">📝 Γιατί η Prolog τυπώνει 0.7200000000000001</div>
+<p style="margin:4px 0">Το 0.9 × 0.8 σε αριθμούς κινητής υποδιαστολής δεν βγαίνει ακριβώς 0.72. Η εκφώνηση γράφει 0.72· στο γραπτό αυτό είναι σωστή απάντηση. Η σειρά του πολλαπλασιασμού δεν αλλάζει το νόημα.</p></div>
+</div></details>
+  <h3>2021Β: value/4 με μονοπάτι συμπερασμού</h3>
+  <p>Η εκφώνηση ζητά να αποφασίσεις πώς αναπαριστάται το μονοπάτι. Εδώ: λίστα με τα γεγονότα που χρησιμοποιήθηκαν, από την οντότητα προς τα πάνω. Αυτή είναι η απάντηση «πώς» για τα δίκτυα.</p>
+<div class="plx" data-id="kr_path" data-query="value(moving_method, ross, Val, Path)." data-title="2021Β: value/4 με μονοπάτι συμπερασμού">
+<script type="text/plain" class="plx-src">
+% 2021Β: τιμή συσχέτισης και μονοπάτι συμπερασμού («πώς»)
+isa(albatross, bird).
+isa(ross, albatross).
+active_at(bird, daylight).
 moving_method(bird, fly).
-moving_method(penguin, swim).   <span class="cm">% εξαίρεση: ο πιγκουίνος κολυμπάει</span>
-has(animal, skin).
+colour(albatross, black_and_white).
 
-<span class="cm">% κληρονομικότητα: ισχύει άμεσα Ή μέσω isa</span>
-prop(Rel, E, V) :- Goal =.. [Rel, E, V], call(Goal).
-prop(Rel, E, V) :- isa(E, Sup), prop(Rel, Sup, V).
+% Path = λίστα με τα γεγονότα που χρησιμοποιήθηκαν, από την οντότητα προς τα πάνω
+% π.χ. [isa(ross,albatross), isa(albatross,bird), moving_method(bird,fly)]
+value(Rel, Ent, Val, ..........) :- ..................
+value(Rel, Ent, Val, ..........) :- ..................
+</script>
+<script type="text/plain" class="plx-ref">
+% 2021Β: τιμή συσχέτισης και μονοπάτι συμπερασμού («πώς»)
+isa(albatross, bird).
+isa(ross, albatross).
+active_at(bird, daylight).
+moving_method(bird, fly).
+colour(albatross, black_and_white).
 
-<span class="cm">% ?- prop(moving_method, sparrow, M).   →  M = fly</span>
-<span class="cm">% ?- prop(has, sparrow, X).             →  X = skin (κληρονομιά)</span></code></div>
-      <div class="note"><div class="hd">📖 Το μυστικό</div>
-        <p style="margin:4px 0">Είναι <strong>ακριβώς το ίδιο template</strong> με το 2021Α, χωρίς τις βεβαιότητες. Αν θυμάσαι το ένα, ξέρεις και το άλλο. Πες ρητά τη λέξη «<strong>σημασιολογικά δίκτυα</strong>» και «<strong>κληρονομικότητα</strong>» — δίνουν μονάδες.</p>
-      </div>
-      </div></details>
-    </div>
-  </div>
+% Path = λίστα με τα γεγονότα που χρησιμοποιήθηκαν, από την οντότητα προς τα πάνω
+% π.χ. [isa(ross,albatross), isa(albatross,bird), moving_method(bird,fly)]
+% άμεσα: το μονοπάτι είναι μόνο το γεγονός
+value(Rel, Ent, Val, [Fact]) :- Fact =.. [Rel, Ent, Val], call(Fact).
+% μέσω isa: το isa μπαίνει μπροστά στο μονοπάτι του γονιού
+value(Rel, Ent, Val, [isa(Ent, Super)|Path]) :- isa(Ent, Super), value(Rel, Super, Val, Path).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "value(moving_method, ross, Val, Path).", "n": 5}, {"q": "value(colour, ross, Val, Path).", "n": 5}, {"q": "value(active_at, bird, Val, Path).", "n": 5}, {"q": "value(colour, bird, Val, Path).", "n": 5}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Άμεσα, το μονοπάτι είναι <code>[Fact]</code>. Μέσω <code>isa</code>, το μονοπάτι είναι το <code>isa(Ent, Super)</code> μπροστά από το μονοπάτι του <code>Super</code>.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% 2021Β: τιμή συσχέτισης και μονοπάτι συμπερασμού («πώς»)</span>
+<span class="fn">isa</span>(albatross, bird).
+<span class="fn">isa</span>(ross, albatross).
+<span class="fn">active_at</span>(bird, daylight).
+<span class="fn">moving_method</span>(bird, fly).
+<span class="fn">colour</span>(albatross, black_and_white).
 
-  <!-- 2022 A forward engine -->
-  <div class="solved">
-    <div class="solved-hd">📄 2022 Α — μηχανή συμπερασμού forward (η δύσκολη)</div>
-    <div class="solved-body">
-      <p>if-then κανόνες με τελεστή <code>and</code> (xfy). Φτιάξε μηχανή που παράγει ένα συμπέρασμα τη φορά με εμπρόσθια αλυσίδωση (πρώτη πρόταση αληθής + οι υπόλοιπες αληθείς ή συμπεράσματα κανόνα-ενός-βήματος).</p>
-      <details class="reveal"><summary>Λύση αναφοράς (δες &amp; την ενότητα «Μηχανή Συμπερασμού» πιο πάνω)</summary><div class="reveal-body">
-      <div class="cb"><code><span class="op">:-</span> op(960, fx, if).  <span class="op">:-</span> op(950, xfx, then).  <span class="op">:-</span> op(940, xfy, and).
+<span class="cm">% Path = λίστα με τα γεγονότα που χρησιμοποιήθηκαν, από την οντότητα προς τα πάνω</span>
+<span class="cm">% π.χ. [isa(ross,albatross), isa(albatross,bird), moving_method(bird,fly)]</span>
+<span class="cm">% άμεσα: το μονοπάτι είναι μόνο το γεγονός</span>
+<span class="fn">value</span>(Rel, Ent, Val, <span class="fill">[Fact]</span>) <span class="kw">:-</span> <span class="fill">Fact <span class="op">=..</span> [Rel, Ent, Val], <span class="fn">call</span>(Fact)</span>.
+<span class="cm">% μέσω isa: το isa μπαίνει μπροστά στο μονοπάτι του γονιού</span>
+<span class="fn">value</span>(Rel, Ent, Val, <span class="fill">[<span class="fn">isa</span>(Ent, Super)|Path]</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">isa</span>(Ent, Super), <span class="fn">value</span>(Rel, Super, Val, Path)</span>.</code></div>
+</div></details>
+  <div class="exam"><div class="hd">🎯 2022Β / 2018Β: «δώσε ονόματα στο σχήμα» ή «φτιάξε δικό σου δίκτυο»</div>
+  <ol style="padding-left:1.5rem;margin:4px 0;line-height:1.7">
+    <li>Ονόμασε τη μεθοδολογία: <strong>σημασιολογικά δίκτυα</strong>, με ιεραρχία <code>isa</code> και κληρονομικότητα ιδιοτήτων.</li>
+    <li>Αιτιολόγησε: η γνώση είναι κυρίως <strong>σχέσεις ανάμεσα σε οντότητες</strong> και ταξινόμηση σε κλάσεις.</li>
+    <li>Γράψε ένα γεγονός για κάθε ακμή (<code>isa(…)</code> και <code>σχέση(οντότητα, τιμή)</code>).</li>
+    <li>Πρόσθεσε το <code>fact/1</code> των σημειώσεων και δύο ερωτήσεις παράδειγμα.</li>
+  </ol></div>
 
-fact(a).
-if a and b then e.
-if a then b.
-
-forward(Concl) :- (if Cond then Concl), cond_holds(Cond).
-
-cond_holds(First and Rest) :- <span class="op">!</span>, known(First), rest_holds(Rest).
-cond_holds(Single)         :- known(Single).
-
-rest_holds(P and Rest) :- <span class="op">!</span>, one_of(P), rest_holds(Rest).
-rest_holds(P)          :- one_of(P).
-
-known(P) :- fact(P).
-one_of(P) :- known(P).
-one_of(P) :- (if Q then P), Q <span class="op">\=</span> (_ and _), known(Q).</code></div>
-      <div class="warn"><div class="hd">🎯 Ρεαλιστικός στόχος: μερική βαθμολογία</div>
-        <p style="margin:4px 0">Αν δεν βγάλεις όλη τη μηχανή, <strong>σίγουρες μονάδες</strong> παίρνεις γράφοντας: (1) τις τρεις δηλώσεις <code>op/3</code>, (2) το <code>forward(C) :- (if Cond then C), …</code> που <em>διαλέγει κανόνα</em>, (3) τον χειρισμό της σύζευξης <code>First and Rest</code>. Σχολίασε τη λογική.</p>
-      </div>
-      </div></details>
-    </div>
-  </div>
+  <div class="section-quiz" data-topic="exam_t4" data-section="nets"></div>
 </section>
 
-<!-- ============ PARTIAL ============ -->
+<section id="frames">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🖼️</div><h2>Πλαίσια: σημειώσεις και άλλη αναπαράσταση</h2></div>
+
+  <p class="lead">Ένα πλαίσιο συγκεντρώνει <strong>όλη τη γνώση για μια οντότητα</strong> σε μια δομή με σχισμές (slots). Οι σχισμές <code>a_kind_of</code> (κλάση → υπερκλάση) και <code>instance_of</code> (στιγμιότυπο → κλάση) φτιάχνουν ιεραρχία, όπως τα <code>isa</code> στα δίκτυα. Η τιμή μιας σχισμής μπορεί να είναι απλή, αναφορά σε άλλο πλαίσιο, διαδικασία υπολογισμού ή απροσδιόριστη.</p>
+<div class="cb"><code><span class="cm">% σημειώσεις: ένα κατηγόρημα για κάθε πλαίσιο, ένα γεγονός για κάθε σχισμή</span>
+<span class="fn">bird</span>(a_kind_of, animal).
+<span class="fn">bird</span>(moving_method, fly).
+<span class="fn">albatross</span>(a_kind_of, bird).
+<span class="fn">albatross</span>(size, <span class="nm">115</span>).
+<span class="fn">albert</span>(instance_of, albatross).
+<span class="fn">albert</span>(size, <span class="nm">120</span>).
+
+<span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span>
+    Query <span class="op">=..</span> [Frame, Slot, Value],
+    <span class="fn">call</span>(Query), !.
+<span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span>
+    <span class="fn">parent</span>(Frame, ParentFrame),
+    <span class="fn">value</span>(ParentFrame, Slot, Value).
+
+<span class="fn">parent</span>(Frame, ParentFrame) <span class="kw">:-</span>
+    (Query <span class="op">=..</span> [Frame, a_kind_of, ParentFrame] ;
+     Query <span class="op">=..</span> [Frame, instance_of, ParentFrame]),
+    <span class="fn">call</span>(Query).</code></div>
+  <p style="font-size:0.9rem;color:var(--muted)">Οι σημειώσεις επεκτείνουν το <code>value</code> σε <code>value/4</code> με <code>process/3</code>, ώστε σχισμές όπως η <code>relative_size</code> να υπολογίζονται με <code>execute(Goal, Frame, Value)</code>. Οι εκφωνήσεις 2016Α και 2020Α δηλώνουν ότι αυτή η περίπτωση δεν χρειάζεται.</p>
+  <h3>2020Α / 2016Α: διαφορετική αναπαράσταση και ο συμπερασμός της</h3>
+  <p>Μια φυσική εναλλακτική: <strong>ένα γεγονός ανά πλαίσιο</strong>, <code>frame(Όνομα, [Σχισμή-Τιμή, …])</code>. Άλλη εξίσου δεκτή: τριάδες <code>slot(Πλαίσιο, Σχισμή, Τιμή)</code>.</p>
+<div class="plx" data-id="kr_frames" data-query="value(albert, active_at, T)." data-title="2020Α / 2016Α: πλαίσια ως frame(Όνομα, Σχισμές)">
+<script type="text/plain" class="plx-src">
+% 2020Α / 2016Α: πλαίσια με άλλη αναπαράσταση
+% frame(Όνομα, [Σχισμή-Τιμή, ...])
+frame(bird, [a_kind_of-animal, moving_method-fly, active_at-daylight]).
+frame(albatross, [a_kind_of-bird, colour-black_and_white, size-115]).
+frame(kiwi, [a_kind_of-bird, moving_method-walk, active_at-night, colour-brown, size-40]).
+frame(albert, [instance_of-albatross, size-120]).
+frame(ross, [instance_of-albatross, size-40]).
+
+% value(Frame, Slot, Value): τοπική τιμή αν υπάρχει, αλλιώς από τον γονιό
+value(Frame, Slot, Value) :- ..................
+value(Frame, Slot, Value) :- ..................
+
+parent(Frame, Parent) :- ..................
+</script>
+<script type="text/plain" class="plx-ref">
+% 2020Α / 2016Α: πλαίσια με άλλη αναπαράσταση
+% frame(Όνομα, [Σχισμή-Τιμή, ...])
+frame(bird, [a_kind_of-animal, moving_method-fly, active_at-daylight]).
+frame(albatross, [a_kind_of-bird, colour-black_and_white, size-115]).
+frame(kiwi, [a_kind_of-bird, moving_method-walk, active_at-night, colour-brown, size-40]).
+frame(albert, [instance_of-albatross, size-120]).
+frame(ross, [instance_of-albatross, size-40]).
+
+% value(Frame, Slot, Value): τοπική τιμή αν υπάρχει, αλλιώς από τον γονιό
+value(Frame, Slot, Value) :- frame(Frame, Slots), member(Slot-Value, Slots), !.
+value(Frame, Slot, Value) :- parent(Frame, Parent), value(Parent, Slot, Value).
+
+parent(Frame, Parent) :- frame(Frame, Slots), ( member(a_kind_of-Parent, Slots) ; member(instance_of-Parent, Slots) ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "value(albert, active_at, T).", "n": 5}, {"q": "value(kiwi, active_at, T).", "n": 5}, {"q": "value(ross, size, S).", "n": 5}, {"q": "value(ross, moving_method, M).", "n": 5}, {"q": "value(albert, colour, C).", "n": 5}, {"q": "value(kiwi, a_kind_of, P).", "n": 5}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Ίδια δομή με τις σημειώσεις: το <code>=..</code> και το <code>call</code> αντικαθίστανται από <code>frame(Frame, Slots), member(Slot-Value, Slots)</code>. Μην ξεχάσεις το <code>!</code>, για να μην κληρονομείται τιμή που υπάρχει τοπικά.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% 2020Α / 2016Α: πλαίσια με άλλη αναπαράσταση</span>
+<span class="cm">% frame(Όνομα, [Σχισμή-Τιμή, ...])</span>
+<span class="fn">frame</span>(bird, [a_kind_of-animal, moving_method-fly, active_at-daylight]).
+<span class="fn">frame</span>(albatross, [a_kind_of-bird, colour-black_and_white, size-<span class="nm">115</span>]).
+<span class="fn">frame</span>(kiwi, [a_kind_of-bird, moving_method-walk, active_at-night, colour-brown, size-<span class="nm">40</span>]).
+<span class="fn">frame</span>(albert, [instance_of-albatross, size-<span class="nm">120</span>]).
+<span class="fn">frame</span>(ross, [instance_of-albatross, size-<span class="nm">40</span>]).
+
+<span class="cm">% value(Frame, Slot, Value): τοπική τιμή αν υπάρχει, αλλιώς από τον γονιό</span>
+<span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span> <span class="fill"><span class="fn">frame</span>(Frame, Slots), <span class="fn">member</span>(Slot-Value, Slots), !</span>.
+<span class="fn">value</span>(Frame, Slot, Value) <span class="kw">:-</span> <span class="fill"><span class="fn">parent</span>(Frame, Parent), <span class="fn">value</span>(Parent, Slot, Value)</span>.
+
+<span class="fn">parent</span>(Frame, Parent) <span class="kw">:-</span> <span class="fill"><span class="fn">frame</span>(Frame, Slots), ( <span class="fn">member</span>(a_kind_of-Parent, Slots) ; <span class="fn">member</span>(instance_of-Parent, Slots) )</span>.</code></div>
+</div></details>
+  <div class="tip-box"><div class="hd">💡 2019Β: δίκτυα ↔ πλαίσια</div>
+  <p style="margin:4px 0"><strong>Ομοιότητες:</strong> και τα δύο οργανώνουν οντότητες σε ιεραρχία (<code>isa</code> ή <code>a_kind_of</code>/<code>instance_of</code>) και παράγουν γνώση με κληρονομικότητα. <strong>Επιλογή:</strong> δίκτυα όταν η γνώση είναι κυρίως σχέσεις ανάμεσα σε οντότητες· πλαίσια όταν κάθε οντότητα έχει πολλά χαρακτηριστικά, προκαθορισμένες τιμές ή τιμές που υπολογίζονται. <strong>Μετατροπή:</strong> η ακμή <code>rel(A, B)</code> γίνεται σχισμή <code>A(rel, B)</code> και αντίστροφα, με το <code>isa</code> να αντιστοιχεί στο <code>a_kind_of</code>.</p></div>
+
+  <div class="section-quiz" data-topic="exam_t4" data-section="frames"></div>
+</section>
+
+<section id="uncert">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🎲</div><h2>Αβεβαιότητα: certainty/2 (2020Β)</h2></div>
+
+  <p class="lead">Κάθε γεγονός και κάθε κανόνας έχει βαθμό βεβαιότητας 0 ≤ c ≤ 1. Οι σημειώσεις ορίζουν: <strong>c(P1 and P2) = min</strong>, <strong>c(P1 or P2) = max</strong>, και για <code>if P1 then P2 : c</code>, <strong>c(P2) = c(P1) · c</strong>. Στο παράδειγμα των σημειώσεων <code>certainty(leak_in_kitchen, C)</code> δίνει C = 0.8.</p>
+  <div class="note"><div class="hd">📝 «Αν το certainty αποτύχει, τι συμπεραίνεις;»</div>
+  <p style="margin:4px 0">Ότι η βάση γνώσης <strong>δεν έχει καμία πληροφορία</strong> για την πρόταση (ούτε <code>given</code> ούτε κανόνα που να την αποδεικνύει). Η αποτυχία <em>δεν</em> σημαίνει βεβαιότητα 0, δηλαδή «σίγουρα ψευδής». Αν θέλουμε να μην αποτυγχάνει, δίνουμε ρητά βεβαιότητα 0 σε ό,τι δεν τεκμηριώνεται.</p></div>
+<div class="plx" data-id="kr_unc" data-query="certainty(c19_drug_to_be_discovered, C)." data-title="2020Β: certainty/2 που δεν αποτυγχάνει ποτέ">
+<script type="text/plain" class="plx-src">
+% 2020Β: αβεβαιότητα (σημειώσεις) που δεν πρέπει να αποτυγχάνει ποτέ
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+
+given(hall_wet, 1).
+given(bathroom_dry, 1).
+given(kitchen_dry, 0).
+given(no_rain, 0.8).
+given(window_closed, 0).
+
+if hall_wet and bathroom_dry then problem_in_kitchen : 0.9.
+if kitchen_dry and hall_wet then leak_in_bathroom : 1.
+if window_closed or no_rain then no_water_from_outside : 1.
+if problem_in_kitchen and no_water_from_outside then leak_in_kitchen : 1.
+
+certainty(P, Cert) :- given(P, Cert).
+certainty(Cond1 and Cond2, Cert) :-
+    certainty(Cond1, Cert1), certainty(Cond2, Cert2), min(Cert1, Cert2, Cert).
+certainty(Cond1 or Cond2, Cert) :-
+    certainty(Cond1, Cert1), certainty(Cond2, Cert2), max(Cert1, Cert2, Cert).
+certainty(P, Cert) :-
+    if Cond then P : C1, certainty(Cond, C2), Cert is C1 * C2.
+% ΑΣΚΗΣΗ: πρόσθεσε μία πρόταση ώστε μια πρόταση χωρίς καμία πληροφορία
+% να παίρνει βεβαιότητα 0 (χωρίς να αλλάξουν οι υπόλοιπες απαντήσεις)
+..................
+
+min(X, Y, X) :- X =< Y, !.
+min(_, Y, Y).
+max(X, Y, X) :- X >= Y, !.
+max(_, Y, Y).
+</script>
+<script type="text/plain" class="plx-ref">
+% 2020Β: αβεβαιότητα (σημειώσεις) που δεν πρέπει να αποτυγχάνει ποτέ
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+
+given(hall_wet, 1).
+given(bathroom_dry, 1).
+given(kitchen_dry, 0).
+given(no_rain, 0.8).
+given(window_closed, 0).
+
+if hall_wet and bathroom_dry then problem_in_kitchen : 0.9.
+if kitchen_dry and hall_wet then leak_in_bathroom : 1.
+if window_closed or no_rain then no_water_from_outside : 1.
+if problem_in_kitchen and no_water_from_outside then leak_in_kitchen : 1.
+
+certainty(P, Cert) :- given(P, Cert).
+certainty(Cond1 and Cond2, Cert) :-
+    certainty(Cond1, Cert1), certainty(Cond2, Cert2), min(Cert1, Cert2, Cert).
+certainty(Cond1 or Cond2, Cert) :-
+    certainty(Cond1, Cert1), certainty(Cond2, Cert2), max(Cert1, Cert2, Cert).
+certainty(P, Cert) :-
+    if Cond then P : C1, certainty(Cond, C2), Cert is C1 * C2.
+% πρόταση χωρίς given και χωρίς κανόνα: βεβαιότητα 0
+certainty(P, 0) :- P \= (_ and _), P \= (_ or _), \+ given(P, _), \+ (if _ then P : _).
+
+min(X, Y, X) :- X =< Y, !.
+min(_, Y, Y).
+max(X, Y, X) :- X >= Y, !.
+max(_, Y, Y).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "certainty(leak_in_kitchen, C).", "n": 5}, {"q": "certainty(no_water_from_outside, C).", "n": 5}, {"q": "certainty(c19_drug_to_be_discovered, C).", "n": 5}, {"q": "certainty(hall_wet and c19_drug_to_be_discovered, C).", "n": 5}, {"q": "certainty(leak_in_bathroom, C).", "n": 5}]</script>
+</div>
+<details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+<p>Μία πρόταση στο τέλος του <code>certainty/2</code> για <strong>απλή</strong> πρόταση (όχι <code>and</code>/<code>or</code>) που δεν έχει ούτε <code>given</code> ούτε κανόνα. Οι σύνθετες δεν χρειάζονται τίποτα: αφού τα μέρη τους δεν αποτυγχάνουν πια, δεν αποτυγχάνουν ούτε αυτές.</p>
+</div></details><details class="reveal"><summary>✅ Λύση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% 2020Β: αβεβαιότητα (σημειώσεις) που δεν πρέπει να αποτυγχάνει ποτέ</span>
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">700</span>, xfx, then).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">300</span>, xfy, or).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">200</span>, xfy, and).
+
+<span class="fn">given</span>(hall_wet, <span class="nm">1</span>).
+<span class="fn">given</span>(bathroom_dry, <span class="nm">1</span>).
+<span class="fn">given</span>(kitchen_dry, <span class="nm">0</span>).
+<span class="fn">given</span>(no_rain, <span class="nm">0.8</span>).
+<span class="fn">given</span>(window_closed, <span class="nm">0</span>).
+
+if hall_wet and bathroom_dry then problem_in_kitchen : <span class="nm">0.9</span>.
+if kitchen_dry and hall_wet then leak_in_bathroom : <span class="nm">1</span>.
+if window_closed or no_rain then no_water_from_outside : <span class="nm">1</span>.
+if problem_in_kitchen and no_water_from_outside then leak_in_kitchen : <span class="nm">1</span>.
+
+<span class="fn">certainty</span>(P, Cert) <span class="kw">:-</span> <span class="fn">given</span>(P, Cert).
+<span class="fn">certainty</span>(Cond1 and Cond2, Cert) <span class="kw">:-</span>
+    <span class="fn">certainty</span>(Cond1, Cert1), <span class="fn">certainty</span>(Cond2, Cert2), <span class="fn">min</span>(Cert1, Cert2, Cert).
+<span class="fn">certainty</span>(Cond1 or Cond2, Cert) <span class="kw">:-</span>
+    <span class="fn">certainty</span>(Cond1, Cert1), <span class="fn">certainty</span>(Cond2, Cert2), <span class="fn">max</span>(Cert1, Cert2, Cert).
+<span class="fn">certainty</span>(P, Cert) <span class="kw">:-</span>
+    if Cond then P : C1, <span class="fn">certainty</span>(Cond, C2), Cert <span class="op">is</span> C1 * C2.
+<span class="cm">% πρόταση χωρίς given και χωρίς κανόνα: βεβαιότητα 0</span>
+<span class="fill"><span class="fn">certainty</span>(P, <span class="nm">0</span>) <span class="kw">:-</span> P <span class="op">\=</span> (_ and _), P <span class="op">\=</span> (_ or _), <span class="op">\+</span> <span class="fn">given</span>(P, _), <span class="op">\+</span> (if _ then P : _).</span>
+
+<span class="fn">min</span>(X, Y, X) <span class="kw">:-</span> X <span class="op">=&lt;</span> Y, !.
+<span class="fn">min</span>(_, Y, Y).
+<span class="fn">max</span>(X, Y, X) <span class="kw">:-</span> X <span class="op">&gt;=</span> Y, !.
+<span class="fn">max</span>(_, Y, Y).</code></div><p>Οι συνθήκες με <code>\+</code> κρατούν τη λύση «σωστή»: μια πρόταση που έχει <code>given</code> ή κανόνα δεν παίρνει επιπλέον την απάντηση 0.</p>
+</div></details>
+  <div class="section-quiz" data-topic="exam_t4" data-section="uncert"></div>
+</section>
+
+<section id="theory">
+  <div class="sh"><div class="sh-icon" style="background:var(--cdim)">💬</div><h2>Σύντομες απαντήσεις θεωρίας</h2></div>
+
+  <p class="lead">Οι ερωτήσεις θεωρίας του Θέματος 4 θέλουν 3 με 5 γραμμές. Πες την απάντηση φωναχτά πριν ανοίξεις την κάρτα.</p>
+<div class="qa-grid prose"><div class="qa-card"><div class="qq2">Σε τι αναφέρονται οι ερωτήσεις <strong>how</strong> και <strong>why</strong>;</div><details><summary>Απάντηση</summary><div><strong>How:</strong> πώς προέκυψε ένα συμπέρασμα (η αλυσίδα κανόνων και γεγονότων). <strong>Why:</strong> γιατί το σύστημα ζητά μια πληροφορία τη στιγμή που τη ζητά (ποιον στόχο εξυπηρετεί).</div></details></div><div class="qa-card"><div class="qq2">Πού δίνεται η έμφαση στα <strong>σημασιολογικά δίκτυα</strong> και ποιος μηχανισμός παράγει νέα γνώση;</div><details><summary>Απάντηση</summary><div>Στις <strong>σχέσεις</strong> ανάμεσα σε οντότητες (ακμές με ετικέτα) και στην ταξινόμησή τους. Νέα γνώση παράγει η <strong>κληρονομικότητα</strong> μέσω των ακμών isa.</div></details></div><div class="qa-card"><div class="qq2">Σε ποιες περιπτώσεις εξυπηρετούν τα <strong>πλαίσια</strong>;</div><details><summary>Απάντηση</summary><div>Όταν η γνώση οργανώνεται γύρω από <strong>αντικείμενα με πολλά χαρακτηριστικά</strong> (στερεότυπες καταστάσεις, κλάσεις και στιγμιότυπα), με προκαθορισμένες τιμές που κληρονομούνται και τιμές που υπολογίζονται με διαδικασίες. Μοιάζουν με την αντικειμενοστραφή προσέγγιση.</div></details></div><div class="qa-card"><div class="qq2">Οπίσθια ή εμπρόσθια συλλογιστική: πότε ποια;</div><details><summary>Απάντηση</summary><div>Οπίσθια (goal driven) όταν θέλεις να αποδείξεις κάτι συγκεκριμένο και δεν έχεις όλα τα δεδομένα. Εμπρόσθια (data driven) όταν έχεις τα δεδομένα και θέλεις ό,τι προκύπτει. Κριτήριο και το σχήμα του AND-OR γράφου (λίγοι ή πολλοί αρχικοί και τελικοί κόμβοι), και τι υποστηρίζει το κέλυφος.</div></details></div><div class="qa-card"><div class="qq2">Τι εννοούμε με <strong>αβεβαιότητα στη γνώση</strong>;</div><details><summary>Απάντηση</summary><div>Ότι γεγονότα και κανόνες δεν ισχύουν πάντα με βεβαιότητα. Τους δίνουμε βαθμό 0 ≤ c ≤ 1 και ορίζουμε πώς συνδυάζονται: min για and, max για or, γινόμενο κατά μήκος κανόνα.</div></details></div><div class="qa-card"><div class="qq2">Γιατί στις σημειώσεις οι κανόνες γράφονται ως <code>if … then …</code> και όχι ως προτάσεις Prolog;</div><details><summary>Απάντηση</summary><div>Για να είναι <strong>δεδομένα</strong> που διαβάζει ένας μετα-διερμηνέας. Έτσι αλλάζεις τη στρατηγική (εμπρόσθια/οπίσθια), προσθέτεις εξηγήσεις, ερωτήσεις στον χρήστη και βεβαιότητες χωρίς να αλλάξεις τη βάση γνώσης.</div></details></div><div class="qa-card"><div class="qq2">Στα πλαίσια, γιατί το <code>value/3</code> έχει <code>!</code> στην πρώτη πρόταση;</div><details><summary>Απάντηση</summary><div>Για να μην ψάξει στον γονιό όταν η σχισμή έχει τοπική τιμή. Έτσι η τοπική τιμή (π.χ. <code>kiwi</code>: <code>active_at</code> = night) υπερισχύει της κληρονομούμενης.</div></details></div><div class="qa-card"><div class="qq2">Ποιο πρόβλημα λύνει το <code>=..</code> στο <code>fact/1</code>;</div><details><summary>Απάντηση</summary><div>Χτίζει τον στόχο από το όνομα της σχέσης σε χρόνο εκτέλεσης. Με έναν κανόνα καλύπτεις κάθε σχέση, αντί να γράψεις έναν κανόνα κληρονομικότητας για κάθε ιδιότητα.</div></details></div></div>
+  <div class="section-quiz" data-topic="exam_t4" data-section="theory"></div>
+</section>
+
 <section id="partial">
   <div class="sh"><div class="sh-icon" style="background:var(--cdim)">🎯</div><h2>Στρατηγική μερικής βαθμολογίας</h2></div>
-  <div class="exam"><div class="hd">📚 Μάζεψε ό,τι μπορείς (15 μονάδες είναι αρκετές)</div>
-    <ul style="margin:6px 0">
-      <li><strong>Αν είναι σημασιολογικό δίκτυο:</strong> γράψε <em>όλα</em> τα γεγονότα (μία ακμή = ένα γεγονός) — αυτό μόνο πιάνει αρκετές μονάδες. Μετά πρόσθεσε τον κανόνα <code>isa</code>-κληρονομικότητας.</li>
-      <li><strong>Πες τη μεθοδολογία με όνομα:</strong> «σημασιολογικά δίκτυα», «κληρονομικότητα», «forward chaining». Οι λέξεις-κλειδιά βαθμολογούνται.</li>
-      <li><strong>Αν είναι forward engine:</strong> γράψε σίγουρα τους <code>op/3</code> τελεστές + το «διάλεξε κανόνα &amp; έλεγξε προϋπόθεση». Μην κολλήσεις στην τελειότητα.</li>
-      <li><strong>Σχολίασε κάθε πρόταση.</strong> Σωστή ιδέα → μονάδες ακόμη κι αν λείπει σύνταξη.</li>
-      <li>Μην ξοδέψεις &gt; 20΄ εδώ αν δεν το ξέρεις. Οι πιο σίγουρες μονάδες είναι στα <strong>Θέματα 3 &amp; 2</strong>.</li>
-    </ul>
+
+  <div class="compare-grid">
+    <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">Σίγουρες μονάδες</h4>
+    <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.8">
+      <li>Όνομα μεθοδολογίας και μηχανισμού: «σημασιολογικά δίκτυα», «κληρονομικότητα», «οπίσθια/εμπρόσθια συλλογιστική».</li>
+      <li>Τα γεγονότα: μία ακμή ή σχισμή = ένα γεγονός.</li>
+      <li>Οι δηλώσεις <code>op/3</code> όταν χρησιμοποιείς <code>if … then</code>.</li>
+      <li>Η δομή «άμεσα ή μέσω γονιού» σε κάθε κατηγόρημα συμπερασμού.</li>
+    </ul></div>
+    <div class="compare-cell good" style="border-color:var(--orange)"><h4 style="color:var(--orange);margin-top:0">Διαχείριση χρόνου</h4>
+    <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.8">
+      <li>Το Θέμα 4 αξίζει περίπου 24 λεπτά (20 στις 100 μονάδες, 120 λεπτά).</li>
+      <li>Γράψε πρώτα την ερώτηση θεωρίας: 5 μονάδες σε 4 λεπτά.</li>
+      <li>Αν κολλήσεις στον κώδικα, γράψε σχόλια με τη λογική κάθε πρότασης και προχώρα.</li>
+    </ul></div>
   </div>
-  <p style="text-align:center;margin-top:18px"><a class="chip" href="exam_cheatsheet.html" style="text-decoration:none">Τελευταία ώρα → Cheat-sheet</a></p>
+<p style="text-align:center;margin-top:14px"><a class="chip" href="exam_cheatsheet.html" style="text-decoration:none;background:var(--cyan);color:#0d1117;font-weight:700;padding:8px 16px">→ Cheat-sheet τελευταίας ώρας</a></p>
+  <div class="section-quiz" data-topic="exam_t4" data-section="partial"></div>
 </section>
 
 </div>

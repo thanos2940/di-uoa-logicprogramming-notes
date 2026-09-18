@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Διαγώνισμα · 120 λεπτά</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--pdim) 55%,#0d1117 100%)}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--pdim) 55%,#f8fafc 100%)}
+.hero::after{content:"?- pass(exam).";position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+<script src="../js/vendor/tau/core.js"></script>
+<script src="../js/vendor/tau/lists.js"></script>
+<script src="../js/vendor/tau/charsio.js"></script>
+<script src="../js/vendor/tau/format.js"></script>
+<script src="../js/prolog_runner.js" defer></script>
+<style>
+.mock-timer{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;border:1px solid var(--border);border-radius:12px;background:var(--surf);padding:12px 16px;margin:16px 0}
+.mock-timer .mt-time{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--txt);min-width:5.5ch}
+.mock-timer.running .mt-time{color:var(--green)}
+.mock-timer.done .mt-time{color:var(--red)}
+.mock-timer .mt-btns{display:flex;gap:8px;flex-wrap:wrap}
+.mock-timer .mt-hint{flex-basis:100%;font-size:0.85rem;color:var(--muted)}
+.mock-grade input{background:var(--surf2);color:var(--txt);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Διαγώνισμα · 4 θέματα · 100 μονάδες · 120 λεπτά</div>
+  <h1>Διαγώνισμα <em>προσομοίωσης</em></h1>
+  <p>Καινούργια θέματα στη μορφή του Ιουνίου 2026, με χρονόμετρο, λύσεις που ανοίγουν μετά και editors για να ελέγξεις τον κώδικά σου.</p>
+  <div class="chips"><span class="chip">35 + 20 + 25 + 20</span><span class="chip">120 λεπτά</span><span class="chip">λύσεις</span><span class="chip">αυτοαξιολόγηση</span></div>
+</div>
+
+<nav class="toc">
+  <a href="#rules">Οδηγίες</a>
+  <a href="#t1">Θέμα 1</a>
+  <a href="#t2">Θέμα 2</a>
+  <a href="#t3">Θέμα 3</a>
+  <a href="#t4">Θέμα 4</a>
+  <a href="#grade">Βαθμός</a>
+</nav>
+
+<div class="wrap">
+
+<section id="rules">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">📋</div><h2>Οδηγίες</h2></div>
+
+  <p class="lead">Διαγώνισμα στη μορφή του Ιουνίου 2026: τέσσερα θέματα, 100 μονάδες, 120 λεπτά. Τα προβλήματα είναι καινούργια· οι τεχνικές είναι αυτές των σημειώσεων. Γράψε σε χαρτί, με κλειστές σημειώσεις, και χρησιμοποίησε τους editors μόνο <strong>αφού</strong> τελειώσει ο χρόνος, για να ελέγξεις τις απαντήσεις σου.</p>
+  <div class="ptsbar"><div class="t1" style="flex:35">Θ1 · 35</div><div class="t2" style="flex:20">Θ2 · 20</div><div class="t3" style="flex:25">Θ3 · 25</div><div class="t4" style="flex:20">Θ4 · 20</div></div>
+<div class="mock-timer" id="mockTimer">
+  <div class="mt-time" aria-live="polite">120:00</div>
+  <div class="mt-btns">
+    <button type="button" class="plx-btn go" data-act="start">▶ Έναρξη</button>
+    <button type="button" class="plx-btn" data-act="pause">❚❚ Παύση</button>
+    <button type="button" class="plx-btn stop" data-act="reset">↺ Μηδενισμός</button>
+  </div>
+  <div class="mt-hint">Προτεινόμενη σειρά: Θέμα 3 (30′) → Θέμα 1 (40′) → Θέμα 2 (25′) → Θέμα 4 (20′) → έλεγχος (5′)</div>
+</div>
+<script>
+(function () {
+  var root = document.getElementById('mockTimer');
+  if (!root) return;
+  var out = root.querySelector('.mt-time');
+  var KEY = 'mock:timer';
+  var total = 120 * 60, state = { left: total, runningSince: null };
+  try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && typeof s.left === 'number') state = s; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function left() {
+    if (state.runningSince === null) return state.left;
+    return Math.max(0, state.left - Math.floor((Date.now() - state.runningSince) / 1000));
+  }
+  function show() {
+    var l = left(), m = Math.floor(l / 60), s = l % 60;
+    out.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    root.classList.toggle('running', state.runningSince !== null);
+    root.classList.toggle('done', l === 0);
+  }
+  root.addEventListener('click', function (e) {
+    var act = e.target && e.target.getAttribute('data-act');
+    if (!act) return;
+    if (act === 'start' && state.runningSince === null) state.runningSince = Date.now();
+    if (act === 'pause' && state.runningSince !== null) { state.left = left(); state.runningSince = null; }
+    if (act === 'reset') state = { left: total, runningSince: null };
+    save(); show();
+  });
+  setInterval(show, 1000);
+  show();
+})();
+</script>
+  <div class="section-quiz" data-topic="exam_mock" data-section="rules"></div>
+</section>
+
+<section id="t1">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">💻</div><h2>Θέμα 1 · Prolog (35 μονάδες)</h2></div>
+
+  <p class="lead">Μπορείτε να χρησιμοποιήσετε συνήθη ενσωματωμένα κατηγορήματα της Prolog.</p>
+<div class="solved"><div class="solved-hd">(α) best_paid/2 <span class="src" style="margin-left:auto">10/100</span></div><div class="solved-body">
+  <p>Δίνονται γεγονότα <code>salary(Όνομα, Τμήμα, Μισθός)</code>. Συμπληρώστε τον ορισμό</p>
+<div class="cb"><code>best_paid(Dept, Name) :- salary(.............), .........................</code></div>
+  <p>ώστε, για κάθε τμήμα, να επιστρέφει τον υπάλληλο με τον μεγαλύτερο μισθό <strong>στο τμήμα του</strong>. Αν υπάρχουν ισόπαλοι, να επιστρέφονται όλοι μέσω οπισθοδρόμησης. Δεν επιτρέπεται να ορίσετε άλλα κατηγορήματα ή άλλη πρόταση.</p>
+<div class="cb"><code>salary(ann, sales, 1800).   salary(bob, it, 2400).     salary(cat, sales, 2100).
+salary(dan, it, 2400).      salary(eve, hr, 1500).     salary(fay, sales, 2100).
+salary(gus, hr, 1500).      salary(hal, it, 1900).     salary(ivy, hr, 1400).
+
+?- best_paid(Dept, Name).
+Dept = it,    Name = bob --&gt; ;
+Dept = sales, Name = cat --&gt; ;
+Dept = it,    Name = dan --&gt; ;
+Dept = hr,    Name = eve --&gt; ;
+Dept = sales, Name = fay --&gt; ;
+Dept = hr,    Name = gus --&gt; ;
+No</code></div>
+<div class="plx" data-id="mk_a" data-query="best_paid(Dept, Name)." data-title="Θέμα 1 (α): best_paid/2">
+<script type="text/plain" class="plx-src">
+salary(ann, sales, 1800).   salary(bob, it, 2400).     salary(cat, sales, 2100).
+salary(dan, it, 2400).      salary(eve, hr, 1500).     salary(fay, sales, 2100).
+salary(gus, hr, 1500).      salary(hal, it, 1900).     salary(ivy, hr, 1400).
+
+% ο πιο καλοπληρωμένος κάθε τμήματος (όλοι οι ισόπαλοι), μόνο αυτή η πρόταση
+best_paid(Dept, Name) :- salary(..........), ....................
+</script>
+<script type="text/plain" class="plx-ref">
+salary(ann, sales, 1800).   salary(bob, it, 2400).     salary(cat, sales, 2100).
+salary(dan, it, 2400).      salary(eve, hr, 1500).     salary(fay, sales, 2100).
+salary(gus, hr, 1500).      salary(hal, it, 1900).     salary(ivy, hr, 1400).
+
+% ο πιο καλοπληρωμένος κάθε τμήματος (όλοι οι ισόπαλοι), μόνο αυτή η πρόταση
+best_paid(Dept, Name) :- salary(Name, Dept, S), \+ ( salary(_, Dept, S2), S2 > S ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "best_paid(Dept, Name).", "n": 12}, {"q": "best_paid(sales, Name).", "n": 5}, {"q": "best_paid(hr, eve).", "n": 2}, {"q": "best_paid(it, hal).", "n": 2}]</script>
+</div>
+<details class="reveal"><summary>✅ Λύση (α)</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">salary</span>(ann, sales, <span class="nm">1800</span>).   <span class="fn">salary</span>(bob, it, <span class="nm">2400</span>).     <span class="fn">salary</span>(cat, sales, <span class="nm">2100</span>).
+<span class="fn">salary</span>(dan, it, <span class="nm">2400</span>).      <span class="fn">salary</span>(eve, hr, <span class="nm">1500</span>).     <span class="fn">salary</span>(fay, sales, <span class="nm">2100</span>).
+<span class="fn">salary</span>(gus, hr, <span class="nm">1500</span>).      <span class="fn">salary</span>(hal, it, <span class="nm">1900</span>).     <span class="fn">salary</span>(ivy, hr, <span class="nm">1400</span>).
+
+<span class="cm">% ο πιο καλοπληρωμένος κάθε τμήματος (όλοι οι ισόπαλοι), μόνο αυτή η πρόταση</span>
+<span class="fn">best_paid</span>(Dept, Name) <span class="kw">:-</span> <span class="fn">salary</span>(<span class="fill">Name, Dept, S</span>), <span class="fill"><span class="op">\+</span> ( <span class="fn">salary</span>(_, Dept, S2), S2 &gt; S )</span>.</code></div>
+<p>Το μοτίβο «βέλτιστο με <code>\+</code>» με έναν περιορισμό: ο εσωτερικός generator κρατά το <strong>ίδιο</strong> <code>Dept</code>, οπότε η σύγκριση γίνεται μόνο μέσα στο τμήμα. Αν γράψεις <code>salary(_, _, S2)</code>, βγαίνουν μόνο οι bob και dan (το μέγιστο όλης της εταιρείας).</p>
+</div></details></div></div><div class="solved"><div class="solved-hd">(β) repeats/2 <span class="src" style="margin-left:auto">25/100</span></div><div class="solved-body">
+  <p><strong>i. (10/100)</strong> Ορίστε το κατηγόρημα <code>repeats(Pattern, List)</code>, το οποίο επιτυγχάνει όταν η <code>List</code> αποτελείται από μία ή περισσότερες συνεχόμενες επαναλήψεις της μη κενής λίστας <code>Pattern</code>, με στοιχεία <strong>ακριβώς ίδια</strong> με αυτά της <code>Pattern</code>.</p>
+<div class="cb"><code>?- repeats([a, f(X)], [a, f(X), a, f(X)]).
+Yes
+?- repeats([a, f(X)], [a, f(X), a, f(Y)]).
+No
+?- repeats([g(X), Y], [g(1), 2, g(1), 2]).
+No
+?- repeats([a, b], [a, b, a]).
+No
+?- repeats([h(X)], [h(1), h(2)]).
+No</code></div>
+  <p><strong>ii. (5/100)</strong> Αν η απαίτηση ήταν τα στοιχεία να είναι <strong>ενοποιήσιμα</strong>, ποια ελάχιστη αλλαγή θα κάνατε στην υλοποίηση του (i); Στην παραλλαγή αυτή όλες οι ερωτήσεις εκτός από την 4η πρέπει να απαντούν Yes.</p>
+  <p><strong>iii. (5/100)</strong> Αν στη θέση του ελέγχου ταυτότητας γράφατε σκέτο <code>=</code>, τι θα απαντούσαν οι πέντε ερωτήσεις; Αιτιολογήστε.</p>
+  <p><strong>iv. (5/100)</strong> Γράψτε το <code>repeats/2</code> του (i) σε <strong>μία πρόταση</strong>, χρησιμοποιώντας μόνο το <code>append/3</code> και το <code>==</code>.</p>
+  <h4 style="margin-top:18px">Έλεγχος μετά τον χρόνο</h4>
+<div class="plx" data-id="mk_b1" data-query="repeats([a, f(X)], [a, f(X), a, f(X)])." data-title="Θέμα 1 (β)i: repeats/2 με ακριβώς ίδια στοιχεία">
+<script type="text/plain" class="plx-src">
+% repeats(Pattern, List): η List είναι μία ή περισσότερες επαναλήψεις της Pattern (μη κενή)
+repeats(P, L) :- ....................
+
+....................
+</script>
+<script type="text/plain" class="plx-ref">
+% repeats(Pattern, List): η List είναι μία ή περισσότερες επαναλήψεις της Pattern (μη κενή)
+repeats(P, L) :- same(P, L, Rest), ( Rest == [] ; repeats(P, Rest) ).
+
+% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει
+same([], Rest, Rest).
+same([X|Xs], [Y|Ys], Rest) :- X == Y, same(Xs, Ys, Rest).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "repeats([a, f(X)], [a, f(X), a, f(X)]).", "n": 2}, {"q": "repeats([a, f(X)], [a, f(X), a, f(Y)]).", "n": 2}, {"q": "repeats([g(X), Y], [g(1), 2, g(1), 2]).", "n": 2}, {"q": "repeats([a, b], [a, b, a]).", "n": 2}, {"q": "repeats([h(X)], [h(1), h(2)]).", "n": 2}]</script>
+</div>
+<div class="plx" data-id="mk_b2" data-query="repeats([h(X)], [h(1), h(2)])." data-title="Θέμα 1 (β)ii: η ελάχιστη αλλαγή για «ενοποιήσιμα»">
+<script type="text/plain" class="plx-src">
+% άλλαξε μόνο τη σύγκριση, ώστε όλες οι ερωτήσεις εκτός της 4ης να απαντούν Yes
+repeats(P, L) :- same(P, L, Rest), ( Rest == [] ; repeats(P, Rest) ).
+
+% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει
+same([], Rest, Rest).
+same([X|Xs], [Y|Ys], Rest) :- X == Y, same(Xs, Ys, Rest).
+</script>
+<script type="text/plain" class="plx-ref">
+% άλλαξε μόνο τη σύγκριση, ώστε όλες οι ερωτήσεις εκτός της 4ης να απαντούν Yes
+repeats(P, L) :- same(P, L, Rest), ( Rest == [] ; repeats(P, Rest) ).
+
+% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει
+same([], Rest, Rest).
+same([X|Xs], [Y|Ys], Rest) :- \+ X \= Y, same(Xs, Ys, Rest).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "repeats([a, f(X)], [a, f(X), a, f(X)]).", "n": 2}, {"q": "repeats([a, f(X)], [a, f(X), a, f(Y)]).", "n": 2}, {"q": "repeats([g(X), Y], [g(1), 2, g(1), 2]).", "n": 2}, {"q": "repeats([a, b], [a, b, a]).", "n": 2}, {"q": "repeats([h(X)], [h(1), h(2)]).", "n": 2}]</script>
+</div>
+<div class="plx" data-id="mk_b3" data-query="repeats([g(X), Y], [g(1), 2, g(1), 2])." data-title="Θέμα 1 (β)iii: πρόβλεψε το σκέτο =">
+<script type="text/plain" class="plx-src">
+% η εκδοχή με σκέτο = : γράψε πρώτα στο χαρτί τι απαντά κάθε ερώτηση
+repeats(P, L) :- same(P, L, Rest), ( Rest == [] ; repeats(P, Rest) ).
+
+% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει
+same([], Rest, Rest).
+same([X|Xs], [Y|Ys], Rest) :- X = Y, same(Xs, Ys, Rest).
+</script>
+</div>
+<div class="plx" data-id="mk_b4" data-query="repeats([a, f(X)], [a, f(X), a, f(X)])." data-title="Θέμα 1 (β)iv: μόνο με append/3">
+<script type="text/plain" class="plx-src">
+% ίδια σημασία με το (i), μία πρόταση, μόνο append/3 και ==
+repeats(P, L) :- ....................
+</script>
+<script type="text/plain" class="plx-ref">
+% ίδια σημασία με το (i), μία πρόταση, μόνο append/3 και ==
+repeats(P, L) :- append(P1, Rest, L), P1 == P, ( Rest == [] ; repeats(P, Rest) ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "repeats([a, f(X)], [a, f(X), a, f(X)]).", "n": 2}, {"q": "repeats([a, f(X)], [a, f(X), a, f(Y)]).", "n": 2}, {"q": "repeats([g(X), Y], [g(1), 2, g(1), 2]).", "n": 2}, {"q": "repeats([a, b], [a, b, a]).", "n": 2}, {"q": "repeats([h(X)], [h(1), h(2)]).", "n": 2}]</script>
+</div>
+<details class="reveal"><summary>✅ Λύση (β)i</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% repeats(Pattern, List): η List είναι μία ή περισσότερες επαναλήψεις της Pattern (μη κενή)</span>
+<span class="fn">repeats</span>(P, L) <span class="kw">:-</span> <span class="fill"><span class="fn">same</span>(P, L, Rest), ( Rest <span class="op">==</span> [] ; <span class="fn">repeats</span>(P, Rest) )</span>.
+
+<span class="cm">% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει</span>
+<span class="fill"><span class="fn">same</span>([], Rest, Rest).</span>
+<span class="fill"><span class="fn">same</span>([X|Xs], [Y|Ys], Rest) <span class="kw">:-</span> X <span class="op">==</span> Y, <span class="fn">same</span>(Xs, Ys, Rest).</span></code></div><p>Το <code>same/3</code> «καταναλώνει» ένα αντίγραφο του μοτίβου από την αρχή της λίστας και επιστρέφει ό,τι περισσεύει. Αν δεν περισσεύει τίποτα, τέλος· αλλιώς το υπόλοιπο πρέπει να είναι πάλι επαναλήψεις. Το <code>==</code> ελέγχει ταυτότητα χωρίς να δεσμεύει.</p>
+</div></details><details class="reveal"><summary>✅ Λύση (β)ii</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% άλλαξε μόνο τη σύγκριση, ώστε όλες οι ερωτήσεις εκτός της 4ης να απαντούν Yes</span>
+<span class="fn">repeats</span>(P, L) <span class="kw">:-</span> <span class="fn">same</span>(P, L, Rest), ( Rest <span class="op">==</span> [] ; <span class="fn">repeats</span>(P, Rest) ).
+
+<span class="cm">% same(P, L, Rest): η L ξεκινά με τα στοιχεία της P (ακριβώς ίδια), Rest ό,τι περισσεύει</span>
+<span class="fn">same</span>([], Rest, Rest).
+<span class="fn">same</span>([X|Xs], [Y|Ys], Rest) <span class="kw">:-</span> <span class="fill"><span class="op">\+</span> X <span class="op">\=</span> Y</span>, <span class="fn">same</span>(Xs, Ys, Rest).</code></div><p>Το <code>\+ X \= Y</code> ελέγχει κάθε ζεύγος χωριστά και δεν κρατά δεσμεύσεις, οπότε το <code>h(X)</code> ταιριάζει και με το <code>h(1)</code> και με το <code>h(2)</code>. Η 4η ερώτηση μένει No λόγω μήκους.</p>
+</div></details><details class="reveal"><summary>✅ Λύση (β)iii</summary><div class="reveal-body">
+<table class="summary-tbl"><thead><tr><th>Ερώτηση</th><th>Με σκέτο =</th><th>Γιατί</th></tr></thead><tbody>
+    <tr><td>1</td><td>Yes</td><td>τα στοιχεία είναι ήδη ίδια</td></tr>
+    <tr><td>2</td><td>Yes, X = Y</td><td>το f(X) = f(Y) δένει X με Y</td></tr>
+    <tr><td>3</td><td>Yes, X = 1, Y = 2</td><td>το πρώτο αντίγραφο δένει τις μεταβλητές, το δεύτερο ταιριάζει</td></tr>
+    <tr><td>4</td><td>No</td><td>περισσεύει το a</td></tr>
+    <tr><td>5</td><td>No</td><td>το h(X) = h(1) δένει X = 1, και μετά h(1) = h(2) αποτυγχάνει</td></tr>
+  </tbody></table><p>Είναι το ίδιο φαινόμενο με το (β)ii του Ιουνίου: οι δεσμεύσεις του ενός ζεύγους μεταφέρονται στα επόμενα.</p>
+</div></details><details class="reveal"><summary>✅ Λύση (β)iv</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% ίδια σημασία με το (i), μία πρόταση, μόνο append/3 και ==</span>
+<span class="fn">repeats</span>(P, L) <span class="kw">:-</span> <span class="fill"><span class="fn">append</span>(P1, Rest, L), P1 <span class="op">==</span> P, ( Rest <span class="op">==</span> [] ; <span class="fn">repeats</span>(P, Rest) )</span>.</code></div><p>Το <code>append(P1, Rest, L)</code> δοκιμάζει κάθε πρόθεμα της λίστας· μόνο αυτό που είναι ίδιο με το μοτίβο περνά το <code>==</code>. Το μοτίβο είναι μη κενό, άρα η αναδρομή δουλεύει σε μικρότερη λίστα.</p>
+</div></details></div></div>
+  <div class="section-quiz" data-topic="exam_mock" data-section="t1"></div>
+</section>
+
+<section id="t2">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">🧩</div><h2>Θέμα 2 · Μοντελοποίηση (20 μονάδες)</h2></div>
+
+  <p>Σε ένα τμήμα, N φοιτητές πρέπει να αναλάβουν διπλωματική με έναν από K επιβλέποντες. Ο φοιτητής s έχει δηλώσει σύνολο αποδεκτών επιβλεπόντων A<sub>s</sub> και, για κάθε k ∈ A<sub>s</sub>, τη θέση προτίμησης r<sub>sk</sub> (1 = πρώτη επιλογή). Κάθε φοιτητής ανατίθεται σε ακριβώς έναν αποδεκτό επιβλέποντα, και ο επιβλέπων k αναλαμβάνει το πολύ C<sub>k</sub> φοιτητές.</p>
+  <ol style="list-style-type:lower-greek;padding-left:1.8rem;line-height:1.8">
+    <li>Μοντελοποιήστε το πρόβλημα ως πρόβλημα ικανοποίησης περιορισμών (μεταβλητές, πεδία, περιορισμοί), με μαθηματική ακρίβεια και περιορισμούς άμεσα υλοποιήσιμους στην ECLiPSe. Κώδικας δεν βαθμολογείται.</li>
+    <li>Ορίστε συνάρτηση κόστους για καθένα από τα κριτήρια: (i) οι φοιτητές, συνολικά, όσο πιο ικανοποιημένοι γίνεται· (ii) ο λιγότερο ικανοποιημένος φοιτητής όσο πιο ικανοποιημένος γίνεται· (iii) οι επιβλέποντες όσο πιο ισοφορτωμένοι γίνεται σε πλήθος φοιτητών.</li>
+    <li>Εξειδικεύστε για N = 5, K = 3, C<sub>1</sub> = C<sub>2</sub> = C<sub>3</sub> = 3 και τις προτιμήσεις του πίνακα.</li>
+  </ol>
+<table class="summary-tbl"><thead><tr><th>Φοιτητής</th><th>1η επιλογή</th><th>2η επιλογή</th><th>3η επιλογή</th></tr></thead><tbody>
+  <tr><td>s1</td><td>k1</td><td>k2</td><td>−</td></tr>
+  <tr><td>s2</td><td>k1</td><td>k3</td><td>−</td></tr>
+  <tr><td>s3</td><td>k1</td><td>k2</td><td>k3</td></tr>
+  <tr><td>s4</td><td>k2</td><td>k1</td><td>−</td></tr>
+  <tr><td>s5</td><td>k2</td><td>k3</td><td>−</td></tr>
+</tbody></table><details class="reveal"><summary>✅ Λύση Θέματος 2</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>(α)</strong> X<sub>s</sub> ∈ A<sub>s</sub>, s = 1..N &nbsp;<span class="op">// ο επιβλέπων του φοιτητή s· το πεδίο κρατά μόνο τους αποδεκτούς</span><br>
+Σ<sub>s=1</sub><sup>N</sup> [X<sub>s</sub> = k] ≤ C<sub>k</sub> &nbsp; ∀ k ∈ {1..K}<br>
+<span class="op">// το «ακριβώς ένας» ισχύει από τη μεταβλητή· βοηθητική παράσταση:</span> R<sub>s</sub> = Σ<sub>k∈A<sub>s</sub></sub> r<sub>sk</sub> · [X<sub>s</sub> = k] &nbsp;<span class="op">// η θέση της ανάθεσης στη λίστα του s</span><br><br>
+<strong>(β)</strong> (i) <span class="quant">min</span> Σ<sub>s</sub> R<sub>s</sub><br>
+(ii) <span class="quant">min</span> max<sub>s</sub> R<sub>s</sub> &nbsp;<span class="op">// ή Z ≥ R<sub>s</sub> ∀s, min Z</span><br>
+(iii) n<sub>k</sub> = Σ<sub>s</sub> [X<sub>s</sub> = k], &nbsp; <span class="quant">min</span> max<sub>k</sub> n<sub>k</sub> − min<sub>k</sub> n<sub>k</sub><br><br>
+<strong>(γ)</strong> X<sub>1</sub> ∈ {1,2}, X<sub>2</sub> ∈ {1,3}, X<sub>3</sub> ∈ {1,2,3}, X<sub>4</sub> ∈ {1,2}, X<sub>5</sub> ∈ {2,3}<br>
+[X<sub>1</sub>=k] + [X<sub>2</sub>=k] + [X<sub>3</sub>=k] + [X<sub>4</sub>=k] + [X<sub>5</sub>=k] ≤ 3, &nbsp; k = 1, 2, 3<br>
+R<sub>1</sub> = [X<sub>1</sub>=1] + 2[X<sub>1</sub>=2] · R<sub>2</sub> = [X<sub>2</sub>=1] + 2[X<sub>2</sub>=3] · R<sub>3</sub> = [X<sub>3</sub>=1] + 2[X<sub>3</sub>=2] + 3[X<sub>3</sub>=3] · R<sub>4</sub> = [X<sub>4</sub>=2] + 2[X<sub>4</sub>=1] · R<sub>5</sub> = [X<sub>5</sub>=2] + 2[X<sub>5</sub>=3]</div><div class="note"><div class="hd">📝 Τι δίνει το στιγμιότυπο (ελεγμένο εξαντλητικά)</div>
+<ul style="padding-left:1.5rem;margin:4px 0">
+  <li>44 εφικτές αναθέσεις.</li>
+  <li>(i) και (ii): βέλτιστη η X = (1, 1, 1, 2, 2), όλοι στην πρώτη τους επιλογή (Σ R = 5, max R = 1). Ο k3 μένει όμως χωρίς φοιτητή: πλήθη (3, 2, 0).</li>
+  <li>(iii): εύρος 1 σε 20 αναθέσεις· από αυτές η καλύτερη σε ικανοποίηση είναι η X = (1, 3, 1, 2, 2) με Σ R = 6 (ο s2 πάει στη 2η επιλογή).</li>
+  <li>Το (i) και το (ii) εδώ συμπίπτουν, όχι όμως πάντα. Με 4 φοιτητές, 4 επιβλέποντες χωρητικότητας 1 και σειρές s1: k2, k1, k3, k4 · s2: k2, k1, k4, k3 · s3: k1, k4, k2, k3 · s4: k4, k3, k2, k1, το min Σ δίνει 6 αφήνοντας τον s1 στην 3η επιλογή, ενώ το min max δίνει 2 με Σ = 7.</li>
+</ul></div><p><strong>Γιατί εδώ το άθροισμα είναι σωστό:</strong> το R<sub>s</sub> εξαρτάται από το <em>ποιος</em> επιβλέπει τον s, άρα το Σ R<sub>s</sub> αλλάζει από λύση σε λύση. Αντίθετα, το Σ<sub>k</sub> n<sub>k</sub> = N είναι σταθερό και δεν μπορεί να εκφράσει ισοκατανομή.</p>
+</div></details>
+  <div class="section-quiz" data-topic="exam_mock" data-section="t2"></div>
+</section>
+
+<section id="t3">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">∀</div><h2>Θέμα 3 · Σημασιολογία (25 μονάδες)</h2></div>
+
+  <p>Δίνεται το λογικό πρόγραμμα P:</p>
+<div class="cb"><code>p(a, b).
+p(f(X), Y) :- p(X, Y).
+q(X) :- p(X, X).</code></div>
+  <ol style="list-style-type:lower-greek;padding-left:1.8rem;line-height:1.8">
+    <li><strong>(5/100)</strong> Ποιο είναι το σύμπαν Herbrand U<sub>L</sub> και ποια η βάση Herbrand B<sub>L</sub>; Είναι η B<sub>L</sub> μοντέλο του προγράμματος; Αιτιολογήστε.</li>
+    <li><strong>(5/100)</strong> Ποιο είναι το ελάχιστο μοντέλο M<sub>P</sub>;</li>
+    <li><strong>(10/100)</strong> Μπορεί το A = { p(b, b) } να είναι υποσύνολο κάποιου μοντέλου; Αν ναι, και M<sub>A</sub> η τομή όλων των μοντέλων που περιέχουν το A, με τι ισούται το B<sub>L</sub> − M<sub>A</sub>;</li>
+    <li><strong>(5/100)</strong> Υπάρχει SLD-απόρριψη για τον στόχο <code>?- p(f(f(a)), b), q(b).</code>; Για τον <code>?- p(f(a), b), p(a, b).</code>; Αιτιολογήστε χωρίς να κατασκευάσετε απόρριψη.</li>
+  </ol>
+<details class="reveal"><summary>✅ Λύση Θέματος 3</summary><div class="reveal-body">
+<div class="math" style="text-align:left"><strong>(α)</strong> U<sub>L</sub> = {a, b, f(a), f(b), f(f(a)), f(f(b)), …} = { f<sup>n</sup>(a), f<sup>n</sup>(b) : n ≥ 0 }<br>
+B<sub>L</sub> = { p(s, t) : s, t ∈ U<sub>L</sub> } ∪ { q(t) : t ∈ U<sub>L</sub> }<br>
+Η B<sub>L</sub> είναι μοντέλο: σε κάθε βασικό στιγμιότυπο κάθε πρότασης η κεφαλή ανήκει στη B<sub>L</sub>, άρα η πρόταση αληθεύει. Αυτό ισχύει για κάθε οριστικό πρόγραμμα.<br><br>
+<strong>(β)</strong> T<sub>P</sub>↑1 = { p(a, b) } · T<sub>P</sub>↑2 = { p(a, b), p(f(a), b) } · …<br>
+M<sub>P</sub> = T<sub>P</sub>↑ω = { p(f<sup>n</sup>(a), b) : n ≥ 0 }<br>
+Κανένα q: το q(t) θέλει p(t, t), και στο M<sub>P</sub> το δεύτερο όρισμα είναι πάντα b ενώ το πρώτο δεν είναι ποτέ b.<br><br>
+<strong>(γ)</strong> Ναι (π.χ. η B<sub>L</sub> είναι μοντέλο που το περιέχει). M<sub>A</sub> = ελάχιστο μοντέλο του P ∪ { p(b, b). }:<br>
+M<sub>A</sub> = { p(t, b) : t ∈ U<sub>L</sub> } ∪ { q(b) } &nbsp;<span class="op">// p(f<sup>n</sup>(b), b) από την αναδρομική πρόταση, q(b) από το p(b, b)</span><br>
+B<sub>L</sub> − M<sub>A</sub> = { p(s, t) : s, t ∈ U<sub>L</sub>, t ≠ b } ∪ { q(t) : t ∈ U<sub>L</sub>, t ≠ b }<br><br>
+<strong>(δ)</strong> Πρώτος στόχος: το q(b) ∉ M<sub>P</sub>, άρα <strong>δεν</strong> υπάρχει SLD-απόρριψη (ορθότητα: μια απόρριψη θα έκανε το q(b) λογική συνέπεια του P, δηλαδή στοιχείο του M<sub>P</sub>).<br>
+Δεύτερος στόχος: p(f(a), b), p(a, b) ∈ M<sub>P</sub>, άρα υπάρχει SLD-απόρριψη (πληρότητα της SLD-επίλυσης).</div><p style="font-size:0.9rem;color:var(--muted)">Οι απαντήσεις του (β) έως (δ) ελέγχθηκαν σε SWI-Prolog με ερωτήσεις στα αντίστοιχα προγράμματα.</p>
+</div></details>
+  <div class="section-quiz" data-topic="exam_mock" data-section="t3"></div>
+</section>
+
+<section id="t4">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">🕸️</div><h2>Θέμα 4 · Αναπαράσταση γνώσης (20 μονάδες)</h2></div>
+
+  <p><strong>(α) (5/100)</strong> Τι σημαίνει ότι η οπίσθια συλλογιστική είναι «οδηγούμενη από τον στόχο» και η εμπρόσθια «οδηγούμενη από τα δεδομένα»; Δώστε κριτήρια για την επιλογή ανάμεσά τους.</p>
+  <p><strong>(β) (15/100)</strong> Στη βάση γνώσης του editor οι κανόνες είναι <code>if … then …</code> με προϋποθέσεις που μπορεί να περιέχουν <code>and</code> και <code>or</code>. Συμπληρώστε το <code>is_true/2</code> ώστε το δεύτερο όρισμα να επιστρέφει το δέντρο απόδειξης (απάντηση σε ερώτηση «πώς»): για γεγονός P η απόδειξη είναι το P· για συμπέρασμα κανόνα είναι <code>P &lt;= Απόδειξη_Προϋπόθεσης</code>· για σύζευξη <code>Απόδειξη1 and Απόδειξη2</code>· για διάζευξη η απόδειξη του μέλους που αληθεύει.</p>
+<div class="cb"><code>?- is_true(call_dealer, Proof).
+Proof = call_dealer &lt;= (engine_wont_start &lt;= (battery_dead &lt;= lights_dim and engine_cranks_slowly)) and car_is_new</code></div>
+<div class="plx" data-id="mk_kr" data-query="is_true(call_dealer, Proof)." data-title="Θέμα 4 (β): is_true/2 με δέντρο απόδειξης">
+<script type="text/plain" class="plx-src">
+% Θέμα 4 (β): οπίσθια συλλογιστική που επιστρέφει και το «πώς»
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+:- op(800, xfx, <=).
+
+if battery_dead or no_fuel then engine_wont_start.
+if lights_dim and engine_cranks_slowly then battery_dead.
+if fuel_gauge_empty then no_fuel.
+if engine_wont_start and car_is_new then call_dealer.
+fact(lights_dim).
+fact(engine_cranks_slowly).
+fact(car_is_new).
+
+% is_true(P, Proof): Proof = P αν είναι γεγονός, P <= ΑπόδειξηΠροϋπόθεσης αν βγήκε από κανόνα
+is_true(P, P) :- fact(P).
+is_true(P, ..........) :- ....................
+is_true(P1 and P2, ..........) :- ....................
+is_true(P1 or P2, Proof) :- ....................
+</script>
+<script type="text/plain" class="plx-ref">
+% Θέμα 4 (β): οπίσθια συλλογιστική που επιστρέφει και το «πώς»
+:- op(800, fx, if).
+:- op(700, xfx, then).
+:- op(300, xfy, or).
+:- op(200, xfy, and).
+:- op(800, xfx, <=).
+
+if battery_dead or no_fuel then engine_wont_start.
+if lights_dim and engine_cranks_slowly then battery_dead.
+if fuel_gauge_empty then no_fuel.
+if engine_wont_start and car_is_new then call_dealer.
+fact(lights_dim).
+fact(engine_cranks_slowly).
+fact(car_is_new).
+
+% is_true(P, Proof): Proof = P αν είναι γεγονός, P <= ΑπόδειξηΠροϋπόθεσης αν βγήκε από κανόνα
+is_true(P, P) :- fact(P).
+is_true(P, P <= CondProof) :- if Cond then P, is_true(Cond, CondProof).
+is_true(P1 and P2, Proof1 and Proof2) :- is_true(P1, Proof1), is_true(P2, Proof2).
+is_true(P1 or P2, Proof) :- is_true(P1, Proof) ; is_true(P2, Proof).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "is_true(call_dealer, Proof).", "n": 3}, {"q": "is_true(engine_wont_start, Proof).", "n": 3}, {"q": "is_true(no_fuel, Proof).", "n": 2}, {"q": "is_true(lights_dim and car_is_new, Proof).", "n": 2}]</script>
+</div>
+<details class="reveal"><summary>✅ Λύση (α)</summary><div class="reveal-body">
+<p><strong>Ενδεικτική απάντηση:</strong> η οπίσθια συλλογιστική ξεκινά από τον στόχο και ψάχνει κανόνες που τον συμπεραίνουν, ζητώντας δεδομένα μόνο όταν χρειάζονται (goal driven). Η εμπρόσθια ξεκινά από τα γνωστά γεγονότα και εφαρμόζει κανόνες μέχρι να μην προκύπτει τίποτα νέο (data driven). Κριτήρια: αν θέλουμε να αποδείξουμε κάτι συγκεκριμένο ή απλώς να δούμε τι προκύπτει· αν έχουμε όλα τα δεδομένα από την αρχή· αν ο AND-OR γράφος έχει λίγους τελικούς και πολλούς αρχικούς κόμβους ή το αντίστροφο· τι υποστηρίζει το κέλυφος που θα χρησιμοποιηθεί.</p>
+</div></details><details class="reveal"><summary>✅ Λύση (β)</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% Θέμα 4 (β): οπίσθια συλλογιστική που επιστρέφει και το «πώς»</span>
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, fx, if).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">700</span>, xfx, then).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">300</span>, xfy, or).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">200</span>, xfy, and).
+<span class="kw">:-</span> <span class="fn">op</span>(<span class="nm">800</span>, xfx, &lt;=).
+
+if battery_dead or no_fuel then engine_wont_start.
+if lights_dim and engine_cranks_slowly then battery_dead.
+if fuel_gauge_empty then no_fuel.
+if engine_wont_start and car_is_new then call_dealer.
+<span class="fn">fact</span>(lights_dim).
+<span class="fn">fact</span>(engine_cranks_slowly).
+<span class="fn">fact</span>(car_is_new).
+
+<span class="cm">% is_true(P, Proof): Proof = P αν είναι γεγονός, P &lt;= ΑπόδειξηΠροϋπόθεσης αν βγήκε από κανόνα</span>
+<span class="fn">is_true</span>(P, P) <span class="kw">:-</span> <span class="fn">fact</span>(P).
+<span class="fn">is_true</span>(P, <span class="fill">P &lt;= CondProof</span>) <span class="kw">:-</span> <span class="fill">if Cond then P, <span class="fn">is_true</span>(Cond, CondProof)</span>.
+<span class="fn">is_true</span>(P1 and P2, <span class="fill">Proof1 and Proof2</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">is_true</span>(P1, Proof1), <span class="fn">is_true</span>(P2, Proof2)</span>.
+<span class="fn">is_true</span>(P1 or P2, Proof) <span class="kw">:-</span> <span class="fill"><span class="fn">is_true</span>(P1, Proof) ; <span class="fn">is_true</span>(P2, Proof)</span>.</code></div><p>Είναι ο μετα-διερμηνέας των σημειώσεων για τις εξηγήσεις «πώς». Κάθε πρόταση του <code>is_true/2</code> χτίζει στο δεύτερο όρισμα το κομμάτι της απόδειξης που αντιστοιχεί στη μορφή του στόχου.</p>
+</div></details>
+  <div class="section-quiz" data-topic="exam_mock" data-section="t4"></div>
+</section>
+
+<section id="grade">
+  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">🧮</div><h2>Αυτοαξιολόγηση</h2></div>
+
+  <p class="lead">Βαθμολόγησε κάθε ερώτημα με τις λύσεις δίπλα σου. Μέτρα αυστηρά: μισές μονάδες μόνο όταν η ιδέα είναι σωστή και λείπει λεπτομέρεια.</p>
+<table class="summary-tbl mock-grade" id="mockGrade"><thead><tr><th>Ερώτημα</th><th>Μέγιστο</th><th>Έδωσα στον εαυτό μου</th></tr></thead><tbody><tr><td>Θ1 (α)</td><td class="num">10</td><td><input type="number" min="0" max="10" step="0.5" data-max="10" aria-label="Μονάδες για Θ1 (α)" style="width:5em"></td></tr><tr><td>Θ1 (β)i</td><td class="num">10</td><td><input type="number" min="0" max="10" step="0.5" data-max="10" aria-label="Μονάδες για Θ1 (β)i" style="width:5em"></td></tr><tr><td>Θ1 (β)ii</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ1 (β)ii" style="width:5em"></td></tr><tr><td>Θ1 (β)iii</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ1 (β)iii" style="width:5em"></td></tr><tr><td>Θ1 (β)iv</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ1 (β)iv" style="width:5em"></td></tr><tr><td>Θ2</td><td class="num">20</td><td><input type="number" min="0" max="20" step="0.5" data-max="20" aria-label="Μονάδες για Θ2" style="width:5em"></td></tr><tr><td>Θ3 (α)</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ3 (α)" style="width:5em"></td></tr><tr><td>Θ3 (β)</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ3 (β)" style="width:5em"></td></tr><tr><td>Θ3 (γ)</td><td class="num">10</td><td><input type="number" min="0" max="10" step="0.5" data-max="10" aria-label="Μονάδες για Θ3 (γ)" style="width:5em"></td></tr><tr><td>Θ3 (δ)</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ3 (δ)" style="width:5em"></td></tr><tr><td>Θ4 (α)</td><td class="num">5</td><td><input type="number" min="0" max="5" step="0.5" data-max="5" aria-label="Μονάδες για Θ4 (α)" style="width:5em"></td></tr><tr><td>Θ4 (β)</td><td class="num">15</td><td><input type="number" min="0" max="15" step="0.5" data-max="15" aria-label="Μονάδες για Θ4 (β)" style="width:5em"></td></tr></tbody><tfoot><tr><td><strong>Σύνολο</strong></td><td class="num">100</td><td class="num"><strong class="mg-total">0</strong></td></tr></tfoot></table><script>
+(function () {
+  var t = document.getElementById('mockGrade');
+  if (!t) return;
+  var ins = t.querySelectorAll('input'), KEY = 'mock:grade', saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+  function sum() {
+    var s = 0, st = {};
+    ins.forEach(function (i, k) {
+      var v = parseFloat(i.value), m = parseFloat(i.dataset.max);
+      if (!isNaN(v)) { v = Math.max(0, Math.min(m, v)); s += v; st[k] = v; }
+    });
+    t.querySelector('.mg-total').textContent = String(s);
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+  }
+  ins.forEach(function (i, k) { if (saved[k] !== undefined) i.value = saved[k]; i.addEventListener('input', sum); });
+  sum();
+})();
+</script>
+  <div class="tip-box"><div class="hd">💡 Μετά τη βαθμολόγηση</div>
+  <p style="margin:4px 0">Για κάθε ερώτημα κάτω από τη μισή βαθμολογία, γύρνα στην αντίστοιχη ενότητα: <a href="exam_theme1_practice.html">Γυμναστήριο Θ1</a> · <a href="exam_theme2_practice.html">Προπόνηση Θ2</a> · <a href="exam_theme3_herbrand.html">Θέμα 3</a> · <a href="exam_theme4_kr.html">Θέμα 4</a>.</p></div>
+
+  <div class="section-quiz" data-topic="exam_mock" data-section="grade"></div>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Διαγώνισμα προσομοίωσης</div>
+</body>
+</html>

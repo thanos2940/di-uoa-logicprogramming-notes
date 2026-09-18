@@ -1,0 +1,185 @@
+/* ============================================================
+   exam_plus.css: επεκτάσεις για την προπόνηση εξετάσεων
+   (runner Prolog, ασκήσεις, πλάνο μελέτης, widget κόστους)
+   Χρησιμοποιεί μόνο τις μεταβλητές χρωμάτων του base/exam.css
+   ============================================================ */
+
+/* ---------- Prolog runner ---------- */
+.plx{border:1px solid var(--border);border-left:4px solid var(--cyan);border-radius:10px;margin:16px 0 20px;background:var(--surf);overflow:hidden}
+.plx.plx-solved{border-left-color:var(--green)}
+.plx-hd{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surf2);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.plx-badge{font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;letter-spacing:1px;color:var(--bg);background:var(--cyan);padding:2px 8px;border-radius:4px}
+.plx.plx-solved .plx-badge{background:var(--green)}
+.plx.plx-solved .plx-badge::after{content:' ✔'}
+.plx-title{font-size:0.9rem;color:var(--muted);font-weight:600}
+.plx-prog{display:block;width:100%;min-height:90px;border:0;border-bottom:1px solid var(--border);background:#060a10;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:0.84rem;line-height:1.55;padding:12px 14px;resize:vertical;tab-size:4;white-space:pre;overflow-x:auto}
+.plx-prog:focus,.plx-query:focus,.plx-stdin-box:focus{outline:2px solid var(--cyan);outline-offset:-2px}
+.plx-stdin-lbl{display:block;font-size:0.78rem;color:var(--muted);padding:6px 14px 0}
+.plx-stdin-box{display:block;width:calc(100% - 28px);margin:4px 14px 8px;background:#060a10;color:var(--txt);border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.82rem;padding:6px 8px;resize:vertical}
+.plx-qrow{display:flex;align-items:center;gap:8px;padding:8px 14px 0}
+.plx-prompt{font-family:'JetBrains Mono',monospace;color:var(--orange);font-weight:700}
+.plx-query{flex:1;min-width:0;background:#060a10;color:var(--txt);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:0.86rem}
+.plx-bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px}
+.plx-btn{font-family:'JetBrains Mono',monospace;font-size:0.78rem;padding:6px 11px;border-radius:6px;border:1px solid var(--border);background:var(--surf2);color:var(--txt);cursor:pointer;line-height:1.2}
+.plx-btn:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+.plx-btn:disabled{opacity:.45;cursor:not-allowed}
+.plx-btn.go{background:var(--cyan);color:#06201e;border-color:var(--cyan);font-weight:700}
+.plx-btn.go:hover:not(:disabled){color:#06201e;filter:brightness(1.1)}
+.plx-btn.check{border-color:var(--green);color:var(--green);font-weight:700}
+.plx-btn.stop{border-color:var(--red);color:var(--red)}
+.plx-btn.sol{border-style:dashed}
+.plx-out{margin:0 14px 12px;min-height:2.2em;max-height:340px;overflow:auto;background:#060a10;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--txt)}
+.plx-out:empty::before{content:'(εδώ εμφανίζονται οι απαντήσεις)';color:var(--dim)}
+.plx-q{color:var(--orange);font-weight:700}
+.plx-a{color:var(--green)}
+.plx-no{color:var(--red);font-weight:700}
+.plx-err{color:var(--red)}
+.plx-ok{color:var(--green);font-weight:700}
+.plx-warn{color:var(--yellow)}
+.plx-dim{color:var(--dim)}
+.plx-io{color:var(--txt)}
+.plx-diff{color:var(--muted)}
+.plx-busy .plx-hd .plx-title::after{content:'  · τρέχει…';color:var(--yellow)}
+html[data-theme="light"] .plx-prog,
+html[data-theme="light"] .plx-query,
+html[data-theme="light"] .plx-out,
+html[data-theme="light"] .plx-stdin-box{background:#f8fafc;color:#0f172a}
+html[data-theme="light"] .plx-btn.go{color:#fff}
+
+/* ---------- Ασκήσεις (drills) ---------- */
+.drill{border:1px solid var(--border);border-radius:14px;margin:22px 0;overflow:hidden;background:var(--surf)}
+.drill-hd{background:var(--surf2);padding:12px 18px;font-weight:700;font-size:1.02rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.drill-hd .src{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--dim);font-weight:400}
+.drill-body{padding:14px 18px 6px}
+.drill-body>p{margin-bottom:1rem}
+.lvl{font-size:0.68rem;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:1px}
+.lvl.e{background:rgba(63,185,80,.15);color:var(--green)}
+.lvl.m{background:rgba(88,166,255,.15);color:var(--blue)}
+.lvl.h{background:rgba(240,136,62,.15);color:var(--orange)}
+.must{font-size:0.68rem;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;background:var(--yellow);color:#1b1400}
+.try{border:1px dashed var(--orange);border-radius:10px;padding:10px 14px;background:rgba(240,136,62,.05);margin:10px 0}
+.try .hd{color:var(--orange);font-weight:700;margin-bottom:4px}
+.pattern-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--purple);border:1px solid var(--purple);border-radius:20px;padding:1px 9px;margin-right:4px}
+
+/* ---------- Ροή (διάγραμμα βημάτων με CSS) ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:16px 0}
+.flow-step{flex:1 1 170px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surf2);position:relative;margin:6px 18px 6px 0}
+.flow-step:not(:last-child)::after{content:'→';position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--dim);font-weight:700}
+.flow-step .n{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--orange);font-weight:700;letter-spacing:1px}
+.flow-step .t{font-weight:700;margin:2px 0 4px}
+.flow-step .d{font-size:0.86rem;color:var(--muted);line-height:1.5}
+.flow-step code{font-size:0.8rem}
+@media (max-width:720px){.flow-step{flex-basis:100%;margin-right:0}.flow-step:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-19px;transform:none}}
+
+/* ---------- Μπάρα βαθμολογίας ---------- */
+.ptsbar{display:flex;width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin:14px 0 6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700}
+.ptsbar>div{padding:10px 8px;text-align:center;color:#0b0f14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptsbar .t1{background:var(--orange)}
+.ptsbar .t2{background:var(--blue)}
+.ptsbar .t3{background:var(--green)}
+.ptsbar .t4{background:var(--cyan)}
+.ptsbar-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:0.85rem;color:var(--muted)}
+
+/* ---------- Πλάνο μελέτης ---------- */
+.plan{counter-reset:blk;margin:18px 0}
+.plan-blk{border:1px solid var(--border);border-radius:12px;background:var(--surf);margin:14px 0;overflow:hidden}
+.plan-blk>.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:var(--surf2);border-bottom:1px solid var(--border)}
+.plan-blk>.ph .time{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--orange);min-width:108px}
+.plan-blk>.ph .ttl{font-weight:700}
+.plan-blk>.ph .dur{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--dim)}
+.plan-blk>.pb{padding:8px 16px 10px}
+.plan-blk.brk{border-style:dashed;opacity:.85}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;line-height:1.5}
+.chk input{margin-top:5px;width:17px;height:17px;flex-shrink:0;accent-color:var(--green)}
+.chk label{cursor:pointer}
+.chk input:checked+label{color:var(--dim);text-decoration:line-through}
+.progress{height:10px;border-radius:6px;background:var(--surf2);border:1px solid var(--border);overflow:hidden;margin:8px 0 4px}
+.progress>div{height:100%;width:0;background:var(--green);transition:width .3s}
+
+/* ---------- Widget ισοκατανομής φόρτου ---------- */
+.lb{border:1px solid var(--border);border-radius:12px;background:var(--surf);padding:14px 16px;margin:18px 0}
+.lb-tasks{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 12px}
+.lb-task{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:var(--surf2);display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:0.84rem}
+.lb-task select{background:var(--bg);color:var(--txt);border:1px solid var(--border);border-radius:5px;padding:2px 4px;font-family:inherit}
+.lb-bars{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;margin:10px 0}
+.lb-bars .nm{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--muted)}
+.lb-bars .track{position:relative;height:22px;border-radius:5px;background:var(--surf2);border:1px solid var(--border);overflow:hidden}
+.lb-bars .fill{height:100%;background:var(--blue);transition:width .25s}
+.lb-bars .fill.over{background:var(--red)}
+.lb-bars .cap{position:absolute;top:0;bottom:0;width:2px;background:var(--red)}
+.lb-bars .val{font-family:'JetBrains Mono',monospace;font-weight:700;min-width:2.5em;text-align:right}
+.lb-metrics{width:100%;border-collapse:collapse;font-size:0.86rem;margin:10px 0}
+.lb-metrics th,.lb-metrics td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top}
+.lb-metrics th{background:var(--surf2);color:var(--orange)}
+.lb-metrics td.num{font-family:'JetBrains Mono',monospace;font-weight:700;white-space:nowrap}
+.lb-metrics tr.bad td{color:var(--red)}
+.lb-btns{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.lb-note{font-size:0.86rem;color:var(--muted)}
+.lb-status{font-weight:700}
+.lb-status.ok{color:var(--green)}
+.lb-status.bad{color:var(--red)}
+
+/* ---------- Κάρτες «γρήγορης απάντησης» ---------- */
+.qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0}
+.qa-card{border:1px solid var(--border);border-radius:10px;background:var(--surf2);padding:10px 12px}
+.qa-card .qq2{font-family:'JetBrains Mono',monospace;font-size:0.84rem;margin-bottom:6px;word-break:break-word}
+.qa-card details summary{cursor:pointer;color:var(--cyan);font-size:0.82rem;font-weight:700}
+.qa-card details div{margin-top:6px;font-size:0.86rem;line-height:1.5}
+.qa-grid.prose .qq2{font-family:inherit;font-size:0.92rem;line-height:1.55}
+.qa-grid.prose details div{font-size:0.9rem}
+.qa-card code{font-size:0.8rem}
+
+/* ---------- Μικρά ---------- */
+.kbd{font-family:'JetBrains Mono',monospace;font-size:0.78rem;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surf2)}
+.tag-new{font-family:'JetBrains Mono',monospace;font-size:0.66rem;font-weight:700;background:var(--green);color:#04210e;padding:1px 6px;border-radius:4px;vertical-align:middle}
+.wrap .cb code .fill{white-space:pre}
+.ans-line{font-family:'JetBrains Mono',monospace;font-size:0.84rem;color:var(--green)}
+@media (max-width:600px){
+  section{padding:1.4rem 1.1rem}
+  .wrap{padding:24px 12px}
+  .hero{padding:100px 18px 36px}
+  .toc{padding:8px 12px;top:60px}
+  .plx-bar{gap:5px}
+  .plx-btn{padding:6px 8px}
+  .drill-body{padding:12px 12px 4px}
+}
+@media (max-width:720px){
+  .summary-tbl,.lb-metrics,.tp-iter{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ptsbar{font-size:0.7rem}
+  .ptsbar>div{padding:8px 3px}
+}
+@media (max-width:720px){
+  .toc{position:static}
+  .hero::after{display:none}
+}
+
+/* ---------- δέντρο σημασιολογικού δικτύου (HTML/CSS, χωρίς SVG) ---------- */
+.wrap .kr-tree,.wrap .kr-tree ul{list-style:none;margin:0;padding:0}
+.wrap .kr-tree{margin:14px 0 18px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surf)}
+.wrap .kr-tree ul{margin:0 0 0 1.1rem}
+.wrap .kr-tree li{position:relative;margin:0;padding:4px 0 4px 1.2rem;line-height:1.9;font-size:1rem}
+.wrap .kr-tree>li{padding-left:0}
+.wrap .kr-tree ul>li{border-left:2px solid var(--border)}
+.wrap .kr-tree ul>li:last-child{border-left-color:transparent}
+.wrap .kr-tree ul>li::before{content:'';position:absolute;left:-2px;top:1.1rem;width:1rem;border-top:2px solid var(--border)}
+.wrap .kr-tree ul>li:last-child::after{content:'';position:absolute;left:-2px;top:0;height:1.1rem;border-left:2px solid var(--border)}
+.kr-node{display:inline-block;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.86rem;border:2px solid var(--cyan);border-radius:999px;padding:0 12px;background:var(--surf2);color:var(--txt);line-height:1.7}
+.kr-node.inst{border-color:var(--purple)}
+.kr-isa{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--dim);margin-right:6px;letter-spacing:.5px}
+.kr-attr{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.76rem;color:var(--cyan);border:1px dashed var(--border);border-radius:6px;padding:0 7px;margin:2px 0 2px 6px;line-height:1.6}
+.kr-legend{font-size:0.82rem;color:var(--muted);margin:-8px 0 14px}
+@media (max-width:720px){.wrap .kr-tree ul{margin-left:0.5rem}.wrap .kr-tree li{padding-left:0.9rem}.wrap .kr-tree ul>li::before{width:0.7rem}.kr-attr{margin-left:0}}
+
+/* μεγάλα αναγνωριστικά Prolog στα quiz: σπάνε αντί να ξεχειλώνουν τη σελίδα */
+.section-quiz .qq,.section-quiz .qa{overflow-wrap:anywhere}
+
+/* σύνδεσμοι μέσα στο περιεχόμενο: ευανάγνωστοι και στα δύο θέματα */
+.wrap a:not(.chip):not(.topic-card):not(.plx-btn){color:var(--cyan);text-decoration:underline;text-decoration-color:rgba(57,212,200,.4);text-underline-offset:2px}
+.wrap a:not(.chip):not(.topic-card):not(.plx-btn):hover{text-decoration-color:currentColor}
+
+/* ελληνικά σε μικρές ετικέτες: sans για να μη μοιάζει το Θ με 0 */
+.ptsbar{font-family:"Roboto",system-ui,"Segoe UI",sans-serif}
+
+/* μπλοκ κώδικα: ουδέτερο χρώμα για αναγνωριστικά, ώστε να ξεχωρίζουν οι χρωματισμένες λέξεις */
+.wrap .cb code{background:transparent;color:var(--txt);padding:0}
+html[data-theme="light"] .wrap .cb .fill{color:#14532d;background:rgba(22,163,74,.16)}

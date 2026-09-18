@@ -7,358 +7,542 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles/base.css">
 <link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
 <style>
 .hero{background:linear-gradient(150deg,#0d1117 0%,var(--odim) 55%,#0d1117 100%)}
-.hero::after{content:'\\+ (better exists)';position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--odim) 55%,#f8fafc 100%)}
+.hero::after{content:"\\+ (better exists)";position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.8rem,2.2vw,1.5rem);color:rgba(240,136,62,.07);pointer-events:none;font-weight:700}
 </style>
 <script src="../js/nav_exam.js" defer></script>
+<script src="../data/questions.js" defer></script>
+<script src="../js/quiz-loader.js" defer></script>
+<script src="../js/vendor/tau/core.js"></script>
+<script src="../js/vendor/tau/lists.js"></script>
+<script src="../js/vendor/tau/charsio.js"></script>
+<script src="../js/vendor/tau/format.js"></script>
+<script src="../js/prolog_runner.js" defer></script>
+
 </head>
 <body>
 <div id="site-nav"></div>
 
 <div class="hero">
-  <div class="hero-label">Θέμα 1 · ~20 μονάδες · <strong>BONUS</strong></div>
+  <div class="hero-label">Θέμα 1 · 35/100 τον Ιούνιο 2026 · ΤΟ ΜΕΓΑΛΥΤΕΡΟ</div>
   <h1>Prolog <em>(non-CSP)</em></h1>
-  <p>Το δυσκολότερο για αρχάριο — αλλά κρύβει <strong>ένα και μόνο μοτίβο</strong> που πέφτει σχεδόν πάντα. Μάθε το, κατάλαβε 4 βοηθητικά κατηγορήματα, και άρπαξε μερική (ή και πλήρη) βαθμολογία.</p>
-  <div class="chips">
-    <span class="chip">generate &amp; test</span><span class="chip">\+ negation</span><span class="chip">subseq</span><span class="chip">append</span><span class="chip">length</span>
-  </div>
+  <p>Έξι τύποι ερωτήσεων που επαναλαμβάνονται. Εδώ είναι η θεωρία, οι παγίδες και η πλήρης λύση του Ιουνίου. Η εξάσκηση με αυτόματο έλεγχο είναι στο Γυμναστήριο.</p>
+  <div class="chips"><span class="chip">\+ βέλτιστο</span><span class="chip">== / = / \+\+</span><span class="chip">append</span><span class="chip">subseq</span><span class="chip">τι απαντά η Prolog</span></div>
 </div>
 
 <nav class="toc">
-  <a href="#intro">Διαίσθηση &amp; Θεωρία</a>
-  <a href="#pattern">ΤΟ Μοτίβο</a>
-  <a href="#toolbox">4 Βοηθητικά</a>
-  <a href="#read">Πώς διαβάζεις σκελετό</a>
-  <a href="#solved">Λυμένα Παλιά Θέματα</a>
-  <a href="#partial">Μερική βαθμολογία</a>
+  <a href="#map">Χάρτης</a>
+  <a href="#pattern">Βέλτιστο με \+</a>
+  <a href="#tools">Εργαλειοθήκη</a>
+  <a href="#read">Σκελετοί</a>
+  <a href="#june">Ιούνιος 2026</a>
+  <a href="#solved">Λυμένα</a>
+  <a href="#exam">Στο γραπτό</a>
 </nav>
 
 <div class="wrap">
 
-<section id="intro">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">💡</div><h2>Διαίσθηση &amp; Θεωρία (Για Αρχάριους)</h2></div>
-  <p class="lead">Η συγγραφή κώδικα στην Prolog διαφέρει ριζικά από γλώσσες όπως η Python ή η Java. Αντί να λες στον υπολογιστή <strong>«πώς να κάνει κάτι»</strong> (βήμα-βήμα οδηγίες), του λες <strong>«τι ισχύει»</strong> (γεγονότα και κανόνες) και τον αφήνεις να ψάξει τις απαντήσεις.</p>
-  
-  <div class="compare-grid">
-    <div class="compare-cell good" style="border-color:var(--cyan);background:linear-gradient(180deg,rgba(57,212,200,.04),transparent)">
-      <h4 style="color:var(--cyan);margin-top:0">1. Πώς σκέφτεται η Prolog;</h4>
-      <p style="font-size:0.92rem;line-height:1.6">
-        • <strong>Backtracking (Οπισθοδρόμηση):</strong> Η Prolog δοκιμάζει ένα μονοπάτι. Αν βρει αδιέξοδο, πηγαίνει αυτόματα πίσω και δοκιμάζει την επόμενη επιλογή. Έτσι, μπορεί να μας δώσει <em>όλες</em> τις δυνατές λύσεις μία-μία.
-        <br>• <strong>Unification (Ενοποίηση):</strong> Δεν είναι απλή ανάθεση τιμής. Είναι μια προσπάθεια να κάνουμε δύο όρους να ταιριάξουν, γεμίζοντας τις μεταβλητές που λείπουν.
-      </p>
-    </div>
-    <div class="compare-cell good" style="border-color:var(--purple);background:linear-gradient(180deg,rgba(188,140,255,.04),transparent)">
-      <h4 style="color:var(--purple);margin-top:0">2. Η φιλοσοφία του "Generate and Test"</h4>
-      <p style="font-size:0.92rem;line-height:1.6">
-        Για να βρούμε μια βέλτιστη λύση, ακολουθούμε τη στρατηγική:
-        <br>1. <strong>Generate (Παραγωγή):</strong> Φτιάξε μια τυχαία έγκυρη λύση (π.χ. μια υπολίστα).
-        <br>2. <strong>Test (Έλεγχος):</strong> Έλεγξε αν είναι η καλύτερη δυνατή. Για να το κάνουμε αυτό, χρησιμοποιούμε την <em>Άρνηση ως Αποτυχία</em> (<code>\+</code>): «Βεβαιώσου ότι <strong>δεν</strong> υπάρχει άλλη λύση που να είναι καλύτερη».
-      </p>
-    </div>
+<section id="map">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🗺️</div><h2>Χάρτης: οι 6 τύποι ερωτήσεων του Θέματος 1</h2></div>
+
+  <p class="lead">Τον Ιούνιο του 2026 το γραπτό είχε <strong>4 θέματα σε κλίμακα 100</strong> και το Θέμα 1 ήταν το μεγαλύτερο: <strong>35 μονάδες</strong> (10 + 10 + 5 + 5 + 5). Οι παλιές σημειώσεις το είχαν ως «bonus» επειδή βασίζονταν στη μορφή 3 θεμάτων / 60 μονάδων. Αυτή η εκτίμηση δεν ισχύει πια. Το Θέμα 1 είναι το θέμα που κρίνει το «πέρασα».</p>
+
+  <div class="ptsbar" role="img" aria-label="Κατανομή μονάδων Ιουνίου 2026">
+    <div class="t1" style="width:35%">Θ1 · 35</div>
+    <div class="t2" style="width:20%">Θ2 · 20</div>
+    <div class="t3" style="width:25%">Θ3 · 25</div>
+    <div class="t4" style="width:20%">Θ4 · 20</div>
   </div>
+  <div class="ptsbar-legend"><span>Θ1 Prolog</span><span>Θ2 CSP</span><span>Θ3 Herbrand/SLD</span><span>Θ4 Αναπαράσταση γνώσης</span></div>
+
+  <p style="margin-top:1.2rem">Τα θέματα Prolog επαναλαμβάνονται σε <strong>έξι μορφές</strong>. Αν αναγνωρίζεις τη μορφή μέσα σε λίγα δευτερόλεπτα, ξέρεις ήδη το μισό της λύσης.</p>
+
+  <table class="summary-tbl">
+    <thead><tr><th>Τύπος</th><th>Πώς τον αναγνωρίζεις</th><th>Πού έπεσε</th><th>Εξάσκηση</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. Βέλτιστο με <code>\+</code></strong></td><td>«μέγιστο / ελάχιστο / βέλτιστο», «όλες οι λύσεις μέσω οπισθοδρόμησης», σκελετός που περιέχει <code>\+ (.....)</code></td><td>2026Α(α) maxage · 2023Α · 2022Β · 2021Α · 2021Β · 2015Α · 2013Α · 2012Α</td><td><a href="exam_theme1_practice.html#unitB">Γυμναστήριο Β</a></td></tr>
+      <tr><td><strong>2. Ταυτότητα ή ενοποίηση</strong></td><td>«ακριβώς ίδια», «ενοποιήσιμα», «χωρίς να γίνει η ενοποίηση», «τι θα παίρνατε αν υπάρχουν μεταβλητές»</td><td>2026Α(β) · 2023Β · 2022Β · 2018Α · 2016Β · 2015Α · 2014Α · 2014Β</td><td><a href="exam_theme1_practice.html#unitA">Α</a> · <a href="exam_theme1_practice.html#unitC">Γ</a></td></tr>
+      <tr><td><strong>3. «Τι απαντά η Prolog;»</strong></td><td>δίνεται ερώτηση ή μικρό πρόγραμμα και ζητείται η απάντηση ή η αιτιολόγηση</td><td>2019Β · 2018Α · 2018Β · 2017Β · 2015Α · 2013Β</td><td><a href="exam_theme1_practice.html#unitA">Γυμναστήριο Α</a></td></tr>
+      <tr><td><strong>4. Αναδρομή που χτίζει λίστα</strong></td><td>παραδείγματα «λίστα μέσα, λίστα έξω»</td><td>2023Β · 2017Α · 2016Β · 2014Α · 2014Β · 2010Β · 2009Α · 2009Β</td><td><a href="exam_theme1_practice.html#unitC">Γ</a> · <a href="exam_theme1_practice.html#unitD">Δ</a></td></tr>
+      <tr><td><strong>5. append ως μαχαίρι</strong></td><td>«μόνο με append», πρώτο / τελευταίο / πριν / μετά από στοιχείο</td><td>2017Α · 2012Β · 2026Α(β)iv · 2009Α</td><td><a href="exam_theme1_practice.html#unitE">Γυμναστήριο Ε</a></td></tr>
+      <tr><td><strong>6. Παραγωγή &amp; έλεγχος</strong></td><td>δεδομένα σε γεγονότα, «όλες οι εφικτές λύσεις», findall / between</td><td>2022Α · 2020Α · 2020Β · 2019Α · 2019Β · 2018Α · 2015Α</td><td><a href="exam_theme1_practice.html#unitF">Γυμναστήριο ΣΤ</a></td></tr>
+    </tbody>
+  </table>
+
+  <div class="exam"><div class="hd">🎯 Τι σημαίνει αυτό για τη μελέτη σου</div>
+<ul style="padding-left:1.5rem;margin:6px 0">
+    <li>Ο <strong>τύπος 1</strong> έπεσε σε 8 από τα τελευταία 12 γραπτά με θέμα κώδικα, και τον Ιούνιο με την πιο απλή του μορφή. Είναι η πρώτη προτεραιότητα.</li>
+    <li>Ο <strong>τύπος 2</strong> κρύβεται μέσα σε σχεδόν κάθε άσκηση λιστών ως υποερώτημα των 5 μονάδων («τι θα παίρνατε αν…»).</li>
+    <li>Οι τύποι 4 έως 6 χρειάζονται <strong>εξάσκηση με το χέρι</strong>. Η θεωρία εδώ σου δίνει τα εργαλεία, το <a href="exam_theme1_practice.html">Γυμναστήριο</a> την εμπειρία.</li>
+  </ul>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="map"></div>
 </section>
 
-<!-- THE PATTERN -->
 <section id="pattern">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⭐</div><h2>ΤΟ Μοτίβο: «βρες το βέλτιστο» = παράγαγε &amp; απέρριψε αν υπάρχει καλύτερο</h2></div>
-  <p>Σχεδόν κάθε Θέμα 1 ζητάει «βρες <strong>μέγιστο/ελάχιστο/βέλτιστο</strong> κάτι, και επίστρεψε <em>όλες</em> τις βέλτιστες λύσεις με οπισθοδρόμηση». Η λύση είναι <strong>πάντα</strong> αυτή η δομή:</p>
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⭐</div><h2>Τύπος 1: «βέλτιστο» σημαίνει «παρήγαγε και απόρριψε αν υπάρχει καλύτερο»</h2></div>
 
-  <div class="cb"><code><span class="cm">% 1) παράγαγε μια υποψήφια λύση Sol (με «μέγεθος»/αξία N)</span>
-<span class="cm">% 2) βεβαιώσου ότι ΔΕΝ υπάρχει άλλη υποψήφια καλύτερη από αυτή</span>
-best(Input, Sol) :-
-    candidate(Input, Sol, N),
-    <span class="op">\+</span> ( candidate(Input, _, N2), better(N2, N) ).</code></div>
+  <p class="lead">Η Prolog δεν έχει εντολή «βρες το μέγιστο». Περιγράφεις <strong>τι είναι</strong> μια βέλτιστη λύση: μια λύση για την οποία <strong>δεν υπάρχει</strong> άλλη καλύτερη. Αυτή η πρόταση μεταφράζεται κατά λέξη σε Prolog.</p>
 
-  <div class="mnemo">
-    <div class="hd">🧠 Το μυστικό της Γενίκευσης (Πώς να χτίσεις τον δικό σου αλγόριθμο)</div>
-    <p>Όταν δεις ένα άγνωστο θέμα που ζητάει "βρες το βέλτιστο/μέγιστο/ελάχιστο", ακολούθησε αυτά τα βήματα για να στήσεις τον κώδικα:</p>
-    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-      <li><strong>Βήμα 1 (Η Κορφή):</strong> Γράψε τον κανόνα με το <code>\+</code> ακριβώς όπως το Template παραπάνω. Δεν αλλάζει σχεδόν ποτέ! Απλώς προσάρμοσε τα ονόματα (π.χ. από <code>best</code> κάντο <code>max_list</code>).</li>
-      <li><strong>Βήμα 2 (Η Παραγωγή - Generator):</strong> Πώς μπορώ να δημιουργήσω μια έγκυρη (αλλά όχι απαραίτητα καλύτερη) λύση; Χρειάζεσαι μια υπολίστα; Χρησιμοποίησε την <code>subseq</code>. Χρειάζεσαι μια συνεχόμενη υπολίστα; Βάλε την <code>append</code>.</li>
-      <li><strong>Βήμα 3 (Ο Έλεγχος - Tester):</strong> Αφού παράγεις τη λύση, έχει κάποιον επιπλέον κανόνα (π.χ. "όλα τα στοιχεία να είναι ενοποιήσιμα"); Γράψε ένα μικρό, ξεχωριστό αναδρομικό κατηγόρημα που διατρέχει τη λίστα <code>[X|Xs]</code> και το ελέγχει.</li>
-      <li><strong>Βήμα 4 (Η Αξιολόγηση):</strong> Πώς μετράμε το πόσο "καλή" είναι η λύση (η τιμή <code>N</code>); Συνήθως είναι απλώς το μήκος της (οπότε χρησιμοποίησε το έτοιμο <code>length(List, N)</code>) ή το άθροισμά της (οπότε γράψε μια απλή αναδρομή με το <code>+</code>).</li>
-    </ul>
-    <p style="margin-top:8px"><strong>Η Διαίσθηση του <code>\+</code>:</strong> Σκέψου το σαν δικαστήριο. Η παραγωγή φέρνει έναν «υποψήφιο». Το δικαστήριο ψάχνει στο παρασκήνιο (με νέα παραγωγή) να βρει έστω και ΕΝΑΝ καλύτερο υποψήφιο. Αν βρει, απορρίπτει τον πρώτο. Έτσι, επιβιώνουν ΜΟΝΟ οι πραγματικά βέλτιστοι!</p>
+  <div class="cb"><code><span class="fn">best</span>(In, Sol) <span class="kw">:-</span>
+    <span class="fn">candidate</span>(In, Sol, V),                    <span class="cm">% 1. μια υποψήφια λύση με «αξία» V</span>
+    <span class="op">\+</span> ( <span class="fn">candidate</span>(In, _, V2), V2 &gt; V ).      <span class="cm">% 2. καμία άλλη με καλύτερη αξία</span></code></div>
+
+  <div class="flow">
+    <div class="flow-step"><div class="n">ΒΗΜΑ 1</div><div class="t">Παρήγαγε</div><div class="d">Ο generator δίνει <em>μία</em> υποψήφια <code>Sol</code> και την αξία της <code>V</code>.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 2</div><div class="t">Ξαναπαρήγαγε όλες</div><div class="d">Μέσα στο <code>\+</code> ο <em>ίδιος</em> generator τρέχει από την αρχή και ψάχνει μία με <code>V2 &gt; V</code>.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 3</div><div class="t">Απόφαση</div><div class="d">Βρέθηκε καλύτερη: το <code>\+</code> αποτυγχάνει και η <code>Sol</code> απορρίπτεται. Δεν βρέθηκε: η <code>Sol</code> είναι απάντηση.</div></div>
+    <div class="flow-step"><div class="n">ΒΗΜΑ 4</div><div class="t">Backtracking</div><div class="d">Με <code>;</code> η Prolog γυρίζει στο βήμα 1 και δοκιμάζει την επόμενη υποψήφια.</div></div>
   </div>
 
-  <div class="def"><div class="hd">⚡ Τι σημαίνει το <code>\+</code></div>
-    <p><code>\+ Goal</code> = <strong>«άρνηση ως αποτυχία»</strong>: πετυχαίνει <em>ακριβώς όταν</em> το <code>Goal</code> αποτυγχάνει (δεν έχει καμία λύση). Εδώ: «δεν υπάρχει καλύτερη υποψήφια». Δεν δεσμεύει μεταβλητές — γι' αυτό βάζουμε <code>_</code> για τη λύση που δεν μας νοιάζει, μόνο η τιμή της <code>N2</code>.</p>
-  </div>
+  <h3>Εκτέλεση βήμα-βήμα: <code>maxage/1</code> του Ιουνίου</h3>
+  <div class="cb"><code><span class="fn">maxage</span>(Person) <span class="kw">:-</span>
+    <span class="fn">age</span>(Person, A),
+    <span class="op">\+</span> ( <span class="fn">age</span>(_, B), B &gt; A ).</code></div>
+  <div class="cb"><code>?- maxage(P).
+age(P, A)          P = pam, A = 17
+  \+ ( age(_,B), B &gt; 17 ):  age(_,22) → 22 &gt; 17 ✓   το εσωτερικό πέτυχε → το \+ ΑΠΟΤΥΓΧΑΝΕΙ → backtrack
+age(P, A)          P = tom, A = 22
+  \+ ( ... &gt; 22 ):         age(_,27) → 27 &gt; 22 ✓   → απόρριψη → backtrack
+age(P, A)          P = jim, A = 27
+  \+ ( ... &gt; 27 ):         κανένα B &gt; 27            → το εσωτερικό αποτυγχάνει → \+ ΠΕΤΥΧΑΙΝΕΙ
+<span class="fill">P = jim</span> ;
+age(P, A)          P = pat, A = 14   → απόρριψη
+age(P, A)          P = bob, A = 27   → <span class="fill">P = bob</span> ;   … <span class="fill">P = ann</span> ; <span class="fill">P = tim</span> ; false.</code></div>
+  <p>Όλοι οι ισόπαλοι βγαίνουν επειδή το <code>\+</code> ζητάει <strong>γνήσια</strong> καλύτερη (<code>&gt;</code>). Ένας ισόπαλος δεν «νικάει» κανέναν, άρα κανείς ισόπαλος δεν απορρίπτεται.</p>
 
-  <div class="warn"><div class="hd">⚠️ Η πιο συχνή παγίδα</div>
-    <p>Μέσα στο <code>\+ ( ... )</code> πρέπει να <strong>ξανα-παράγεις</strong> υποψήφιες (καλείς πάλι το <code>candidate</code>), όχι να αναφερθείς στην ίδια <code>Sol</code>. Συγκρίνεις την τιμή <code>N</code> της τρέχουσας με την τιμή <code>N2</code> <em>κάθε</em> άλλης δυνατής.</p>
-  </div>
+  <h3>Τα 4 λάθη που κοστίζουν μονάδες</h3>
+  <table class="summary-tbl">
+    <thead><tr><th>Γράφεις</th><th>Τι γίνεται</th><th>Γιατί</th></tr></thead>
+    <tbody>
+      <tr><td><code>\+ ( age(_,B), B &gt;= A )</code></td><td><strong>false</strong> για όλους</td><td>Κάθε άτομο βρίσκει τον εαυτό του με <code>B = A</code>, άρα πάντα υπάρχει «καλύτερος ή ίσος».</td></tr>
+      <tr><td><code>\+ ( age(Person,B), B &gt; A )</code></td><td>επιστρέφει <strong>όλους</strong></td><td>Το <code>Person</code> είναι ήδη δεμένο: συγκρίνεις το άτομο μόνο με τον εαυτό του.</td></tr>
+      <tr><td><code>\+ ( B &gt; A )</code></td><td><strong>instantiation error</strong></td><td>Λείπει ο generator: το <code>B</code> δεν έχει τιμή όταν φτάνει στο <code>&gt;</code>.</td></tr>
+      <tr><td><code>\+ (...), age(Person, A)</code></td><td>instantiation error ή λάθος</td><td>Το <code>\+</code> τρέχει πριν δεσμευτεί το <code>A</code>. Η σειρά μετράει: πρώτα παραγωγή, μετά έλεγχος.</td></tr>
+    </tbody>
+  </table>
+  <p>Όλα αυτά τα τρέχεις στο <a href="exam_theme1_practice.html#b1x">Γυμναστήριο (άσκηση Β1γ)</a>.</p>
 
-  <div class="mnemo"><div class="hd">🧠 Μνημονικό 4 βημάτων: «Π-Α-Μ-Ε» (πάμε!)</div>
-    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-      <li><strong>Π</strong>αρήγαγε υποψήφια λύση (με <code>subseq</code> ή <code>append</code>).</li>
-      <li><strong>Α</strong>πέρριψε, αν υπάρχει καλύτερη (το <code>\+ (candidate…, better)</code>).</li>
-      <li><strong>Μ</strong>έτρησε την τιμή N (με <code>length</code> ή απλό άθροισμα).</li>
-      <li><strong>Ε</strong>πιπλέον ιδιότητα; (αν χρειάζεται, έλεγξέ την με ξεχωριστό αναδρομικό κατηγόρημα, π.χ. «όλα ενοποιήσιμα»).</li>
-    </ul>
-    <p style="margin-top:6px"><strong>Γιατί βγαίνουν ΟΛΕΣ οι βέλτιστες;</strong> Το εξωτερικό <code>candidate</code> με <em>οπισθοδρόμηση</em> δοκιμάζει μία-μία όλες τις υποψήφιες. Το <code>\+</code> αφήνει να περάσουν μόνο όσες δεν έχουν καλύτερη — δηλαδή <em>όλες</em> τις ισοβαθμούσες βέλτιστες, μία σε κάθε backtracking. Γι' αυτό το ίδιο μοτίβο δίνει «την πρώτη» (αν βάλεις <code>!</code>/<code>once</code>) ή «όλες» (αν αφήσεις την οπισθοδρόμηση να τρέξει).</p>
-  </div>
+  <h3>Παραλλαγές του ίδιου μοτίβου</h3>
+  <ul style="padding-left:1.5rem">
+    <li><strong>Ελάχιστο:</strong> αλλάζεις μόνο τη σύγκριση σε <code>V2 &lt; V</code>.</li>
+    <li><strong>Βέλτιστο με περιορισμό</strong> (π.χ. «ο μεγαλύτερος από όσους είναι κάτω από 20»): ο ίδιος περιορισμός μπαίνει <em>και</em> στον εξωτερικό <em>και</em> στον εσωτερικό generator.</li>
+    <li><strong>Σύνθετο «καλύτερο»</strong> (ισοπαλία με αλφάβητο): <code>\+ ( age(Q,B), ( B &gt; A ; B =:= A, Q @&lt; P ) )</code>.</li>
+    <li><strong>Ελάχιστο μήκος χωρίς <code>\+</code>:</strong> με ελεύθερο μήκος, το <code>length(L, N)</code> δοκιμάζει <code>N = 0, 1, 2, …</code>, άρα η πρώτη λύση έχει το μικρότερο μήκος (2022 Α).</li>
+  </ul>
+
+  <div class="note"><div class="hd">📚 Από τις διαφάνειες του μαθήματος</div>
+<p style="margin:4px 0">Το μοτίβο εμφανίζεται ήδη στο κεφάλαιο των γράφων, στην εύρεση μονοπατιού ελαχίστου κόστους:</p><div class="cb"><code>?- <span class="fn">path</span>(node1, node2, Graph, MinPath, MinCost),
+   not ( <span class="fn">path</span>(node1, node2, Graph, _, Cost),
+         Cost &lt; MinCost ).</code></div><p style="margin:4px 0">Ίδια δομή: παραγωγή μιας λύσης, και άρνηση της ύπαρξης φθηνότερης.</p>
+</div>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="pattern"></div>
 </section>
 
-<!-- TOOLBOX -->
-<section id="toolbox">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧰</div><h2>Τα 4 βοηθητικά που χρειάζεσαι (αποστήθισέ τα)</h2></div>
+<section id="tools">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧰</div><h2>Εργαλειοθήκη: οι συγκρίσεις και τα «μαχαίρια» λιστών</h2></div>
 
-  <h3>1 · <code>length/2</code> — μέτρα ή φτιάξε λίστα δοσμένου μήκους</h3>
-  <div class="cb"><code><span class="cm">% μετράει: N = 3</span>
-?- length([a,b,c], N).
-<span class="cm">% παράγει «σκελετό» λίστας μήκους 2 (με ανώνυμες μεταβλητές)</span>
-?- length(L, 2).   <span class="cm">% L = [_,_]</span>
-<span class="cm">% αν αφήσεις και τα δύο ελεύθερα: παράγει 0,1,2,… (αύξον μήκος)</span></code></div>
+  <h3 style="margin-top:0.5rem">Οι έξι συγκρίσεις (τύποι 2 και 3)</h3>
+  <table class="summary-tbl">
+    <thead><tr><th>Γράφεις</th><th>Τι ελέγχει</th><th>Δένει μεταβλητές;</th><th>Παράδειγμα</th></tr></thead>
+    <tbody>
+      <tr><td><code>X = Y</code></td><td>ενοποίηση</td><td><strong>ναι</strong></td><td><code>f(X) = f(5)</code> → <code>X = 5</code></td></tr>
+      <tr><td><code>X == Y</code></td><td>είναι <em>ήδη</em> ίδιοι όροι;</td><td>όχι</td><td><code>f(X) == f(5)</code> → false</td></tr>
+      <tr><td><code>X \= Y</code></td><td>δεν ενοποιούνται</td><td>όχι</td><td><code>f(X) \= f(5)</code> → false</td></tr>
+      <tr><td><code>\+ X \= Y</code> ή <code>\+ \+ X = Y</code></td><td>ενοποιούνται, <em>χωρίς να κρατηθεί</em> η ενοποίηση</td><td>όχι</td><td><code>\+ f(X) \= f(5)</code> → true, το <code>X</code> μένει ελεύθερο</td></tr>
+      <tr><td><code>N is E</code></td><td>υπολογισμός αριθμητικής έκφρασης</td><td>ναι (το <code>N</code>)</td><td><code>N is 1+1</code> → <code>N = 2</code></td></tr>
+      <tr><td><code>E1 =:= E2</code></td><td>αριθμητική ισότητα (και οι δύο πρέπει να έχουν τιμή)</td><td>όχι</td><td><code>2 =:= 1+1</code> → true · <code>2 == 1+1</code> → false</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><div class="hd">⚠️ Γιατί το \+ δεν αφήνει ποτέ δεσμεύσεις</div>
+<p style="margin:4px 0">Αν το <code>\+ G</code> πετύχει, το <code>G</code> απέτυχε, άρα δεν δέθηκε τίποτα. Αν το <code>\+ G</code> αποτύχει, η Prolog κάνει backtracking και αναιρεί ό,τι έδεσε το <code>G</code>. Γι' αυτό το <code>\+ \+ X = Y</code> είναι το «δοκίμασε την ενοποίηση και ξήλωσέ την».</p>
+</div>
 
-  <h3>2 · <code>append/3</code> — κόψε/ένωσε λίστες (για «συνεχόμενη υπολίστα»)</h3>
-  <div class="cb"><code><span class="cm">% Sub είναι ΣΥΝΕΧΟΜΕΝΗ υπολίστα της List:</span>
-contig(Sub, List) :- append(_, Rest, List), append(Sub, _, Rest).</code></div>
-  <p style="color:var(--muted)">List = (κάτι) ++ Rest, και Rest = Sub ++ (κάτι). Άρα το Sub είναι ένα συνεχόμενο «παράθυρο» μέσα στη List.</p>
+  <h3>Τα «μαχαίρια» του append (τύπος 5)</h3>
+  <table class="summary-tbl">
+    <thead><tr><th>Θέλεις</th><th>Γράφεις</th></tr></thead>
+    <tbody>
+      <tr><td>τελευταίο στοιχείο</td><td><code>append(_, [Last], L)</code></td></tr>
+      <tr><td>πρώτο και τελευταίο, και το ενδιάμεσο</td><td><code>append([First|Middle], [Last], L)</code></td></tr>
+      <tr><td>πριν και μετά από το <code>x</code></td><td><code>append(Before, [x|After], L)</code></td></tr>
+      <tr><td>τα στοιχεία ακριβώς γύρω από το <code>x</code></td><td><code>append(_, [Prev, x, Next|_], L)</code></td></tr>
+      <tr><td>συνεχόμενη υπολίστα («παράθυρο»)</td><td><code>append(_, Rest, L), append(Sub, _, Rest)</code></td></tr>
+      <tr><td>πρόθεμα / κατάληξη</td><td><code>append(Pre, _, L)</code> / <code>append(_, Suf, L)</code></td></tr>
+      <tr><td>μέλος (σαν member)</td><td><code>append(_, [X|_], L)</code></td></tr>
+    </tbody>
+  </table>
 
-  <h3>3 · <code>subseq/2</code> — υπακολουθία (διατήρησε σειρά, ΟΧΙ κατ' ανάγκη συνεχόμενα)</h3>
-  <div class="cb"><code>subseq([], []).
-subseq([X|Xs], [X|Ys]) :- subseq(Xs, Ys).   <span class="cm">% κράτα το X</span>
-subseq([_|Xs],    Ys ) :- subseq(Xs, Ys).   <span class="cm">% πέτα το X</span></code></div>
+  <h3>Οι γεννήτριες (τύποι 1 και 6)</h3>
+  <div class="cb"><code><span class="cm">% υπακολουθία: διατηρεί τη σειρά, όχι κατ' ανάγκη συνεχόμενα</span>
+<span class="fn">subseq</span>([], []).
+<span class="fn">subseq</span>([X|Xs], [X|Ys]) <span class="kw">:-</span> <span class="fn">subseq</span>(Xs, Ys).    <span class="cm">% κράτα το X</span>
+<span class="fn">subseq</span>([_|Xs], Ys) <span class="kw">:-</span> <span class="fn">subseq</span>(Xs, Ys).        <span class="cm">% πέτα το X</span>
 
-  <h3>4 · <code>=../2</code> (univ) + <code>call/1</code> — φτιάξε &amp; τρέξε δυναμικό στόχο</h3>
-  <div class="cb"><code><span class="cm">% χτίζει τον στόχο  &lt;(3,5)  και τον εκτελεί:</span>
-?- Op = (&lt;), Goal =.. [Op, 3, 5], call(Goal).   <span class="cm">% πετυχαίνει (3&lt;5)</span></code></div>
-  <p style="color:var(--muted)">Χρήσιμο όταν ο τελεστής σύγκρισης (<code>&lt;</code> ή <code>&gt;</code>) δίνεται ως όρισμα.</p>
+<span class="cm">% αριθμοί Lo..Hi ένας-ένας</span>
+?- <span class="fn">between</span>(<span class="nm">1</span>, <span class="nm">3</span>, K).                          <span class="cm">% K = 1 ; K = 2 ; K = 3</span>
 
-  <div class="tip-box"><div class="hd">💡 ==/\== εναντίον =/\=</div>
-    <p><code>X = Y</code> = <strong>ενοποίηση</strong> (μπορεί να δέσει μεταβλητές). <code>X == Y</code> = «είναι <em>συντακτικά ταυτόσημα τώρα</em>;» (δεν δένει). <code>\==</code> το αντίθετο. Χρήσιμα όταν η εκφώνηση λέει «χωρίς να γίνει ενοποίηση».</p>
-    <p>Για «είναι ενοποιήσιμα χωρίς να τα δέσω;» → <code>\+ \+ X = Y</code> (δοκίμασε ενοποίηση, μετά ξήλωσέ την).</p>
-  </div>
+<span class="cm">% όλες οι λύσεις σε λίστα</span>
+?- <span class="fn">findall</span>(K, <span class="fn">between</span>(<span class="nm">1</span>, <span class="nm">3</span>, K), Ks).          <span class="cm">% Ks = [1,2,3]</span>
+
+<span class="cm">% στόχος με τελεστή που δίνεται ως όρισμα (2023 Α)</span>
+?- Op = (&lt;), Goal <span class="op">=..</span> [Op, <span class="nm">3</span>, <span class="nm">5</span>], <span class="fn">call</span>(Goal). <span class="cm">% πετυχαίνει</span></code></div>
+  <p>Με ελεύθερο πρώτο όρισμα, το <code>length(L, 2)</code> φτιάχνει τη λίστα <code>[_, _]</code>. Με ελεύθερα και τα δύο, το <code>length(L, N)</code> δίνει <code>N = 0, 1, 2, …</code> επ' άπειρον.</p>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="tools"></div>
 </section>
 
-<!-- READING SKELETON -->
 <section id="read">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🔍</div><h2>Πώς να συμπληρώσεις τα «...........»</h2></div>
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🔍</div><h2>Πώς διαβάζεις και γεμίζεις έναν σκελετό</h2></div>
+
+  <p class="lead">Στην Prolog περιγράφεις μια <strong>σχέση</strong> ανάμεσα στα ορίσματα. Κάθε όρισμα είναι ένα «κανάλι» με σταθερό νόημα σε όλες τις προτάσεις.</p>
   <ol class="steps">
-    <li><strong>Βρες το <code>\+ (...)</code>:</strong> σχεδόν πάντα στην 1η πρόταση. Μέσα μπαίνει «υπάρχει υποψήφια με καλύτερη τιμή».</li>
-    <li><strong>Δες ποιο κατηγόρημα παράγει υποψήφιες</strong> (συνήθως μέσω <code>subseq</code> ή <code>append</code>). Συμπλήρωσε εκεί το «παράγαγε + έλεγξε ιδιότητα + μέτρα μέγεθος».</li>
-    <li><strong>Βάσεις αναδρομής:</strong> η κενή λίστα <code>[]</code> δίνει τα αρχικά (συχνά <code>0, 0</code> για αθροίσματα).</li>
-    <li><strong>Αναδρομικές προτάσεις:</strong> μία «κράτα το στοιχείο» και μία «πέτα το στοιχείο» (το κλασικό subseq).</li>
+    <li><strong>Διάβασε πρώτα τα παραδείγματα.</strong> Ό,τι είναι δεμένο στην ερώτηση είναι είσοδος. Ό,τι επιστρέφεται είναι έξοδος. Γράψε δίπλα σε κάθε όρισμα τι κρατάει.</li>
+    <li><strong>Ψάξε το <code>\+ (....)</code>.</strong> Αν υπάρχει στην πρώτη πρόταση, το θέμα είναι τύπου 1 και το κενό είναι «ο ίδιος generator + καλύτερη τιμή».</li>
+    <li><strong>Η πρόταση με <code>[]</code> είναι η βάση.</strong> Ρώτα: «για την άδεια είσοδο, ποια είναι η σωστή έξοδος;» (συνήθως <code>[]</code>, <code>0</code>, <code>0, 0</code>).</li>
+    <li><strong>Δύο σχεδόν ίδιες αναδρομικές προτάσεις</strong> σημαίνουν «κράτα / πέτα» (subseq, υποσύνολα) ή «ίδιο / διαφορετικό» (packcons, compr).</li>
+    <li><strong>Όλο = στοιχείο ⊕ μέρος.</strong> Στην αναδρομική πρόταση, η έξοδος της κεφαλής φτιάχνεται από το πρώτο στοιχείο και την έξοδο της αναδρομής: <code>[X|Sub]</code>, <code>TotW is TotW1 + W</code>.</li>
+    <li><strong>Κάνε trace με το μικρότερο παράδειγμα.</strong> Δύο-τρία βήματα στο χαρτί αρκούν για να δεις αν το σχήμα της εξόδου βγαίνει σωστό.</li>
   </ol>
+
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <h4 style="color:var(--green);margin-top:0">Ο σκελετός σου «μιλάει»</h4>
+      <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.6">
+        <li><code>\+ (....)</code> στην αρχή → βέλτιστο (τύπος 1)</li>
+        <li><code>foo([], …)</code> και <code>foo([X|Xs], …)</code> → αναδρομή σε λίστα</li>
+        <li>δύο <code>append</code> στη σειρά → συνεχόμενη υπολίστα</li>
+        <li><code>findall(…)</code> → «μάζεψε όλες τις λύσεις»</li>
+        <li>όρισμα που «μεγαλώνει» (<code>SoFar</code>, <code>Acc</code>) → συσσωρευτής</li>
+        <li><code>call(Goal)</code> → πριν χρειάζεται <code>Goal =.. [...]</code></li>
+      </ul>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--purple)">
+      <h4 style="color:var(--purple);margin-top:0">Τρεις χρυσοί κανόνες</h4>
+      <ul style="padding-left:1.5rem;font-size:0.93rem;line-height:1.6">
+        <li><strong>Ίδιο νόημα, ίδια θέση.</strong> Αν το 3ο όρισμα είναι «βάρος ώς τώρα», είναι παντού «βάρος ώς τώρα».</li>
+        <li><strong>Η αναδρομή δουλεύει σε μικρότερη είσοδο</strong>, αλλιώς δεν τερματίζει.</li>
+        <li><strong>Η αριθμητική μπαίνει αφού δεθούν οι μεταβλητές</strong> (<code>is</code>, <code>&lt;</code> μετά τον generator).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="read"></div>
 </section>
 
-<!-- SOLVED -->
+<section id="june">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🆕</div><h2>Ιούνιος 2026, Θέμα 1: όλη η λύση</h2></div>
+
+  <p class="lead">Το θέμα που δεν έλυσες είναι δύο κομμάτια: ένα καθαρό «βέλτιστο με <code>\+</code>» (τύπος 1) και ένα masterclass στις συγκρίσεις (τύπος 2). Δοκίμασε πρώτα στους editors, μετά άνοιξε τις λύσεις.</p>
+
+  <h3 style="margin-top:0.6rem">(α) maxage/1 · 10 μονάδες</h3>
+  <p>Δίνονται γεγονότα <code>age(Άτομο, Ηλικία)</code>. Συμπλήρωσε τον ορισμό <code>maxage(Person) :- age(.....), .....</code> ώστε να επιστρέφει το μεγαλύτερο σε ηλικία άτομο, και όλα τα ισόπαλα με backtracking. <strong>Δεν επιτρέπονται άλλα κατηγορήματα ή άλλες προτάσεις.</strong> Αναμενόμενο: <code>jim ; bob ; ann ; tim ; No</code>.</p>
+  <div class="plx" data-id="b1" data-query="maxage(Person)." data-title="maxage/1 (Ιούνιος 2026): μία πρόταση, χωρίς βοηθητικά">
+<script type="text/plain" class="plx-src">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+maxage(Person) :- age(.............), ........................
+</script>
+<script type="text/plain" class="plx-ref">
+age(pam, 17). age(tom, 22). age(jim, 27). age(pat, 14). age(bob, 27).
+age(ann, 27). age(amy, 26). age(don, 18). age(gus, 18). age(ian, 25).
+age(leo, 19). age(sam, 23). age(tim, 27). age(zoe, 17). age(ben, 24).
+
+maxage(Person) :-
+    age(Person, A),
+    \+ ( age(_, B), B > A ).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "maxage(Person).", "n": 10}, {"q": "maxage(tom).", "n": 3}, {"q": "maxage(tim).", "n": 3}]</script>
+</div>
+  <details class="reveal"><summary>Λύση (α): πώς βγαίνει κάθε κενό</summary><div class="reveal-body">
+
+<div class="cb"><code><span class="fn">age</span>(pam, <span class="nm">17</span>). <span class="fn">age</span>(tom, <span class="nm">22</span>). <span class="fn">age</span>(jim, <span class="nm">27</span>). <span class="fn">age</span>(pat, <span class="nm">14</span>). <span class="fn">age</span>(bob, <span class="nm">27</span>).
+<span class="fn">age</span>(ann, <span class="nm">27</span>). <span class="fn">age</span>(amy, <span class="nm">26</span>). <span class="fn">age</span>(don, <span class="nm">18</span>). <span class="fn">age</span>(gus, <span class="nm">18</span>). <span class="fn">age</span>(ian, <span class="nm">25</span>).
+<span class="fn">age</span>(leo, <span class="nm">19</span>). <span class="fn">age</span>(sam, <span class="nm">23</span>). <span class="fn">age</span>(tim, <span class="nm">27</span>). <span class="fn">age</span>(zoe, <span class="nm">17</span>). <span class="fn">age</span>(ben, <span class="nm">24</span>).
+
+<span class="fn">maxage</span>(Person) <span class="kw">:-</span>
+    <span class="fn">age</span>(<span class="fill">Person, A</span>),
+    <span class="fill"><span class="op">\+</span> ( <span class="fn">age</span>(_, B), B &gt; A )</span>.</code></div>
+<ul style="padding-left:1.5rem">
+  <li><strong>1ο κενό, <code>age(Person, A)</code>:</strong> ο generator. Δένει ένα άτομο και την ηλικία του.</li>
+  <li><strong>2ο κενό, <code>\+ ( age(_, B), B &gt; A )</code>:</strong> ο έλεγχος «κανείς γνήσια μεγαλύτερος». Το <code>_</code> είναι απαραίτητο: χρειάζεσαι <em>οποιοδήποτε</em> άτομο, όχι το ίδιο.</li>
+  <li>Η εκφώνηση απαγορεύει βοηθητικά κατηγορήματα και άλλες προτάσεις. Το μοτίβο χωράει σε μία πρόταση, γι' αυτό ακριβώς το ζήτησαν έτσι.</li>
+</ul>
+</div></details>
+
+  <h3>(β) special_palindrome/1 · 25 μονάδες</h3>
+  <p><strong>i. (10)</strong> Επιτυχία όταν τα συμμετρικά ως προς το κέντρο στοιχεία είναι <strong>ακριβώς ίδια</strong>. Αναμενόμενο στις 4 ερωτήσεις: <code>No · Yes · No · No</code>.</p>
+  <div class="plx" data-id="c1" data-query="special_palindrome([f(X), g(3), h(Y), g(3), f(X)])." data-title="Ιούνιος 2026 (β)i: special_palindrome, συμμετρικά ΑΚΡΙΒΩΣ ίδια">
+<script type="text/plain" class="plx-src">
+% επιτυγχάνει όταν τα συμμετρικά ως προς το κέντρο στοιχεία είναι ακριβώς ίδια
+special_palindrome(List) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    First == Last,
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div>
+  <details class="reveal"><summary>Λύση (β)i: σύγκρινε πρώτο με τελευταίο και μπες προς τα μέσα</summary><div class="reveal-body">
+
+<div class="cb"><code><span class="fn">special_palindrome</span>([]).
+<span class="fn">special_palindrome</span>([_]).
+<span class="fn">special_palindrome</span>([First|Rest]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Middle, [Last], Rest),
+    First <span class="op">==</span> Last,
+    <span class="fn">special_palindrome</span>(Middle).</code></div>
+<ul style="padding-left:1.5rem">
+  <li><strong>Βάσεις:</strong> η άδεια λίστα και η λίστα ενός στοιχείου είναι πάντα «παλίνδρομες» (το μεσαίο στοιχείο δεν έχει ζευγάρι).</li>
+  <li><strong>Ένα βήμα:</strong> το <code>append(Middle, [Last], Rest)</code> κόβει το τελευταίο. Το <code>First == Last</code> ελέγχει ταυτότητα χωρίς να δέσει τίποτα.</li>
+  <li><strong>Ισοδύναμα σε μία γραμμή:</strong> <code>special_palindrome(L) :- reverse(L, R), L == R.</code> (το <code>reverse</code> εδώ επιτρέπεται).</li>
+</ul>
+<div class="cb"><code>?- special_palindrome([f(X), g(5), g(X), f(5)]).
+First = f(X), Rest = [g(5), g(X), f(5)]
+append(Middle, [Last], Rest)   → Middle = [g(5), g(X)], Last = f(5)
+f(X) == f(5)                   → <span class="op">αποτυγχάνει</span> (το X δεν είναι 5)   → No</code></div>
+</div></details>
+  <p><strong>ii. (5)</strong> Ποια <strong>ελάχιστη</strong> αλλαγή χρειάζεται ώστε η συνθήκη να γίνει «ενοποιήσιμα», με καταφατική απάντηση και στις 4 ερωτήσεις;</p>
+  <div class="plx" data-id="c2" data-query="special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)])." data-title="Ιούνιος 2026 (β)ii: η ελάχιστη αλλαγή για «ενοποιήσιμα»">
+<script type="text/plain" class="plx-src">
+% Άλλαξε ΜΟΝΟ τη σύγκριση ώστε και οι 4 ερωτήσεις να πετυχαίνουν.
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    First == Last,
+    special_palindrome(Middle).
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    \+ First \= Last,
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div>
+  <details class="reveal"><summary>Λύση (β)ii: η παγίδα του σκέτου <code>=</code></summary><div class="reveal-body">
+
+<p>Η ελάχιστη αλλαγή είναι να γίνει η σύγκριση «ενοποιήσιμα, <strong>χωρίς να κρατηθεί</strong> η ενοποίηση»:</p>
+<div class="cb"><code>    First <span class="op">==</span> Last           <span class="cm">% (i)</span>
+    <span class="fill"><span class="op">\+</span> First <span class="op">\=</span> Last</span>       <span class="cm">% (ii)   ισοδύναμο: \+ \+ First = Last</span></code></div>
+<p>Αν γράψεις σκέτο <code>First = Last</code>, οι δεσμεύσεις του ενός ζευγαριού <strong>μένουν</strong> και επηρεάζουν τα επόμενα. Η εκφώνηση ζητάει καταφατική απάντηση και στις 4 ερωτήσεις, και η 4η τη χάνει:</p>
+<div class="cb"><code>?- special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).     με  First = Last
+ζευγάρι 1:  f(X) = f(Y)   → X = Y
+ζευγάρι 2:  g(Y) = g(3)   → Y = 3   (άρα και X = 3)
+ζευγάρι 3:  h(5) = h(X)   → h(5) = h(3)  <span class="op">αποτυγχάνει</span>        → No
+
+με  \+ First \= Last   κάθε ζευγάρι ελέγχεται μόνο του, καμία δέσμευση δεν μένει:
+f(X)~f(Y) ✓   g(Y)~g(3) ✓   h(5)~h(X) ✓                          → Yes</code></div>
+<table class="summary-tbl">
+  <thead><tr><th>Ερώτηση</th><th>(i) <code>==</code></th><th>(ii) <code>\+ \=</code></th><th>λάθος <code>=</code></th><th>(iii) <code>reverse(L,L)</code> και (iv)</th></tr></thead>
+  <tbody>
+    <tr><td><code>[f(X),g(5),g(X),f(5)]</code></td><td>No</td><td>Yes</td><td>Yes, X = 5</td><td>Yes, X = 5</td></tr>
+    <tr><td><code>[f(X),g(3),h(Y),g(3),f(X)]</code></td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td><code>[f(X),g(Y),h(3),h(X),g(3),f(Y)]</code></td><td>No</td><td>Yes</td><td>Yes, X = Y = 3</td><td>Yes, X = Y = 3</td></tr>
+    <tr><td><code>[f(X),g(Y),h(5),h(X),g(3),f(Y)]</code></td><td>No</td><td><strong>Yes</strong></td><td><strong>No</strong></td><td>No</td></tr>
+  </tbody>
+</table>
+<p style="color:var(--muted);font-size:0.9rem">Ο πίνακας είναι επαληθευμένος σε SWI-Prolog. Τον ξανατρέχεις στο <a href="exam_theme1_practice.html#unitC">Γυμναστήριο Γ</a>.</p>
+</div></details>
+  <p><strong>iii. (5)</strong> Τι απαντά ο ορισμός <code>special_palindrome(List) :- reverse(List, List).</code>; <strong>iv. (5)</strong> Γράψε τον ίδιο ορισμό χωρίς <code>reverse/2</code>.</p>
+  <div class="plx" data-id="c4" data-query="special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)])." data-title="Ιούνιος 2026 (β)iv: ίδια συμπεριφορά με το (iii), χωρίς reverse/2">
+<script type="text/plain" class="plx-src">
+% ίδιες απαντήσεις (και ίδιες δεσμεύσεις) με το
+%   special_palindrome(List) :- reverse(List, List).
+special_palindrome(List) :-
+    ......................
+</script>
+<script type="text/plain" class="plx-ref">
+special_palindrome([]).
+special_palindrome([_]).
+special_palindrome([First|Rest]) :-
+    append(Middle, [First], Rest),
+    special_palindrome(Middle).
+</script>
+<script type="application/json" class="plx-tests">[{"q": "special_palindrome([f(X), g(5), g(X), f(5)]).", "n": 5}, {"q": "special_palindrome([f(X), g(3), h(Y), g(3), f(X)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(3), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([f(X), g(Y), h(5), h(X), g(3), f(Y)]).", "n": 5}, {"q": "special_palindrome([]).", "n": 3}, {"q": "special_palindrome([a,b,a]).", "n": 3}]</script>
+</div>
+  <details class="reveal"><summary>Λύση (β)iii και (β)iv</summary><div class="reveal-body">
+
+<p><strong>(iii)</strong> Το <code>reverse(List, List)</code> ενοποιεί τη λίστα με την αντίστροφή της, με <em>κοινές</em> δεσμεύσεις σε όλη τη λίστα. Απαντήσεις: <span class="ans-line">Yes (X = 5) · Yes · Yes (X = 3, Y = 3) · No</span>. Είναι η συμπεριφορά του σκέτου <code>=</code> της προηγούμενης στήλης.</p>
+<p><strong>(iv)</strong> Χωρίς <code>reverse</code>: το πρώτο στοιχείο <em>ενοποιείται</em> απευθείας με το τελευταίο, γράφοντας την ίδια μεταβλητή <code>First</code> και στις δύο θέσεις.</p>
+<div class="cb"><code><span class="fn">special_palindrome</span>([]).
+<span class="fn">special_palindrome</span>([_]).
+<span class="fn">special_palindrome</span>([First|Rest]) <span class="kw">:-</span>
+    <span class="fn">append</span>(Middle, [First], Rest),
+    <span class="fn">special_palindrome</span>(Middle).</code></div>
+<p>Επιτρέπεται και δικός σου αντιστροφέας με συσσωρευτή (<code>rev(L, R) :- rev(L, [], R).</code> …) και μετά <code>special_palindrome(L) :- rev(L, L).</code> Δίνει τις ίδιες απαντήσεις.</p>
+</div></details>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="june"></div>
+</section>
+
 <section id="solved">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">✅</div><h2>Και τα 5 Παλιά Θέματα — Συμπληρωμένα</h2></div>
-  <p class="lead">Με <span class="fill">πράσινο</span> τα κομμάτια που μπαίνουν στα κενά.</p>
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">✅</div><h2>Λυμένα παλιά θέματα τύπου 1 και 2</h2></div>
 
-  <div class="exam"><div class="hd">🧭 Μην πανικοβάλλεσαι — έτσι «επιτίθεσαι» σε ΚΑΘΕ θέμα κώδικα</div>
-    <ol style="margin:6px 0; padding-left:20px; line-height:1.7">
-      <li><strong>Διάβασε ΠΡΩΤΑ τα παραδείγματα εκτέλεσης</strong> (<code>?- foo(...)</code>). Σου λένε ακριβώς τι πρέπει να βγάλει — είναι η εκφώνηση «με νούμερα».</li>
-      <li><strong>Ψάξε το <code>\+ (...)</code> στον σκελετό.</strong> Αν υπάρχει → το θέμα ζητάει «βέλτιστο». Μέσα μπαίνει πάντα «υπάρχει υποψήφια <em>καλύτερη</em>». Γεμίζει σχεδόν μόνο του.</li>
-      <li><strong>Οι 2 αναδρομικές προτάσεις = «κράτα / πέτα».</strong> Η μία παίρνει το στοιχείο, η άλλη το προσπερνά. (Αυτό είναι το <code>subseq</code>.)</li>
-      <li><strong>Η πρόταση με <code>[]</code> = η βάση.</strong> Βάλε τα αρχικά (συχνά <code>0, 0</code> ή κενή λίστα <code>[]</code>).</li>
-      <li><strong>Αν κολλήσεις, γράψε ό,τι ξέρεις + σχόλια.</strong> Παίρνεις μερική βαθμολογία. Δεν χρειάζεσαι τέλειο κώδικα — χρειάζεσαι μονάδες.</li>
-    </ol>
-  </div>
+  <p class="lead">Με <span class="fill">πράσινο</span> ό,τι μπαίνει στα κενά. Κάθε άσκηση έχει δικό της editor με αυτόματο έλεγχο στο <a href="exam_theme1_practice.html">Γυμναστήριο</a>.</p>
 
-  <div class="tip-box" style="border-color:var(--cyan);background:linear-gradient(90deg,rgba(57,212,200,.07),transparent 60%)">
-    <div class="hd" style="color:var(--cyan)">💡 Αποκωδικοποίηση Όρων για Αρχάριους (Newbie Guide)</div>
-    <p>Αν γράφεις κώδικα Prolog για πρώτη φορά, δες πώς δουλεύουν τα βασικά εργαλεία:</p>
-    <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-      <li><strong>Generate & Test (Παραγωγή & Έλεγχος):</strong> Το βασικό μοτίβο. Αντί να βρούμε έξυπνα τη βέλτιστη λύση, παράγουμε όλες τις υποψήφιες λύσεις (generate) και μετά φιλτράρουμε τις κακές (test).</li>
-      <li><strong>Άρνηση ως Αποτυχία (<code>\+ Goal</code>):</strong> Πετυχαίνει <em>μόνο αν</em> το <code>Goal</code> αποτύχει να βρει λύση (δεν αποδεικνύεται).
-        <ul style="margin:2px 0; padding-left:20px">
-          <li>Για βελτιστοποίηση: <em>«Βρες μια υποψήφια λύση Sol με τιμή N, τέτοια ώστε <strong>να μην υπάρχει (\+)</strong> άλλη Sol2 με τιμή N2 καλύτερη από τη δική μας.»</em></li>
-        </ul>
-      </li>
-      <li><strong><code>subseq(List, Sub)</code>:</strong> Παράγει ή ελέγχει <strong>υπακολουθίες</strong>. Παίρνει στοιχεία από τη λίστα διατηρώντας τη σειρά τους, αλλά <em>όχι απαραίτητα συνεχόμενα</em> (π.χ. το <code>[a,c]</code> είναι υπακολουθία του <code>[a,b,c]</code>).</li>
-      <li><strong><code>append</code> (για συνεχόμενες υπολίστες):</strong>
-        Συνδυάζοντας δύο append (<code>append(_, Rest, List), append(Sub, _, Rest)</code>) "κόβουμε" ένα <strong>συνεχόμενο κομμάτι</strong> (παράθυρο) από τη λίστα (π.χ. το <code>[a,b]</code> είναι συνεχόμενο κομμάτι, αλλά το <code>[a,c]</code> όχι).
-      </li>
-      <li><strong>Ενοποίηση (<code>=</code>) vs Συντακτική Ισότητα (<code>==</code>):</strong>
-        <ul style="margin:2px 0; padding-left:20px">
-          <li><code>X = Y</code>: Αν το X είναι ελεύθερη μεταβλητή, <em>την ταυτίζει/δεσμεύει</em> με το Y.</li>
-          <li><code>X == Y</code>: Ελέγχει αν είναι <em>ήδη ταυτόσημα αυτή τη στιγμή</em> (π.χ. αν είναι η ίδια μεταβλητή), χωρίς να κάνει καμία δέσμευση.</li>
-          <li><code>X \== Y</code>: Συντακτικά διάφορα (το αντίθετο του <code>==</code>).</li>
-          <li><code>\+ \+ X = Y</code>: Ελέγχει αν το X <em>μπορεί</em> να ενοποιηθεί με το Y, αλλά <strong>αναιρεί αμέσως</strong> τη δέσμευση (δοκιμή χωρίς μόνιμη αλλαγή).</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+  <div class="solved"><div class="solved-hd">2021 Α · knapsack/4 (το αρχέτυπο) · <a href="exam_theme1_practice.html#b4">δοκίμασέ το</a></div><div class="solved-body">
+  <p>Υποσύνολο αντικειμένων <code>W/V</code> που χωράει στο σακίδιο, με μέγιστη αξία, όλες οι βέλτιστες λύσεις.</p>
+  <details class="reveal"><summary>Λύση + εξήγηση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">items</span>([<span class="nm">6</span>/<span class="nm">12</span>, <span class="nm">15</span>/<span class="nm">10</span>, <span class="nm">22</span>/<span class="nm">32</span>, <span class="nm">14</span>/<span class="nm">19</span>, <span class="nm">15</span>/<span class="nm">17</span>, <span class="nm">18</span>/<span class="nm">11</span>, <span class="nm">6</span>/<span class="nm">22</span>, <span class="nm">14</span>/<span class="nm">13</span>, <span class="nm">34</span>/<span class="nm">42</span>, <span class="nm">40</span>/<span class="nm">7</span>]).
 
-  <!-- 2021 A knapsack -->
-  <div class="solved">
-    <div class="solved-hd">📄 2021 Α — knapsack/4 (το αρχέτυπο του μοτίβου)</div>
-    <div class="solved-body">
-      <p>Βρες υποσύνολο αντικειμένων (λίστα <code>W/V</code>) που χωράει στη χωρητικότητα και έχει <strong>μέγιστη αξία</strong>· όλες οι βέλτιστες.</p>
-      <details class="reveal" open><summary>Συμπληρωμένος κώδικας</summary><div class="reveal-body">
-      <div class="cb"><code>knapsack(Capacity, Solution, TotW, TotV) :-
-    items(Items),
-    solution(Capacity, Items, Solution, TotW, TotV),
-    <span class="op">\+</span> ( <span class="fill">solution(Capacity, Items, _, _, TotV2), TotV2 > TotV</span> ).
+<span class="fn">knapsack</span>(Capacity, Solution, TotW, TotV) <span class="kw">:-</span>
+    <span class="fn">items</span>(Items),
+    <span class="fn">solution</span>(Capacity, Items, Solution, TotW, TotV),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">solution</span>(Capacity, Items, _, _, TotV2), TotV2 &gt; TotV</span>).
 
-solution(_, [], [], <span class="fill">0, 0</span>).
-solution(Capacity, [W/V|Items], [W/V|Solution], TotW, TotV) :-
-    solution(Capacity, Items, <span class="fill">Solution, TotW1, TotV1</span>),
-    <span class="fill">TotW is TotW1 + W, TotW =< Capacity, TotV is TotV1 + V</span>.
-solution(Capacity, [_|Items], Solution, TotW, TotV) :-
-    <span class="fill">solution(Capacity, Items, Solution, TotW, TotV)</span>.</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>1η γραμμή (το κλειδί):</strong> «φτιάξε μια λύση <code>Solution</code> με το <code>solution</code>, και κράτησέ την <em>μόνο αν</em> <code>\+</code> δεν υπάρχει άλλη λύση με μεγαλύτερη αξία (<code>TotV2 &gt; TotV</code>)». → επιβιώνουν μόνο οι μέγιστης αξίας.</li>
-          <li><strong>solution με <code>[]</code>:</strong> τέλος αντικειμένων → άδειο σακίδιο, βάρος 0, αξία 0. <em>(η βάση)</em></li>
-          <li><strong>solution «πάρε <code>W/V</code>»:</strong> βάζει το αντικείμενο στη λύση, αθροίζει βάρος &amp; αξία — αλλά <em>μόνο αν</em> <code>TotW =&lt; Capacity</code> (αλλιώς αποτυγχάνει και οπισθοδρομεί).</li>
-          <li><strong>solution «πέτα»:</strong> αγνοεί το αντικείμενο. Οι δύο τελευταίες προτάσεις μαζί δοκιμάζουν <strong>όλα</strong> τα υποσύνολα μέσω backtracking.</li>
-        </ul>
-        <p style="margin:4px 0 0">Μοτίβο Π-Α-Μ-Ε: <strong>Π</strong>αρήγαγε (πάρε/πέτα) · <strong>Α</strong>πέρριψε-καλύτερη (<code>\+</code>) · <strong>Μ</strong>έτρησε (βάρος/αξία) · <strong>Ε</strong>πιπλέον έλεγχος (≤ Capacity).</p>
-      </div>
-      </div></details>
-    </div>
-  </div>
+<span class="fn">solution</span>(_, [], [], <span class="fill"><span class="nm">0</span>, <span class="nm">0</span></span>).
+<span class="fn">solution</span>(Capacity, [W/V|Items], [W/V|Solution], TotW, TotV) <span class="kw">:-</span>
+    <span class="fn">solution</span>(Capacity, Items, <span class="fill">Solution, TotW1, TotV1</span>),
+    <span class="fill">TotW <span class="op">is</span> TotW1 + W, TotW <span class="op">=&lt;</span> Capacity, TotV <span class="op">is</span> TotV1 + V</span>.
+<span class="fn">solution</span>(Capacity, [_|Items], Solution, TotW, TotV) <span class="kw">:-</span>
+    <span class="fill"><span class="fn">solution</span>(Capacity, Items, Solution, TotW, TotV)</span>.</code></div>
+  <ul style="padding-left:1.5rem">
+    <li><strong>Γραμμή με <code>\+</code>:</strong> μια λύση επιβιώνει μόνο αν καμία άλλη δεν έχει μεγαλύτερη αξία. Ο εσωτερικός generator είναι το <em>ίδιο</em> <code>solution</code>.</li>
+    <li><strong>Βάση:</strong> χωρίς αντικείμενα, άδειο σακίδιο με βάρος 0 και αξία 0.</li>
+    <li><strong>«Πάρε»:</strong> πρώτα λύνεις για τα υπόλοιπα, μετά προσθέτεις βάρος και αξία, και ελέγχεις τη χωρητικότητα <em>αφού</em> δεθεί το <code>TotW</code>.</li>
+    <li><strong>«Πέτα»:</strong> αγνοείς το αντικείμενο. Μαζί με το «πάρε» παράγουν όλα τα υποσύνολα.</li>
+  </ul>
+</div></details>
+  </div></div>
 
-  <!-- 2023 A longestordsubseq -->
-  <div class="solved">
-    <div class="solved-hd">📄 2023 Α — longestordsubseq/3 (μέγιστη μονότονη υπακολουθία)</div>
-    <div class="solved-body">
-      <details class="reveal"><summary>Συμπληρωμένος κώδικας</summary><div class="reveal-body">
-      <div class="cb"><code>longestordsubseq(Seq, Op, SubSeq) :-
-    ordsubseqlen(Seq, SubSeq, Op, N),
-    <span class="op">\+</span> ( <span class="fill">ordsubseqlen(Seq, _, Op, N2), N2 > N</span> ).
+  <div class="solved"><div class="solved-hd">2023 Α · longestordsubseq/3 · <a href="exam_theme1_practice.html#b6">δοκίμασέ το</a></div><div class="solved-body">
+  <details class="reveal"><summary>Λύση + εξήγηση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">longestordsubseq</span>(Seq, Op, SubSeq) <span class="kw">:-</span>
+    <span class="fn">ordsubseqlen</span>(Seq, SubSeq, Op, N),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">ordsubseqlen</span>(Seq, _, Op, N1), N1 &gt; N</span>).
 
-ordsubseqlen(Seq, SubSeq, Op, N) :-
-    subseq(Seq, SubSeq), ordseq(<span class="fill">SubSeq, Op</span>),
-    <span class="fill">length(SubSeq, N)</span>.
+<span class="fn">ordsubseqlen</span>(Seq, SubSeq, Op, N) <span class="kw">:-</span>
+    <span class="fn">subseq</span>(Seq, SubSeq), <span class="fn">ordseq</span>(<span class="fill">SubSeq, Op</span>),
+    <span class="fill"><span class="fn">length</span>(SubSeq, N)</span>.
 
-subseq([], []).
-subseq(<span class="fill">[X|Xs], [X|Ys]</span>) :- <span class="fill">subseq(Xs, Ys)</span>.
-subseq(<span class="fill">[_|Xs], Ys</span>)    :- <span class="fill">subseq(Xs, Ys)</span>.
+<span class="fn">subseq</span>([], []).
+<span class="fn">subseq</span>(<span class="fill">[X|Seq], [X|SubSeq]</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subseq</span>(Seq, SubSeq)</span>.
+<span class="fn">subseq</span>(<span class="fill">[_|Seq], SubSeq</span>) <span class="kw">:-</span> <span class="fill"><span class="fn">subseq</span>(Seq, SubSeq)</span>.
 
-ordseq([_], _).
-ordseq(<span class="fill">[X,Y|Rest]</span>, Op) :-
-    <span class="fill">Goal =.. [Op, X, Y]</span>, call(Goal),
-    ordseq(<span class="fill">[Y|Rest]</span>, Op).</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>subseq:</strong> παράγει μία-μία όλες τις υπακολουθίες (η μία πρόταση «κρατά» το στοιχείο, η άλλη το «πετά»).</li>
-          <li><strong>ordseq:</strong> ελέγχει ότι κάθε διαδοχικό ζεύγος είναι ταξινομημένο. Το <code>Goal =.. [Op, X, Y]</code> «χτίζει» τον στόχο π.χ. <code>&lt;(X,Y)</code> και το <code>call(Goal)</code> τον τρέχει — χρειάζεται γιατί ο τελεστής <code>Op</code> (<code>&lt;</code> ή <code>&gt;</code>) δίνεται ως όρισμα, δεν είναι σταθερός.</li>
-          <li><strong>length:</strong> μετράει το μήκος <code>N</code> της υπακολουθίας.</li>
-          <li><strong>\+ :</strong> κράτα τη λύση μόνο αν δεν υπάρχει ταξινομημένη υπακολουθία μεγαλύτερου μήκους (<code>N2 &gt; N</code>).</li>
-        </ul>
-      </div>
-      </div></details>
-    </div>
-  </div>
+<span class="fn">ordseq</span>([_], _).
+<span class="fn">ordseq</span>(<span class="fill">[X1, X2|Xs]</span>, Op) <span class="kw">:-</span>
+    <span class="fill">Goal <span class="op">=..</span> [Op, X1, X2]</span>, <span class="fn">call</span>(Goal),
+    <span class="fn">ordseq</span>(<span class="fill">[X2|Xs]</span>, Op).</code></div>
+  <ul style="padding-left:1.5rem">
+    <li><code>subseq</code>: «κράτα / πέτα», παράγει κάθε υπακολουθία.</li>
+    <li><code>ordseq</code>: κάθε διαδοχικό ζεύγος πρέπει να ικανοποιεί τον τελεστή <code>Op</code>. Επειδή το <code>Op</code> είναι όρισμα, ο στόχος χτίζεται με <code>=..</code> και τρέχει με <code>call</code>.</li>
+    <li><code>length</code> μετράει και το <code>\+</code> κρατά μόνο τις μέγιστου μήκους.</li>
+  </ul>
+</div></details>
+  </div></div>
 
-  <!-- 2022 B maxcntunif -->
-  <div class="solved">
-    <div class="solved-hd">📄 2022 Β — maxcntunif/2 (μέγιστη συνεχόμενη ενοποιήσιμη υπολίστα)</div>
-    <div class="solved-body">
-      <details class="reveal"><summary>Συμπληρωμένος κώδικας</summary><div class="reveal-body">
-      <div class="cb"><code>maxcntunif(List, MaxSub) :-
-    cntunif(N, MaxSub, List),
-    <span class="op">\+</span> ( <span class="fill">cntunif(N2, _, List), N2 > N</span> ).
+  <div class="solved"><div class="solved-hd">2022 Β / 2015 Α · maxcntunif/2 · <a href="exam_theme1_practice.html#b7">δοκίμασέ το</a></div><div class="solved-body">
+  <details class="reveal"><summary>Λύση + εξήγηση</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">maxcntunif</span>(List, MaxSub) <span class="kw">:-</span>
+    <span class="fn">cntunif</span>(N, MaxSub, List),
+    <span class="op">\+</span> (<span class="fill"><span class="fn">cntunif</span>(N1, _, List), N1 &gt; N</span>).
 
-cntunif(N, Sublist, List) :-
-    append(<span class="fill">_, Rest, List</span>),
-    append(<span class="fill">Sublist, _, Rest</span>),
-    unifall(Sublist),
-    <span class="fill">length(Sublist, N)</span>.
+<span class="fn">cntunif</span>(N, Sublist, List) <span class="kw">:-</span>
+    <span class="fn">append</span>(<span class="fill">_, L1, List</span>),
+    <span class="fn">append</span>(<span class="fill">Sublist, _, L1</span>),
+    <span class="fn">unifall</span>(Sublist),
+    <span class="fill"><span class="fn">length</span>(Sublist, N)</span>.
 
-unifall([_]).
-unifall([X|L]) :-
-    unifone(X, L),
-    <span class="fill">unifall(L)</span>.
+<span class="fn">unifall</span>([_]).
+<span class="fn">unifall</span>([X|L]) <span class="kw">:-</span>
+    <span class="fn">unifone</span>(X, L),
+    <span class="fill"><span class="fn">unifall</span>(L)</span>.
 
-unifone(<span class="fill">_, []</span>).
-unifone(<span class="fill">X, [Y|L]</span>) :-
-    <span class="fill">\+ \+ X = Y</span>,
-    <span class="fill">unifone(X, L)</span>.</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>cntunif (τα δύο append):</strong> κόβουν ένα <em>συνεχόμενο</em> κομμάτι (<code>Sublist</code>) από τη λίστα — το 1ο append βρίσκει πού ξεκινά, το 2ο πού τελειώνει.</li>
-          <li><strong>unifall + unifone:</strong> ελέγχουν ότι <em>όλα</em> τα στοιχεία είναι ανά δύο ενοποιήσιμα. Το <code>\+ \+ X = Y</code> σημαίνει «μπορούν να ταιριάξουν, αλλά <strong>μη τα δέσεις</strong>» — γιατί η εκφώνηση λέει ρητά «χωρίς να γίνει η ενοποίηση».</li>
-          <li><strong>length + \+ :</strong> κράτα μόνο τις υπολίστες <em>μέγιστου</em> μήκους.</li>
-        </ul>
-      </div>
-      </div></details>
-    </div>
-  </div>
+<span class="fn">unifone</span>(<span class="fill">_, []</span>).
+<span class="fn">unifone</span>(<span class="fill">X, [Y|L]</span>) <span class="kw">:-</span>
+    <span class="fill"><span class="op">\+</span> X <span class="op">\=</span> Y, <span class="fn">unifone</span>(X, L)</span>.</code></div>
+  <ul style="padding-left:1.5rem">
+    <li>Τα δύο <code>append</code> κόβουν ένα συνεχόμενο κομμάτι.</li>
+    <li><code>unifall</code>/<code>unifone</code>: κάθε στοιχείο πρέπει να ενοποιείται με όλα τα επόμενα. Η εκφώνηση λέει «χωρίς να γίνει η ενοποίηση», άρα <code>\+ X \= Y</code>. Γι' αυτό στις απαντήσεις οι μεταβλητές μένουν ελεύθερες: <code>[g(X), g(2), g(Y)]</code>.</li>
+  </ul>
+</div></details>
+  </div></div>
 
-  <!-- 2023 B packcons -->
-  <div class="solved">
-    <div class="solved-hd">📄 2023 Β — packcons/2 (ομαδοποίηση συνεχόμενων ίσων)</div>
-    <div class="solved-body">
-      <details class="reveal"><summary>Συμπληρωμένος κώδικας</summary><div class="reveal-body">
-      <div class="cb"><code>packcons([], []).
-packcons([X|Xs], [Z|Zs]) :-
-    packone(<span class="fill">X, Xs, Z, Rest</span>),
-    packcons(<span class="fill">Rest, Zs</span>).
+  <div class="solved"><div class="solved-hd">2023 Β / 2018 Α · packcons/2 και «τι θα παίρνατε με μεταβλητές» · <a href="exam_theme1_practice.html#c5">δοκίμασέ το</a></div><div class="solved-body">
+  <details class="reveal"><summary>Λύση + οι δύο απαντήσεις με μεταβλητές</summary><div class="reveal-body">
+<div class="cb"><code><span class="fn">packcons</span>([], []).
+<span class="fn">packcons</span>([X|Xs], [Z|Zs]) <span class="kw">:-</span>
+    <span class="fn">packone</span>(<span class="fill">X, Xs, Z, Rest</span>),
+    <span class="fn">packcons</span>(<span class="fill">Rest, Zs</span>).
 
-packone(X, [], <span class="fill">[X], []</span>).
-packone(X, [Y|Xs], <span class="fill">[X], [Y|Xs]</span>) :-
-    <span class="fill">X \== Y</span>.
-packone(X, [Y|Xs], <span class="fill">[X|Group], Rest</span>) :-
-    <span class="fill">X == Y</span>,
-    packone(X, Xs, <span class="fill">Group, Rest</span>).</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>packcons:</strong> παίρνει το 1ο στοιχείο <code>X</code>, καλεί το <code>packone</code> να μαζέψει όλη τη «σειρά» των ίδιων <code>X</code> μπροστά, και συνεχίζει με ό,τι έμεινε (<code>Rest</code>).</li>
-          <li><strong>packone «<code>X == Y</code>»:</strong> το επόμενο είναι ίδιο → βάλ' το στην ομάδα και συνέχισε αναδρομικά.</li>
-          <li><strong>packone «<code>X \== Y</code>»:</strong> το επόμενο είναι διαφορετικό → κλείσε την ομάδα εδώ.</li>
-          <li><strong>Γιατί <code>==</code> κι όχι <code>=</code>:</strong> για να συγκρίνει <em>χωρίς να ενοποιεί</em>. Γι' αυτό, όταν η λίστα έχει μεταβλητές, κάθε στοιχείο μένει μόνο του — δύο διαφορετικές μεταβλητές (<code>X</code>, <code>Y</code>) θεωρούνται «διαφορετικές».</li>
-        </ul>
-      </div>
-      <div class="warn"><div class="hd">⚠️ Το «τι θα τύπωνε με μεταβλητές;»</div>
-        <p>Επειδή το <code>==</code> θεωρεί <em>διαφορετικές</em> δύο διαφορετικές μεταβλητές:</p>
-        <div class="cb"><code>?- packcons([f(1),f(X),f(2),f(Y),f(2)], List).
-List = <span class="fill">[[f(1)],[f(X)],[f(2)],[f(Y)],[f(2)]]</span>   <span class="cm">% όλα μονά</span>
-?- packcons([f(X),f(Y),g(X),g(1),g(2),g(Y)], List).
-List = <span class="fill">[[f(X)],[f(Y)],[g(X)],[g(1)],[g(2)],[g(Y)]]</span></code></div>
-      </div>
-      </div></details>
-    </div>
-  </div>
+<span class="fn">packone</span>(X, [], <span class="fill">[X]</span>, <span class="fill">[]</span>).
+<span class="fn">packone</span>(X, [Y|Xs], <span class="fill">[X]</span>, <span class="fill">[Y|Xs]</span>) <span class="kw">:-</span>
+    <span class="fill">X <span class="op">\==</span> Y</span>.
+<span class="fn">packone</span>(X, [Y|Xs], <span class="fill">[X|Zs]</span>, <span class="fill">Rest</span>) <span class="kw">:-</span>
+    <span class="fill">X <span class="op">==</span> Y</span>,
+    <span class="fn">packone</span>(X, Xs, <span class="fill">Zs</span>, <span class="fill">Rest</span>).</code></div>
+  <p>Η απάντηση στο «τι θα παίρνατε» <strong>εξαρτάται από την υλοποίησή σου</strong>, και αυτό ακριβώς θέλει να δει ο εξεταστής:</p>
+  <table class="summary-tbl">
+    <thead><tr><th>Ερώτηση</th><th>με <code>==</code> / <code>\==</code></th><th>με <code>=</code> / <code>\=</code></th></tr></thead>
+    <tbody>
+      <tr><td><code>[f(1),f(X),f(2),f(Y),f(2)]</code></td><td><code>[[f(1)],[f(X)],[f(2)],[f(Y)],[f(2)]]</code></td><td><code>[[f(1),f(1)],[f(2),f(2),f(2)]]</code>, X = 1, Y = 2</td></tr>
+      <tr><td><code>[f(X),f(Y),g(X),g(1),g(2),g(Y)]</code></td><td>έξι μονές ομάδες</td><td><code>[[f(1),f(1)],[g(1),g(1)],[g(2)],[g(1)]]</code>, X = Y = 1</td></tr>
+    </tbody>
+  </table>
+  <p>Με <code>==</code> δύο διαφορετικές μεταβλητές είναι «διαφορετικές». Με <code>=</code> ενοποιούνται και οι δεσμεύσεις περνούν στα επόμενα στοιχεία.</p>
+</div></details>
+  </div></div>
 
-  <!-- 2022 A solveprob -->
-  <div class="solved">
-    <div class="solved-hd">📄 2022 Α — βέλτιστη (ελάχιστου μήκους) λύση μέσω length</div>
-    <div class="solved-body">
-      <p>Συμπλήρωσε δύο <em>ερωτήσεις</em>: η 1η τυπώνει την <strong>πρώτη</strong> βέλτιστη λύση· η 2η <strong>όλες</strong> τις βέλτιστες (= ελάχιστου μήκους).</p>
-      <details class="reveal"><summary>Συμπληρωμένες ερωτήσεις</summary><div class="reveal-body">
-      <div class="cb"><code><span class="cm">% 1η: το length(L,N) δοκιμάζει N=0,1,2,…· η πρώτη επιτυχία είναι η μικρότερη</span>
-?- length(<span class="fill">L, N</span>), solveprob(<span class="fill">L</span>), <span class="fill">write(L), nl, !, fail</span>.
-[k, m]
-No
+  <div class="solved"><div class="solved-hd">2022 Α · βέλτιστη λύση ελάχιστου μήκους με length/2 · <a href="exam_theme1_practice.html#b3">δοκίμασέ το</a></div><div class="solved-body">
+  <details class="reveal"><summary>Λύση + εξήγηση</summary><div class="reveal-body">
+<div class="cb"><code><span class="cm">% μόνο η πρώτη βέλτιστη</span>
+?- <span class="fn">length</span>(<span class="fill">L, N</span>), <span class="fn">solveprob</span>(<span class="fill">L</span>), <span class="fill"><span class="fn">write</span>(L), nl, !, fail</span> .
 
-<span class="cm">% 2η: «κλείδωσε» το βέλτιστο N με !, μετά πάρε ΟΛΕΣ τις λύσεις αυτού του N</span>
-?- length(<span class="fill">L, N</span>), solveprob(<span class="fill">L</span>), <span class="fill">!, length(L2, N), solveprob(L2), write(L2), nl, fail</span>.
-[k, m]
-[p, u]
-[r, e]
-[w, w]
-No</code></div>
-      <div class="note"><div class="hd">📖 Πώς δουλεύει — με απλά λόγια</div>
-        <ul style="margin:6px 0; padding-left:20px; line-height:1.6">
-          <li><strong>Το κόλπο:</strong> με ελεύθερο <code>N</code>, το <code>length(L, N)</code> ζητάει λίστες μήκους 0, μετά 1, μετά 2… → η <em>πρώτη</em> <code>solveprob</code> που πετυχαίνει έχει αναγκαστικά το <strong>ελάχιστο</strong> μήκος (= βέλτιστη).</li>
-          <li><strong>1η ερώτηση:</strong> <code>write(L), nl, !, fail</code> → τύπωσε την πρώτη βέλτιστη και σταμάτα (το <code>!</code> κόβει την οπισθοδρόμηση, το <code>fail</code> δίνει το «No» στο τέλος).</li>
-          <li><strong>2η ερώτηση:</strong> το <code>!</code> «κλειδώνει» το βέλτιστο <code>N</code>· μετά ένα <em>fail-loop</em> (<code>length(L2,N), solveprob(L2), write, fail</code>) τυπώνει <strong>όλες</strong> τις λύσεις αυτού του μήκους.</li>
-        </ul>
-      </div>
-      </div></details>
-    </div>
-  </div>
+<span class="cm">% όλες οι βέλτιστες</span>
+?- <span class="fn">length</span>(<span class="fill">L, N</span>), <span class="fn">solveprob</span>(<span class="fill">L</span>), <span class="fill">!, <span class="fn">length</span>(L2, N), <span class="fn">solveprob</span>(L2), <span class="fn">write</span>(L2), nl, fail</span> .</code></div>
+  <ul style="padding-left:1.5rem">
+    <li>Με ελεύθερα <code>L</code>, <code>N</code>, το <code>length</code> δοκιμάζει μήκη 0, 1, 2, …, άρα η πρώτη λύση που βρίσκει το <code>solveprob</code> έχει το ελάχιστο μήκος.</li>
+    <li>Το <code>!</code> «κλειδώνει» αυτό το μήκος. Χωρίς αυτό, το <code>fail</code> θα έστελνε το <code>length</code> σε μεγαλύτερα μήκη για πάντα.</li>
+    <li>Το <code>fail</code> στο τέλος είναι «βρόχος αποτυχίας»: τυπώνει κάτι, αποτυγχάνει, backtracking στην επόμενη λύση. Γι' αυτό η απάντηση τελειώνει με No.</li>
+  </ul>
+</div></details>
+  </div></div>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="solved"></div>
 </section>
 
-<!-- PARTIAL CREDIT -->
-<section id="partial">
-  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🎯</div><h2>Στρατηγική μερικής βαθμολογίας (αν κολλήσεις)</h2></div>
-  <div class="exam"><div class="hd">📚 Μάζεψε ό,τι μπορείς</div>
-    <ul style="margin:6px 0">
-      <li><strong>Γράψε σίγουρα τις βάσεις</strong> (<code>foo([], …)</code>) και το <code>subseq</code>/<code>append</code> — είναι «δεδομένες» μονάδες.</li>
-      <li><strong>Γράψε το <code>\+ ( candidate(...), better )</code></strong> ακόμα κι αν δεν είσαι σίγουρος για το υπόλοιπο. Δείχνει ότι ξέρεις το μοτίβο.</li>
-      <li><strong>Σχολίασε τι κάνει κάθε πρόταση</strong> — οι διορθωτές δίνουν μονάδες για σωστή ιδέα.</li>
-      <li>Μην ξοδέψεις &gt; 30΄ εδώ. Οι σίγουρες μονάδες είναι στα Θέματα 3 &amp; 2.</li>
-    </ul>
+<section id="exam">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🎯</div><h2>Στο γραπτό: χρόνος, σειρά, μερική βαθμολογία</h2></div>
+
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <h4 style="color:var(--green);margin-top:0">Χρόνος (120 λεπτά για 100 μονάδες)</h4>
+      <ul style="padding-left:1.5rem;font-size:0.95rem;line-height:1.7">
+        <li><strong>Θέμα 1 (35):</strong> περίπου 40 λεπτά.</li>
+        <li>Ξεκίνα από το υποερώτημα που αναγνωρίζεις: συνήθως το «βέλτιστο με <code>\+</code>».</li>
+        <li>Τα «τι θα απαντούσε» (5 μονάδες το καθένα) θέλουν 3-4 λεπτά με trace στο χαρτί.</li>
+      </ul>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--purple)">
+      <h4 style="color:var(--purple);margin-top:0">Αν κολλήσεις</h4>
+      <ul style="padding-left:1.5rem;font-size:0.95rem;line-height:1.7">
+        <li>Γράψε <strong>σίγουρα</strong> τις βάσεις και τον generator (subseq, append, between).</li>
+        <li>Γράψε τη γραμμή <code>\+ ( generator(…, V2), V2 &gt; V )</code> ακόμα κι αν λείπει κάτι αλλού.</li>
+        <li>Σχολίασε κάθε πρόταση σε μία γραμμή: η σωστή ιδέα παίρνει μονάδες.</li>
+        <li>Στα «τι απαντά» γράψε και το <strong>γιατί</strong> (ποια ενοποίηση πέτυχε ή απέτυχε).</li>
+      </ul>
+    </div>
   </div>
-  <p style="text-align:center;margin-top:18px"><a class="chip" href="exam_cheatsheet.html" style="text-decoration:none">Τελευταία ώρα → Cheat-sheet</a></p>
+  <div class="mnemo"><div class="hd">🧠 Π-Α-Μ-Ε για κάθε «βέλτιστο»</div>
+<p style="margin:4px 0"><strong>Π</strong>αρήγαγε υποψήφια · <strong>Α</strong>πέρριψε αν υπάρχει καλύτερη (ίδιος generator μέσα στο <code>\+</code>) · <strong>Μ</strong>έτρησε την αξία (length, άθροισμα) · <strong>Ε</strong>πιπλέον ιδιότητα (π.χ. «όλα ενοποιήσιμα») με δικό της αναδρομικό κατηγόρημα.</p>
+</div>
+  <p style="text-align:center;margin-top:18px"><a class="chip" href="exam_theme1_practice.html" style="text-decoration:none;background:var(--orange);color:#0d1117;font-weight:700;padding:8px 16px">→ Γυμναστήριο Θέματος 1</a></p>
+
+  <div class="section-quiz" data-topic="exam_t1" data-section="exam"></div>
 </section>
 
 </div>

@@ -5,7 +5,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'
  * nav_exam.js - Minimal navigation for the EXAM-PREP crash course.
  *
  * This is intentionally separate from nav.js (the full course notes nav).
- * It lists ONLY the exam-prep pages (8-hour plan). The original chapter
+ * It lists ONLY the focused 1-2 day exam-prep pages. The original chapter
  * pages and their nav.js are left completely untouched and remain reachable
  * via full_notes.html.
  *
@@ -13,40 +13,15 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'
  */
 
 const topics = [
-    { id: 'index',  title: 'Πλάνο 8 ωρών',            short: 'Πλάνο',      path: 'index.html',                 icon: '🎯', root: true },
-    { id: 'theme1', title: 'Θέμα 1 · Prolog',         short: 'Θ1',         path: 'exam_theme1_prolog.html',    icon: '💻' },
-    { id: 'drill1', title: 'Θέμα 1 · Γυμναστήριο',    short: 'Θ1 γυμν.',   path: 'exam_theme1_practice.html',  icon: '🏋️' },
-    { id: 'theme2', title: 'Θέμα 2 · CSP',            short: 'Θ2',         path: 'exam_theme2_csp.html',       icon: '🧩' },
-    { id: 'drill2', title: 'Θέμα 2 · Προπόνηση',      short: 'Θ2 προπ.',   path: 'exam_theme2_practice.html',  icon: '⚖️' },
-    { id: 'theme3', title: 'Θέμα 3 · Herbrand',       short: 'Θ3',         path: 'exam_theme3_herbrand.html',  icon: '∀'  },
-    { id: 'theme4', title: 'Θέμα 4 · Γνώση',          short: 'Θ4',         path: 'exam_theme4_kr.html',        icon: '🕸️' },
-    { id: 'mock',   title: 'Διαγώνισμα',              short: 'Διαγώνισμα', path: 'exam_mock.html',             icon: '📝' },
-    { id: 'cheat',  title: 'Cheat-sheet',             short: 'Cheat',      path: 'exam_cheatsheet.html',       icon: '📋' },
-    { id: 'full',   title: 'Πλήρεις Σημειώσεις',      short: 'Σημειώσεις', path: 'full_notes.html',            icon: '📚', root: true }
+    { id: 'index',     title: 'Πλάνο',        path: 'index.html',                  icon: '🎯', root: true },
+    { id: 'theme1',    title: 'Θέμα 1 · Prolog',   path: 'exam_theme1_prolog.html'   , icon: '💻' },
+    { id: 'drill1',    title: 'Θ1 · Προπόνηση',    path: 'exam_theme1_practice.html' , icon: '🏋️' },
+    { id: 'theme2',    title: 'Θέμα 2 · CSP',      path: 'exam_theme2_csp.html'      , icon: '🧩' },
+    { id: 'theme3',    title: 'Θέμα 3 · Herbrand', path: 'exam_theme3_herbrand.html' , icon: '∀'  },
+    { id: 'theme4',    title: 'Θέμα 4 · Γνώση',    path: 'exam_theme4_kr.html'       , icon: '🕸️' },
+    { id: 'cheat',     title: 'Cheat-sheet',       path: 'exam_cheatsheet.html'      , icon: '📋' },
+    { id: 'full',      title: 'Πλήρεις Σημειώσεις', path: 'full_notes.html',            icon: '📚', root: true }
 ];
-
-// συμπαγής μπάρα: σύντομοι τίτλοι στην οθόνη υπολογιστή, πλήρεις στο κινητό
-(function injectNavCss() {
-    const css = `
-.nav-link .nl-full{display:none}
-@media (min-width: 769px){
-  #site-nav .nav-links{gap:4px;flex-wrap:nowrap;align-items:center}
-  #site-nav .nav-link{padding:0.45rem 0.6rem;font-size:0.84rem;white-space:nowrap;font-family:'Roboto',system-ui,'Segoe UI',sans-serif}
-  #site-nav .nav-logo{white-space:nowrap;margin-right:12px}
-}
-@media (min-width: 769px) and (max-width: 1200px){
-  #site-nav{padding:0 20px}
-  #site-nav .nav-link > span:first-child{display:none}
-  #site-nav .nav-link{padding:0.4rem 0.45rem;font-size:0.8rem}
-}
-@media (max-width: 768px){
-  .nav-link .nl-short{display:none}
-  .nav-link .nl-full{display:inline}
-}`;
-    const st = document.createElement('style');
-    st.textContent = css;
-    document.head.appendChild(st);
-})();
 
 function initNav() {
     const navContainer = document.getElementById('site-nav');
@@ -72,7 +47,7 @@ function initNav() {
         link.className = 'nav-link';
         if (currentPath === topic.path) link.classList.add('active');
         link.title = topic.title;
-        link.innerHTML = `<span>${topic.icon}</span><span class="nl-short">${topic.short || topic.title}</span><span class="nl-full">${topic.title}</span>`;
+        link.innerHTML = `<span>${topic.icon}</span> ${topic.title}`;
         linksContainer.appendChild(link);
     });
 

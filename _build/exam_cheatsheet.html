@@ -7,8 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles/base.css">
 <link rel="stylesheet" href="../styles/exam.css">
+<link rel="stylesheet" href="../styles/exam_plus.css">
 <style>
 .hero{background:linear-gradient(150deg,#0d1117 0%,var(--pdim) 55%,#0d1117 100%)}
+html[data-theme="light"] .hero{background:linear-gradient(150deg,#f8fafc 0%,var(--pdim) 55%,#f8fafc 100%)}
+
+</style>
+<script src="../js/nav_exam.js" defer></script>
+
+
+<style>
 .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin:18px 0}
 .cheat-card{border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--surf)}
 .cheat-card h3{font-family:'Syne',sans-serif;margin-bottom:8px;display:flex;align-items:center;gap:8px}
@@ -16,122 +24,124 @@
 .cheat-card.c2{border-color:rgba(88,166,255,.5)} .cheat-card.c2 h3{color:var(--blue)}
 .cheat-card.c1{border-color:rgba(240,136,62,.5)} .cheat-card.c1 h3{color:var(--orange)}
 .cheat-card.c4{border-color:rgba(57,212,200,.5)} .cheat-card.c4 h3{color:var(--cyan)}
-.cheat-card ul{margin:0;padding-left:18px} .cheat-card li{margin:5px 0;font-size:0.92rem}
+.wrap .cheat-card ul{margin:0;padding-left:1.2rem} .wrap .cheat-card li{margin:5px 0;font-size:0.92rem;line-height:1.55}
 .cheat-card code{background:var(--surf2);padding:1px 5px;border-radius:3px;font-size:0.86em}
 @media print{.toc,#site-nav,.hero p,.chips{display:none}}
 </style>
-<script src="../js/nav_exam.js" defer></script>
 </head>
 <body>
 <div id="site-nav"></div>
 
 <div class="hero">
-  <div class="hero-label">Cheat-sheet · διάβασέ το 2 φορές πριν μπεις</div>
+  <div class="hero-label">Cheat-sheet · διάβασέ το δύο φορές πριν μπεις</div>
   <h1>Τελευταία <em>Ώρα</em></h1>
-  <p>Όλες οι συνταγές σε μία σελίδα. Αν θυμάσαι μόνο αυτή τη σελίδα, περνάς.</p>
-  <div class="chips"><span class="chip">printable</span><span class="chip">recap</span></div>
+  <p>Όλες οι συνταγές των τεσσάρων θεμάτων σε μία σελίδα, στη μορφή της εξέτασης του Ιουνίου 2026.</p>
+  <div class="chips"><span class="chip">recap</span><span class="chip">printable</span><span class="chip">4 θέματα</span><span class="chip">100 μονάδες</span></div>
 </div>
+
+<nav class="toc">
+  <a href="#mnemo">Μνημονικά</a>
+  <a href="#cards">Κάρτες</a>
+  <a href="#phrases">Φράσεις</a>
+  <a href="#room">Στην αίθουσα</a>
+</nav>
 
 <div class="wrap">
 
-<div class="mnemo" style="font-size:1.05rem">
-  <div class="hd">🧠 Τα 3 μνημονικά — αν θυμάσαι μόνο αυτά, ξέρεις τη μέθοδο</div>
-  <ul style="margin:6px 0 0;padding-left:18px">
-    <li><strong>Θέμα 3 →</strong> «<strong>Σώμα μέσα ⇒ Κεφαλή μέσα</strong>» — το μόνο που ελέγχεις πάντα για μοντέλο/M<sub>P</sub>/απόρριψη.</li>
-    <li><strong>Θέμα 2 →</strong> «<strong>Μ-Π-Π-Κ</strong>» (Μεταβλητές · Πεδία · Περιορισμοί · Κόστος) — «Με Ποιά Πράγματα Κερδίζω;»</li>
-    <li><strong>Θέμα 1 →</strong> «<strong>Π-Α-Μ-Ε</strong>» (Παρήγαγε υποψήφιο · Απέρριψε αν υπάρχει καλύτερο μέσω <code>\+</code> · Μέτρησε/σύγκρινε · Έλεγξε τη βάση)</li>
-  </ul>
-</div>
+<section id="mnemo">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧠</div><h2>Τα μνημονικά</h2></div>
 
-<div class="cheat-grid">
+  <div class="mnemo"><div class="hd">Αν θυμάσαι μόνο αυτά, ξέρεις τη μέθοδο</div>
+  <ul style="padding-left:1.5rem;margin:6px 0">
+    <li><strong>Θέμα 1 → «Π-Α-Μ-Ε»</strong>: Παρήγαγε υποψήφια · Απέρριψε αν υπάρχει καλύτερη (ίδιος generator μέσα στο <code>\+</code>) · Μέτρησε την αξία · Επιπλέον ιδιότητα με δικό της κατηγόρημα.</li>
+    <li><strong>Θέμα 1, συγκρίσεις → «ίδια ή ενοποιήσιμα;»</strong>: ίδια → <code>==</code> · ενοποιήσιμα χωρίς δεσμεύσεις → <code>\+ X \= Y</code> · σκέτο <code>=</code> κρατά δεσμεύσεις.</li>
+    <li><strong>Θέμα 2 → «Μ-Π-Π-Κ»</strong> (Μεταβλητές · Πεδία · Περιορισμοί · Κόστος) και <strong>«μέτρα τη διαφορά, όχι το σύνολο»</strong>.</li>
+    <li><strong>Θέμα 3 → «Σώμα μέσα ⇒ Κεφαλή μέσα»</strong>: το μόνο που ελέγχεις για μοντέλο, M<sub>P</sub> και απόρριψη.</li>
+    <li><strong>Θέμα 4 → «άμεσα ή μέσω γονιού»</strong> (δίκτυα, πλαίσια) και <strong>«ο κανόνας είναι δεδομένο»</strong> (if-then, is_true).</li>
+  </ul></div>
 
-  <!-- THEME 3 -->
-  <div class="cheat-card c3">
-    <h3>∀ Θέμα 3 · Herbrand</h3>
-    <ul>
-      <li><strong>U<sub>L</sub></strong> = όλοι οι ground όροι (σταθερές + f(…)). Με <code>s/1</code> ή <code>f/1</code> → άπειρο.</li>
-      <li><strong>B<sub>L</sub></strong> = όλα τα ground άτομα (κατηγορήματα × U<sub>L</sub>).</li>
-      <li><strong>«B<sub>L</sub> μοντέλο;» → ΝΑΙ πάντα</strong> (οριστικό πρόγραμμα: όλες οι κεφαλές αληθεύουν).</li>
-      <li><strong>M<sub>P</sub></strong>: T<sub>P</sub> από ∅ → πρώτα γεγονότα, μετά κανόνες, ώσπου να μην αλλάζει.</li>
-      <li><strong>«A σε μοντέλο;» → ΝΑΙ· τομή = M<sub>P∪{A}</sub></strong> (πρόσθεσε A, ξανα-εφάρμοσε κανόνες).</li>
-      <li><strong>«SLD-απόρριψη;»</strong> ⟺ <em>κάθε</em> άτομο του στόχου ∈ M<sub>P</sub>. Έστω ένα έξω → <strong>ΟΧΙ</strong>.</li>
-      <li>Tip: κατάλαβε τι «μετράει» το πρόγραμμα (π.χ. X+Y=N).</li>
-    </ul>
-  </div>
-
-  <!-- THEME 2 -->
-  <div class="cheat-card c2">
-    <h3>🧩 Θέμα 2 · CSP</h3>
-    <ul>
-      <li><strong>ΚΩΔΙΚΑΣ = 0.</strong> Μόνο μαθηματικά.</li>
-      <li>4 επικεφαλίδες: <strong>Μεταβλητές · Πεδία · Περιορισμοί · Κόστος</strong>.</li>
-      <li>Συνήθως <code>x<sub>i</sub> ∈ {0,1}</code> (διάλεξε i) ή <code>x<sub>ij</sub></code> (ανάθεσε i→j).</li>
-      <li>«ακριβώς» → <code>Σ x = 1</code> · «τουλάχιστον» → <code>Σ x ≥ 1</code> · «το πολύ» → <code>Σ x ≤ 1</code>.</li>
-      <li>χωρητικότητα → <code>Σ w<sub>i</sub>x<sub>i</sub> ≤ C</code>.</li>
-      <li>Κόστος → <code>min/max Σ c<sub>i</sub>x<sub>i</sub></code>.</li>
-      <li>MAX-SAT: δυαδική <code>s<sub>j</sub></code> ανά clause, <code>max Σ s<sub>j</sub></code>. ECLiPSe extra = <strong>reification</strong>.</li>
-    </ul>
-  </div>
-
-  <!-- THEME 1 -->
-  <div class="cheat-card c1">
-    <h3>💻 Θέμα 1 · Prolog</h3>
-    <ul>
-      <li>Μοτίβο βελτίστου:<br><code>best(In,S):- cand(In,S,N), \+(cand(In,_,N2), N2&gt;N).</code></li>
-      <li><code>\+ G</code> = πετυχαίνει αν το G αποτυγχάνει (δεν δένει μεταβλητές).</li>
-      <li><code>subseq</code>: κράτα / πέτα στοιχείο (2 αναδρομικές προτάσεις).</li>
-      <li>συνεχόμενη υπολίστα: <code>append(_,R,L), append(Sub,_,R)</code>.</li>
-      <li><code>length(L,N)</code> ελεύθερο N → παράγει 0,1,2,… (για «ελάχιστο»).</li>
-      <li>τελεστής ως όρισμα: <code>G=..[Op,X,Y], call(G)</code>.</li>
-      <li>«χωρίς ενοποίηση» → <code>==</code>/<code>\==</code> · «ενοποιήσιμα;» → <code>\+ \+ X=Y</code>.</li>
-    </ul>
-  </div>
-
-  <!-- THEME 4 -->
-  <div class="cheat-card c4">
-    <h3>🕸️ Θέμα 4 · Γνώση (αν πέσει)</h3>
-    <ul>
-      <li><strong>Διάγνωση:</strong> <code>isa</code>/γράφος/«βεβαιότητα» → <strong>σημασιολογικό δίκτυο</strong> (εύκολο). <code>if…then…</code> → <strong>forward engine</strong> (δύσκολο).</li>
-      <li><strong>Κάθε ακμή = ένα γεγονός</strong>: <code>isa(ross,albatross).</code></li>
-      <li><strong>Κληρονομικότητα</strong> (κλειδί): «άμεσο Ή μέσω isa»:<br><code>prop(R,E,V):- G=..[R,E,V],call(G).</code><br><code>prop(R,E,V):- isa(E,S), prop(R,S,V).</code></li>
-      <li><strong>Βεβαιότητες</strong>: ίδιο + <code>Cert is C1*C2</code> (πολλαπλασιασμός κατά μήκος της isa-αλυσίδας).</li>
-      <li>Πες τις λέξεις: «<strong>σημασιολογικά δίκτυα</strong>», «<strong>κληρονομικότητα</strong>».</li>
-    </ul>
-  </div>
-</div>
-
-<!-- READY PHRASES -->
-<section>
-  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">💬</div><h2>Έτοιμες φράσεις (αντίγραψέ τες)</h2></div>
-  <div class="def"><div class="hd">⚡ Για το «είναι η B_L μοντέλο;»</div>
-    <p style="font-style:italic">«Ναι. Το πρόγραμμα είναι οριστικό. Στη βάση Herbrand όλα τα άτομα αληθεύουν, άρα η κεφαλή κάθε πρότασης αληθεύει, οπότε κάθε οριστική πρόταση ικανοποιείται. Άρα η B<sub>L</sub> είναι μοντέλο.»</p>
-  </div>
-  <div class="def"><div class="hd">⚡ Για το «υπάρχει SLD-απόρριψη;» (όταν ΟΧΙ)</div>
-    <p style="font-style:italic">«Όχι. Το άτομο <code>____</code> δεν ανήκει στο ελάχιστο μοντέλο M<sub>P</sub> (δεν είναι λογική συνέπεια του P). Από την ορθότητα της SLD-ανάλυσης, δεν υπάρχει SLD-απόρριψη για στόχο που περιέχει μη-συνέπεια.»</p>
-  </div>
-  <div class="def"><div class="hd">⚡ Για το «τομή όλων των μοντέλων που περιέχουν το A»</div>
-    <p style="font-style:italic">«Είναι το ελάχιστο μοντέλο του P αν προσθέσουμε το A ως γεγονός: M<sub>P∪{A←}</sub>. Δηλαδή M<sub>P</sub> μαζί με όσα νέα άτομα παράγει το A μέσω των κανόνων.»</p>
-  </div>
 </section>
 
-<!-- TIME PLAN -->
-<section>
-  <div class="sh"><div class="sh-icon" style="background:var(--pdim)">⏱️</div><h2>Στην αίθουσα</h2></div>
+<section id="cards">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">📋</div><h2>Οι τέσσερις κάρτες</h2></div>
+
+  <div class="cheat-grid">
+    <div class="cheat-card c1"><h3>💻 Θέμα 1 · Prolog · 35</h3>
+    <ul>
+      <li>Βέλτιστο: <code>best(S) :- cand(S, V), \+ ( cand(_, V2), V2 &gt; V ).</code> Γνήσια σύγκριση, ώστε να βγαίνουν οι ισόπαλοι.</li>
+      <li>Ιούνιος (α): <code>maxage(P) :- age(P, A), \+ ( age(_, B), B &gt; A ).</code></li>
+      <li>Με περιορισμό (τμήμα, όριο): ο ίδιος περιορισμός και μέσα στο <code>\+</code>.</li>
+      <li><code>=</code> ενοποιεί · <code>==</code> ίδιοι όροι · <code>\=</code> δεν ενοποιούνται · <code>is</code> υπολογίζει · <code>=:=</code> αριθμητική ισότητα.</li>
+      <li>Πρώτο/τελευταίο: <code>append([F|Mid], [L], List)</code> · παράθυρο: <code>append(_, R, L), append(Sub, _, R)</code>.</li>
+      <li>subseq: κράτα / πέτα · <code>length(L, N)</code> ελεύθερο → μήκη 0, 1, 2, … · <code>G =.. [Op, X, Y], call(G)</code>.</li>
+      <li>«Τι απαντά»: trace στο χαρτί και γράψε <em>γιατί</em>.</li>
+    </ul></div>
+    <div class="cheat-card c2"><h3>🧩 Θέμα 2 · CSP · 20</h3>
+    <ul>
+      <li>Κώδικας = 0 μονάδες. Γράφεις ∀, Σ, ∈, [·].</li>
+      <li>Ανάθεση: X<sub>i</sub> ∈ {1..K} (το «ακριβώς ένας» ισχύει μόνο του) ή x<sub>ij</sub> ∈ {0,1} με Σ<sub>j</sub> x<sub>ij</sub> = 1.</li>
+      <li>Φόρτος: Load<sub>j</sub> = Σ<sub>i</sub> L<sub>i</sub>[X<sub>i</sub> = j] ≤ M ∀j · «ακριβώς / τουλάχιστον / το πολύ» → = / ≥ / ≤.</li>
+      <li><strong>Έλεγχος κόστους:</strong> αλλάζει από λύση σε λύση; Η καλύτερη λύση έχει μικρότερη τιμή;</li>
+      <li>Δίκαιη κατανομή: <strong>min (max<sub>j</sub> Load<sub>j</sub> − min<sub>j</sub> Load<sub>j</sub>)</strong> (ή Σ Load<sub>j</sub><sup>2</sup>, ή min max). Ποτέ min Σ Load<sub>j</sub>: είναι σταθερό.</li>
+      <li>«Το συντομότερο» → min max · «ο χειρότερος όσο καλύτερα» → min max ή max min · «όσο περισσότερα ικανοποιούνται» → max Σ s<sub>j</sub>.</li>
+      <li>Βοηθητικές: άνω φράγμα (Z ≥ …) → min · κάτω φράγμα (Z ≤ …) → max.</li>
+      <li>MAX-SAT: s<sub>j</sub> = [πρόταση j αληθής], ECLiPSe: reified περιορισμοί.</li>
+    </ul></div>
+    <div class="cheat-card c3"><h3>∀ Θέμα 3 · Herbrand · 25</h3>
+    <ul>
+      <li>U<sub>L</sub> = όλοι οι βασικοί όροι (σταθερές και f(…)). Με συναρτησιακό σύμβολο → άπειρο.</li>
+      <li>B<sub>L</sub> = όλα τα βασικά άτομα (κατηγορήματα × U<sub>L</sub>).</li>
+      <li>«B<sub>L</sub> μοντέλο;» → ναι πάντα (οριστικό πρόγραμμα: όλες οι κεφαλές αληθεύουν).</li>
+      <li>M<sub>P</sub>: T<sub>P</sub> από ∅, πρώτα γεγονότα, μετά κανόνες, ώσπου να μην αλλάζει.</li>
+      <li>«A σε μοντέλο;» → ναι· τομή = ελάχιστο μοντέλο του P ∪ {A}. Μετά B<sub>L</sub> − M<sub>A</sub>.</li>
+      <li>«SLD-απόρριψη;» ⟺ κάθε άτομο του στόχου ∈ M<sub>P</sub>. Ένα έξω → όχι.</li>
+    </ul></div>
+    <div class="cheat-card c4"><h3>🕸️ Θέμα 4 · Γνώση · 20</h3>
+    <ul>
+      <li>Ιούνιος (= 2017Α): <code>is_true(P, SoFar) :- if Cond then P, is_true(Cond, [Cond|SoFar]).</code></li>
+      <li><code>is_true(P, SoFar) :- askable(P), write(P), writeln('?'), read(A), answer(A, SoFar).</code></li>
+      <li>how = πώς βγήκε το συμπέρασμα (δέντρο απόδειξης, <code>P &lt;= Proof</code>) · why = γιατί ρωτάω (το SoFar).</li>
+      <li>Δίκτυα: <code>fact(F) :- call(F), !.</code> <code>fact(F) :- F =.. [R, A, B], isa(A, S), G =.. [R, S, B], fact(G).</code></li>
+      <li>Βεβαιότητες στο δίκτυο: <code>Cert is C1 * C2</code> σε κάθε βήμα isa.</li>
+      <li>Πλαίσια: <code>value</code> τοπικά με <code>!</code>, αλλιώς <code>parent</code> μέσω <code>a_kind_of</code>/<code>instance_of</code>.</li>
+      <li>Εμπρόσθια: <code>new_derived_fact</code> + <code>assert(fact(P))</code> ώσπου «No more facts».</li>
+      <li>Αβεβαιότητα: and → min, or → max, κανόνας → γινόμενο.</li>
+    </ul></div>
+  </div>
+
+</section>
+
+<section id="phrases">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">💬</div><h2>Έτοιμες φράσεις</h2></div>
+
+  <div class="compare-grid">
+    <div class="compare-cell good"><h4 style="color:var(--green);margin-top:0">«Είναι η B<sub>L</sub> μοντέλο;»</h4>
+    <p style="font-size:0.93rem">«Ναι. Το πρόγραμμα είναι οριστικό. Στη βάση Herbrand όλα τα άτομα αληθεύουν, άρα η κεφαλή κάθε βασικού στιγμιοτύπου κάθε πρότασης αληθεύει και κάθε πρόταση ικανοποιείται.»</p></div>
+    <div class="compare-cell good" style="border-color:var(--red)"><h4 style="color:var(--red);margin-top:0">«Υπάρχει SLD-απόρριψη;» (όταν όχι)</h4>
+    <p style="font-size:0.93rem">«Όχι. Το ____ δεν ανήκει στο M<sub>P</sub>, άρα δεν είναι λογική συνέπεια του P. Από την ορθότητα της SLD-επίλυσης δεν υπάρχει απόρριψη.»</p></div>
+    <div class="compare-cell good" style="border-color:var(--blue)"><h4 style="color:var(--blue);margin-top:0">Αιτιολόγηση κόστους (Θέμα 2)</h4>
+    <p style="font-size:0.93rem">«Ο συνολικός φόρτος είναι ίδιος σε κάθε λύση, άρα η δικαιοσύνη μετριέται από το πόσο διαφέρουν οι φόρτοι· ελαχιστοποιώ τη διαφορά του πιο φορτωμένου από τον λιγότερο φορτωμένο.»</p></div>
+    <div class="compare-cell good" style="border-color:var(--cyan)"><h4 style="color:var(--cyan);margin-top:0">how / why (Θέμα 4)</h4>
+    <p style="font-size:0.93rem">«Το how εξηγεί πώς προέκυψε ένα συμπέρασμα, με την αλυσίδα κανόνων και γεγονότων. Το why εξηγεί γιατί το σύστημα ζητά μια πληροφορία, δηλαδή ποιον στόχο προσπαθεί να αποδείξει.»</p></div>
+  </div>
+
+</section>
+
+<section id="room">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">⏱️</div><h2>Στην αίθουσα (120 λεπτά, 100 μονάδες)</h2></div>
+
+  <div class="ptsbar"><div class="t1" style="flex:35">Θ1 · 35</div><div class="t2" style="flex:20">Θ2 · 20</div><div class="t3" style="flex:25">Θ3 · 25</div><div class="t4" style="flex:20">Θ4 · 20</div></div>
   <ol class="steps">
-    <li><strong>Πρώτα το Θέμα 3.</strong> Είναι οι πιο σίγουρες μονάδες. ~20΄.</li>
-    <li><strong>Μετά το Θέμα 2.</strong> Γράψε τις 4 επικεφαλίδες, γέμισέ τες. ~20΄.</li>
-    <li><strong>Τέλος το Θέμα 1.</strong> Βάσεις + <code>\+</code>-μοτίβο + σχόλια. Ό,τι προλάβεις.</li>
-    <li>Αν περισσέψει χρόνος: ξανατσέκαρε το M<sub>P</sub> και τα αθροίσματα του Θέματος 3.</li>
+    <li><strong>Θέμα 3 (≈ 30′):</strong> οι πιο σίγουρες μονάδες σου. Γράψε τις φράσεις και τις επαναλήψεις του T<sub>P</sub>.</li>
+    <li><strong>Θέμα 1 (≈ 40′):</strong> ξεκίνα από το «βέλτιστο με <code>\+</code>», μετά τα «τι απαντά» με trace στο χαρτί.</li>
+    <li><strong>Θέμα 2 (≈ 25′):</strong> Μ-Π-Π-Κ, και πέρασε το κόστος από τον έλεγχο «αλλάζει από λύση σε λύση;».</li>
+    <li><strong>Θέμα 4 (≈ 20′):</strong> πρώτα η θεωρία (5 μονάδες), μετά ο κώδικας με σχόλια.</li>
+    <li><strong>Έλεγχος (≈ 5′):</strong> ∀ και όρια δεικτών, βάσεις αναδρομής, τελείες στο τέλος των προτάσεων.</li>
   </ol>
-  <div class="warn"><div class="hd">⚠️ 4ο θέμα — Αναπαράσταση Γνώσης (αν πέσει)</div>
-    <p>Σε 2021/2022 υπήρχε 4ο θέμα <strong>αναπαράστασης γνώσης</strong> (~15 μον.): σημασιολογικά δίκτυα με <code>isa</code> + κληρονομικότητα (±βαθμοί βεβαιότητας), ή μηχανή συμπερασμού forward. Στις 2023 ΔΕΝ έπεσε. Αν εμφανιστεί: γράψε <strong>κάθε σχέση ως γεγονός</strong> + τον αναδρομικό κανόνα <code>prop(R,E,V):- isa(E,S),prop(R,S,V).</code> και πες «<strong>σημασιολογικά δίκτυα / κληρονομικότητα</strong>». → πλήρης οδηγός στη <a href="exam_theme4_kr.html" style="color:var(--cyan)">σελίδα Θέματος 4</a>.</p>
-  </div>
-</section>
+  <div class="exam"><div class="hd">🍀 Στόχος</div>
+  <p style="margin:4px 0">Πάνω από 50 στις 100. Το Θέμα 3 και τα μισά του Θέματος 1 σε φέρνουν κοντά· το Θέμα 2 με σωστό κόστος και το is_true του Θέματος 4 κάνουν τη διαφορά.</p></div>
 
-<div class="tip-box" style="text-align:center;font-size:1.05rem">
-  <div class="hd" style="justify-content:center">🍀 Καλή επιτυχία</div>
-  <p>Στόχος: ~30/60. Με Θέμα 3 + Θέμα 2 το έχεις. Ηρέμησε, ξεκίνα από το 3, γράψε καθαρά.</p>
-</div>
+</section>
 
 </div>
 <div class="footer">Λογικός Προγραμματισμός · Cheat-sheet</div>

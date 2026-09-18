@@ -455,6 +455,50 @@
     </div>
   </div>
 
+  <!-- June 2026 -->
+  <div class="solved">
+    <div class="solved-hd">🆕 June 2026 — πρόγραμμα q/p (ζυγά-μονά) · με νέο ερώτημα «B_L − M_A»</div>
+    <div class="solved-body">
+      <div class="cb"><code><span class="fn">q</span>(<span class="nm">0</span>).
+<span class="fn">q</span>(<span class="nm">s</span>(X)) :- <span class="fn">p</span>(X).
+<span class="fn">p</span>(<span class="nm">s</span>(X)) :- <span class="fn">q</span>(X).</code></div>
+      <p><strong>Τι κάνει:</strong> εναλλάσσει q↔p προσθέτοντας ένα <code>s</code> κάθε φορά, ξεκινώντας από <code>q(0)</code>. → <code>q</code> σε <strong>ζυγά</strong> s, <code>p</code> σε <strong>μονά</strong> s.</p>
+
+      <details class="reveal" open><summary>Λύση (α) — U_L, B_L, μοντέλο η B_L;</summary>
+      <div class="reveal-body">
+        <div class="math">U<sub>L</sub> = { 0, s(0), s²(0), … } (άπειρο) &nbsp;·&nbsp; B<sub>L</sub> = { q(s<sup>n</sup>0), p(s<sup>n</sup>0) | n ≥ 0 } (άπειρο)</div>
+        <p><strong>Η B<sub>L</sub> μοντέλο; ΝΑΙ</strong> — οριστικό πρόγραμμα (Γεγονός 1).</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (β) — ελάχιστο μοντέλο M_P</summary>
+      <div class="reveal-body">
+        <p>q(0) → p(s0) → q(s²0) → p(s³0) → … (κάθε βήμα +1 s, εναλλάξ q/p):</p>
+        <div class="math">M<sub>P</sub> = { q(s<sup>2k</sup>0) | k ≥ 0 } ∪ { p(s<sup>2k+1</sup>0) | k ≥ 0 }<br>= { q(0), q(s²0), q(s⁴0), … } ∪ { p(s0), p(s³0), p(s⁵0), … }</div>
+        <p><strong>Κανόνας-μνήμης:</strong> <code>q</code> = ζυγά, <code>p</code> = μονά.</p>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (γ) — A = {p(s⁴0), q(s⁵0)} υποσύνολο μοντέλου; πόσο είναι B_L − M_A;</summary>
+      <div class="reveal-body">
+        <p><strong>Βήμα 1 — μπορεί;</strong> p(s⁴0) = p σε <em>ζυγό</em> (∉ M<sub>P</sub>)· q(s⁵0) = q σε <em>μονό</em> (∉ M<sub>P</sub>). Και τα δύο εκτός M<sub>P</sub>, αλλά <strong>ΝΑΙ</strong> — υπάρχει μοντέλο που τα περιέχει (π.χ. η B<sub>L</sub>).</p>
+        <p><strong>Βήμα 2 — φτιάξε το M<sub>A</sub></strong> (ελάχιστο μοντέλο με το A ως γεγονότα): πρόσθεσε p(s⁴0), q(s⁵0) και κλείσε:</p>
+        <p style="font-size:0.92rem">p(s⁴0) →[q(s(X)):-p(X)] q(s⁵0) →[p(s(X)):-q(X)] p(s⁶0) → q(s⁷0) → … δηλ. <strong>p σε ζυγά ≥4</strong> και <strong>q σε μονά ≥5</strong>.</p>
+        <div class="math" style="font-size:0.92rem">M<sub>A</sub> = M<sub>P</sub> ∪ { p(s<sup>2k</sup>0) | k ≥ 2 } ∪ { q(s<sup>2k+1</sup>0) | k ≥ 2 }</div>
+        <p><strong>Βήμα 3 — B<sub>L</sub> − M<sub>A</sub></strong> = ό,τι <em>λείπει</em> από το M<sub>A</sub>. Λείπουν: <code>q</code> σε μονά {1,3} και <code>p</code> σε ζυγά {0,2}:</p>
+        <div class="math"><strong>B<sub>L</sub> − M<sub>A</sub> = { q(s0), q(s³0), p(0), p(s²0) }</strong> &nbsp;(4 άτομα)</div>
+        <div class="tip-box"><div class="hd">💡 Το κόλπο για το «B_L − M_A»</div>
+          <p style="margin:4px 0">Μη μετράς άπειρα σύνολα! Το M<sub>A</sub> καλύπτει σχεδόν τα πάντα — βρες μόνο τις <strong>λίγες «τρύπες»</strong> που μένουν έξω. Εδώ: πριν το A, το p ξεκινούσε στο 1 και το q στο 0· το A «γεμίζει» τα ζυγά-p από το 4 και τα μονά-q από το 5. Μένουν έξω μόνο τα μικρά: p(0),p(s²0),q(s0),q(s³0).</p>
+        </div>
+      </div></details>
+
+      <details class="reveal"><summary>Λύση (δ) — SLD-απόρριψη;</summary>
+      <div class="reveal-body">
+        <p><code>?- q(s²0), p(s³0), q(0), p(s0), p(s⁴0).</code> — τσέκαρε καθένα στο M<sub>P</sub>:</p>
+        <p>q(s²0) ζυγό-q ✔ · p(s³0) μονό-p ✔ · q(0) ✔ · p(s0) μονό-p ✔ · <strong>p(s⁴0) ζυγό-p ✘</strong> (το p θέλει μονά).</p>
+        <p><strong>ΟΧΙ</strong> — το <code>p(s⁴0)</code> δεν ανήκει στο M<sub>P</sub>, άρα δεν είναι λογική συνέπεια → δεν υπάρχει SLD-απόρριψη.</p>
+      </div></details>
+    </div>
+  </div>
+
   <div class="mnemo"><div class="hd">🧠 Ο κανόνας-κλειδί για να «βλέπεις» αν το M_P είναι άπειρο ή πεπερασμένο</div>
     <p style="margin:6px 0">Κοίτα τι κάνει ο <strong>αναδρομικός κανόνας</strong> στον όρο:</p>
     <ul style="margin:6px 0; padding-left:20px; line-height:1.6">

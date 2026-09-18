@@ -30,7 +30,7 @@
         if (!db) return;
         
         // Use navTopics for better names if available
-        const topicNames = Object.assign({}, window.quizTopicNames || {});
+        const topicNames = {};
         if (window.navTopics) {
             window.navTopics.forEach(t => topicNames[t.id] = t.title);
         }

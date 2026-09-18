@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Θέμα 1 · Προπόνηση</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/exam.css">
+<style>
+.hero{background:linear-gradient(150deg,#0d1117 0%,var(--odim) 55%,#0d1117 100%)}
+.hero::after{content:'?- solve(You, Intuition).';position:absolute;right:32px;bottom:16px;font-family:'JetBrains Mono',monospace;font-size:clamp(0.7rem,2vw,1.3rem);color:rgba(240,136,62,.08);pointer-events:none;font-weight:700}
+.try{border:1px dashed var(--orange);border-radius:10px;padding:12px 16px;background:rgba(240,136,62,.05);margin:10px 0}
+.try .hd{color:var(--orange);font-weight:700;margin-bottom:4px;font-family:'Syne',sans-serif}
+.drill{border:1px solid var(--border);border-radius:14px;padding:0;margin:20px 0;overflow:hidden;background:var(--surf)}
+.drill-hd{background:var(--surf2);padding:12px 18px;font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.drill-body{padding:16px 18px}
+.lvl{font-size:0.68rem;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:1px}
+.lvl.e{background:rgba(63,185,80,.15);color:var(--green)}
+.lvl.m{background:rgba(88,166,255,.15);color:var(--blue)}
+.lvl.h{background:rgba(240,136,62,.15);color:var(--orange)}
+</style>
+<script src="../js/nav_exam.js" defer></script>
+</head>
+<body>
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="hero-label">Θέμα 1 · Προπόνηση &amp; Διαίσθηση</div>
+  <h1>Χτίσε τη <em>Διαίσθηση</em></h1>
+  <p>Ο μόνος τρόπος να μάθεις να «γεμίζεις κενά» είναι <strong>να το κάνεις</strong>. Πρώτα ο τρόπος σκέψης &amp; τα εργαλεία, μετά ασκήσεις όπου <strong>προσπαθείς πρώτα εσύ</strong> και μετά αποκαλύπτεις τη λύση με ανάλυση κάθε κενού.</p>
+  <div class="chips">
+    <span class="chip">mindset</span><span class="chip">εργαλεία</span><span class="chip">καλές πρακτικές</span><span class="chip">4 drills</span>
+  </div>
+</div>
+
+<nav class="toc">
+  <a href="#mindset">Πώς να σκέφτεσαι</a>
+  <a href="#tools">Τα εργαλεία σου</a>
+  <a href="#practices">Καλές πρακτικές</a>
+  <a href="#drills">Ασκήσεις (δοκίμασε!)</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ================= MINDSET ================= -->
+<section id="mindset">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧠</div><h2>Πώς να σκέφτεσαι (το νοητικό μοντέλο)</h2></div>
+
+  <p class="lead">Η μεγαλύτερη αλλαγή: στην Prolog <strong>δεν λες «κάνε αυτό, μετά εκείνο»</strong>. Δηλώνεις <strong>ΠΟΙΑ σχέση ισχύει</strong> ανάμεσα στα ορίσματα, και αφήνεις τη μηχανή να ψάξει. Άρα δεν «σχεδιάζεις αλγόριθμο» — <strong>περιγράφεις</strong> τι σημαίνει να είναι σωστή η απάντηση.</p>
+
+  <div class="def"><div class="hd">🔑 Οι 3 ερωτήσεις πριν γράψεις ΟΤΙΔΗΠΟΤΕ</div>
+    <ol style="margin:6px 0;padding-left:20px;line-height:1.7">
+      <li><strong>Τι κρατάει κάθε όρισμα;</strong> Δώσ' του όνομα-νόημα («λίστα εισόδου», «άθροισμα ώς τώρα», «η λύση»). Γράψ' το δίπλα.</li>
+      <li><strong>Είναι ΕΙΣΟΔΟΣ ή ΕΞΟΔΟΣ;</strong> Κοίτα το παράδειγμα: ό,τι είναι <em>δεσμευμένο στην ερώτηση</em> = είσοδος· ό,τι <em>γυρίζει</em> = έξοδος.</li>
+      <li><strong>Ποια σχέση συνδέει είσοδο→έξοδο;</strong> Πες τη με λόγια πρώτα («η έξοδος είναι η μέγιστη υπακολουθία…»). Μετά τη μεταφράζεις σε προτάσεις.</li>
+    </ol>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-cell good" style="border-color:var(--cyan)">
+      <h4 style="color:var(--cyan);margin-top:0">Διάβασε τα παραδείγματα ΑΝΑΠΟΔΑ</h4>
+      <p style="font-size:0.92rem;line-height:1.6">Τα <code>?- foo(...)</code> με τα αποτελέσματά τους <strong>ΕΙΝΑΙ η εκφώνηση «με νούμερα»</strong>. Πριν κοιτάξεις τον σκελετό, ρώτα: «τι μπαίνει, τι βγαίνει, με ποια σχέση;». Οι μισές απαντήσεις κρύβονται εκεί.</p>
+    </div>
+    <div class="compare-cell good" style="border-color:var(--purple)">
+      <h4 style="color:var(--purple);margin-top:0">Διάβασε μια πρόταση «δηλωτικά»</h4>
+      <p style="font-size:0.92rem;line-height:1.6">Το <code>H :- B1, B2.</code> διαβάζεται: «το <strong>H</strong> ισχύει ΑΝ ισχύουν <strong>B1 ΚΑΙ B2</strong>». Το <code>:-</code> = «αν». Τα κόμματα = «και». Δεν είναι «βήματα εκτέλεσης» — είναι <em>συνθήκες</em>.</p>
+    </div>
+  </div>
+
+  <div class="mnemo"><div class="hd">🧩 Το «σκελετό-σκάνερ»: τι σου λέει η μορφή του κώδικα</div>
+    <ul style="margin:6px 0;padding-left:20px;line-height:1.7">
+      <li>Βλέπεις <code>\+ ( ... )</code>; → θέμα <strong>«βέλτιστο / μοναδικό»</strong>. Μέσα μπαίνει «υπάρχει <em>καλύτερο</em>».</li>
+      <li>Βλέπεις προτάσεις με <code>[]</code> και <code>[H|T]</code>; → <strong>αναδρομή σε λίστα</strong>. Το <code>[]</code> = βάση.</li>
+      <li>Βλέπεις 2 σχεδόν-ίδιες αναδρομικές προτάσεις; → <strong>«κράτα / πέτα»</strong> (παραγωγή υποσυνόλων/υπακολουθιών).</li>
+      <li>Βλέπεις <code>append(...)</code>; → <strong>σπάσιμο/ένωση λίστας</strong> (πρόθεμα, κατάληξη, «παράθυρο»).</li>
+      <li>Βλέπεις <code>findall(...)</code>; → <strong>«μάζεψε ΟΛΕΣ τις λύσεις σε μία λίστα»</strong>.</li>
+      <li>Βλέπεις επιπλέον όρισμα που «μεγαλώνει»; → <strong>accumulator</strong> (κρατάει ό,τι μάζεψες ώς τώρα).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= TOOLS ================= -->
+<section id="tools">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🧰</div><h2>Τα εργαλεία σου (η «εργαλειοθήκη»)</h2></div>
+  <p class="lead">Σχεδόν κάθε θέμα κώδικα λύνεται με συνδυασμό αυτών. Μάθε <strong>πότε</strong> βγάζεις το καθένα.</p>
+
+  <table class="summary-tbl"><thead><tr><th>Εργαλείο</th><th>Πότε το βγάζεις</th><th>Μοτίβο</th></tr></thead><tbody>
+    <tr><td><code>[]</code> / <code>[H|T]</code></td><td>Θέλω να διατρέξω/σπάσω λίστα</td><td><code>foo([]). foo([H|T]):- …foo(T).</code></td></tr>
+    <tr><td>accumulator<br>(επιπλέον όρισμα)</td><td>«Κράτα ό,τι μάζεψα ώς τώρα» (άθροισμα, λίστα, ιστορικό)</td><td><code>go(L,Acc,Out)</code> · η βάση: <code>go([],Acc,Acc).</code></td></tr>
+    <tr><td><code>\+ (Goal)</code></td><td>«Βέλτιστο / μοναδικό»: κανείς καλύτερος / δεν υπάρχει αντιπαράδειγμα</td><td><code>\+ ( cand(N2), N2 &gt; N )</code></td></tr>
+    <tr><td><code>append(A,B,L)</code></td><td>Σπάσε ή ένωσε λίστες· βγάλε πρόθεμα/κατάληξη/κομμάτι</td><td>πρόθεμα = <code>append(P,_,L)</code>· παράθυρο = 2 append</td></tr>
+    <tr><td><code>member(X,L)</code></td><td>«Διάλεξε ένα στοιχείο» (με backtracking όλα)</td><td><code>member(X,[a,b,c])</code></td></tr>
+    <tr><td><code>between(Lo,Hi,X)</code></td><td>«Παρήγαγε έναν αριθμό» στο διάστημα</td><td><code>between(1,N,K)</code></td></tr>
+    <tr><td><code>length(L,N)</code></td><td>Μέτρα μήκος· ή με <em>ελεύθερο</em> N/L παράγει μήκη 0,1,2,…</td><td><code>length(L,N)</code> για «ελάχιστο μήκος»</td></tr>
+    <tr><td><code>findall(T,G,L)</code></td><td>«Μάζεψε ΟΛΕΣ τις λύσεις του G σε λίστα L»</td><td><code>findall(X, p(X), Xs)</code></td></tr>
+    <tr><td><code>=..</code> + <code>call</code></td><td>Χτίσε στόχο δυναμικά (π.χ. τελεστής ως όρισμα)</td><td><code>G=..[Op,X,Y], call(G)</code></td></tr>
+    <tr><td><code>=</code> · <code>==</code> · <code>\+\+ =</code></td><td>ενοποίηση · «ταυτόσημα τώρα;» · «ενοποιήσιμα χωρίς δέσιμο;»</td><td>δες πίνακα πιο κάτω</td></tr>
+    <tr><td><code>is</code></td><td>Αριθμητικός <em>υπολογισμός</em> (όχι ενοποίηση!)</td><td><code>N is N1 + 1</code></td></tr>
+    <tr><td><code>!</code> (cut)</td><td>«Σταμάτα στην 1η λύση» (π.χ. «πρώτη» vs «όλες»)</td><td><code>…, !.</code></td></tr>
+  </tbody></table>
+
+  <div class="warn"><div class="hd">⚠️ Οι 3 συγκρίσεις που μπερδεύουν (κρατά τες κοντά)</div>
+    <ul style="margin:6px 0;padding-left:20px;line-height:1.6">
+      <li><code>X = Y</code> → <strong>ενοποίηση</strong>: προσπαθεί να τα ταιριάξει, <em>δένοντας</em> μεταβλητές. (<code>X = 5</code> δένει το X.)</li>
+      <li><code>X == Y</code> → <strong>ταυτότητα τώρα</strong>: «είναι ήδη ακριβώς ίδια;» χωρίς κανένα δέσιμο. (<code>f(X) == f(5)</code> → όχι.)</li>
+      <li><code>\+ \+ X = Y</code> → <strong>ενοποιήσιμα;</strong> δοκιμάζει την ενοποίηση και <em>την ξηλώνει</em> — μαθαίνεις «θα ταίριαζαν;» χωρίς να αφήσεις δεσμεύσεις.</li>
+      <li><code>N is E</code> → <strong>υπολόγισε</strong> την αριθμητική έκφραση E. Το <code>N = 1+1</code> ΔΕΝ κάνει 2· το <code>N is 1+1</code> κάνει.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= PRACTICES ================= -->
+<section id="practices">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">✅</div><h2>Καλές πρακτικές &amp; παγίδες</h2></div>
+
+  <div class="compare-grid">
+    <div class="compare-cell good">
+      <h4 style="color:var(--green);margin-top:0">✅ Κάνε</h4>
+      <ul style="margin:6px 0;padding-left:18px;font-size:0.92rem;line-height:1.6">
+        <li><strong>Γράψε πρώτα τη ΒΑΣΗ.</strong> «Ποια η απάντηση για την πιο μικρή είσοδο (<code>[]</code> ή 1 στοιχείο);»</li>
+        <li><strong>Ονόμασε τον accumulator.</strong> Ξέρε ακριβώς τι κρατάει σε κάθε επίπεδο.</li>
+        <li><strong>Κράτα σταθερό τον ρόλο κάθε ορίσματος</strong> σε όλες τις προτάσεις &amp; κλήσεις.</li>
+        <li><strong>Μείωσε το πρόβλημα.</strong> Η αναδρομική κλήση πρέπει να δουλεύει σε <em>μικρότερη</em> είσοδο (ουρά), αλλιώς → ατέρμονη.</li>
+        <li><strong>Κάνε trace με το ΜΙΚΡΟΤΕΡΟ παράδειγμα.</strong> 2-3 βήματα στο χαρτί.</li>
+      </ul>
+    </div>
+    <div class="compare-cell bad" style="border-color:var(--red);background:linear-gradient(180deg,rgba(248,81,73,.04),transparent)">
+      <h4 style="color:var(--red);margin-top:0">❌ Απόφυγε (κλασικές παγίδες)</h4>
+      <ul style="margin:6px 0;padding-left:18px;font-size:0.92rem;line-height:1.6">
+        <li><strong><code>=</code> αντί <code>is</code></strong> για αριθμούς (<code>N = N1+1</code> δεν υπολογίζει).</li>
+        <li><strong>Ξέχασες τη βάση</strong> → ατέρμονη αναδρομή / πάντα No.</li>
+        <li><strong>Αναδρομή σε ίδιο ή μεγαλύτερο</strong> όρισμα → δεν τερματίζει.</li>
+        <li><strong>Μπερδεμένοι ρόλοι ορισμάτων</strong> (το 3ο όρισμα άλλαξε νόημα ανάμεσα στις προτάσεις).</li>
+        <li><strong>Διαρροή δεσμεύσεων</strong>: χρησιμοποίησες <code>=</code> εκεί που ήθελες <code>\+\+ =</code> ή <code>==</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-box"><div class="hd">💡 Η «χρυσή εξίσωση» της αναδρομής</div>
+    <p><strong>Ολικό = πρώτο-στοιχείο ⊕ (αναδρομή στην ουρά).</strong> Σε κάθε αναδρομική πρόταση, το όρισμα-απάντηση της κεφαλής προκύπτει συνδυάζοντας το πρώτο στοιχείο με το αποτέλεσμα της αναδρομής. Παραδείγματα: <code>TotW is TotW1 + W</code> (άθροισμα), <code>[X|Sub]</code> (λίστα), <code>oddlength(L)</code> (εναλλαγή).</p>
+  </div>
+</section>
+
+<!-- ================= DRILLS ================= -->
+<section id="drills">
+  <div class="sh"><div class="sh-icon" style="background:var(--odim)">🏋️</div><h2>Ασκήσεις — δοκίμασε ΠΡΩΤΑ, μετά αποκάλυψε</h2></div>
+  <p class="lead">Πραγματικά παλιά θέματα (2017–2021). Σειρά: <span class="lvl e">EASY</span> → <span class="lvl m">MEDIUM</span> → <span class="lvl h">HARD</span>. Δώσε στον εαυτό σου <strong>5-10 λεπτά</strong> ανά άσκηση πριν ανοίξεις τη λύση.</p>
+
+  <!-- DRILL 1: evenlength/oddlength -->
+  <div class="drill">
+    <div class="drill-hd"><span class="lvl e">EASY</span> 1 · evenlength/1 &amp; oddlength/1 <span style="color:var(--muted);font-weight:400;font-size:0.85rem">— αναδρομή σε λίστα, βάση</span></div>
+    <div class="drill-body">
+      <p>Όρισε <code>evenlength(L)</code> (επιτυχία αν η λίστα έχει <strong>ζυγό</strong> πλήθος στοιχείων) και <code>oddlength(L)</code> (<strong>μονό</strong>). <em>Χωρίς</em> να μετρήσεις με <code>length</code>.</p>
+      <div class="try"><div class="hd">✍️ Δοκίμασε πρώτα</div>Σκέψου: πόσα στοιχεία έχει η μικρότερη «ζυγή» λίστα; Αν αφαιρέσω 1 στοιχείο από ζυγή, τι γίνεται;</div>
+      <details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+        <p>Η <code>[]</code> είναι ζυγή (0 στοιχεία). Αν βγάλω 1 στοιχείο, «ζυγό» ↔ «μονό». Άρα οι δύο ορισμοί καλούν <em>ο ένας τον άλλον</em> (αμοιβαία αναδρομή).</p>
+      </div></details>
+      <details class="reveal"><summary>✅ Λύση + ανάλυση</summary><div class="reveal-body">
+        <div class="cb"><code>evenlength([]).
+evenlength([_|L]) :- oddlength(L).
+oddlength([_|L]) :- evenlength(L).</code></div>
+        <div class="note"><div class="hd">📖 Ανάλυση</div>
+          <ul style="margin:6px 0;padding-left:20px;line-height:1.6">
+            <li><strong>Βάση:</strong> <code>evenlength([])</code> — 0 στοιχεία = ζυγό. (Το <code>oddlength</code> ΔΕΝ έχει βάση <code>[]</code>: η άδεια λίστα ΔΕΝ είναι μονή.)</li>
+            <li><strong>«Ένα βήμα»:</strong> «η <code>[_|L]</code> είναι ζυγή ΑΝ η ουρά <code>L</code> είναι μονή» — αφαιρώ 1, αλλάζει η parity.</li>
+            <li><strong>Γιατί τερματίζει:</strong> κάθε κλήση δουλεύει σε <em>μικρότερη</em> λίστα (ουρά) → φτάνει στο <code>[]</code>.</li>
+          </ul>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- DRILL 2: append -->
+  <div class="drill">
+    <div class="drill-hd"><span class="lvl e">EASY</span> 2 · Η μαγεία του append/3 <span style="color:var(--muted);font-weight:400;font-size:0.85rem">— σπάσε λίστα με 3 τρόπους</span></div>
+    <div class="drill-body">
+      <p>Χρησιμοποίησε <strong>μόνο</strong> <code>append/3</code> (γεμίζοντας τα κενά) ώστε:</p>
+      <div class="cb"><code>?- append(...., ...., [sun,mon,tue,wed,thu,fri,sat]).   <span class="cm">% FirstDay=sun, LastDay=sat</span>
+?- append(...., ...., [sun,mon,tue,wed,thu,fri,sat]).   <span class="cm">% Before=[sun,mon], After=[wed,thu,fri,sat]</span>
+?- append(...., ...., [sun,mon,tue,wed,thu,fri,sat]).   <span class="cm">% JustBeforeFriday=thu, JustAfterFriday=sat</span></code></div>
+      <div class="try"><div class="hd">✍️ Δοκίμασε πρώτα</div>Θυμήσου: <code>append(A, B, L)</code> σημαίνει «η <code>L</code> είναι το <code>A</code> ακολουθούμενο από το <code>B</code>». Πώς «κόβεις» το πρώτο; το γύρω-από-tue; το γύρω-από-fri;</div>
+      <details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+        <p>Για το «πρώτο &amp; τελευταίο»: κάνε το B <em>ένα στοιχείο</em> <code>[LastDay]</code> και το A να αρχίζει με <code>[FirstDay|_]</code>. Για «γύρω από X»: βάλε το X <em>μέσα</em> στο δεύτερο κομμάτι ως <code>[X|After]</code>.</p>
+      </div></details>
+      <details class="reveal"><summary>✅ Λύση + ανάλυση</summary><div class="reveal-body">
+        <div class="cb"><code><span class="cm">% 1) πρώτο & τελευταίο</span>
+?- append(<span class="fill">[FirstDay|_]</span>, <span class="fill">[LastDay]</span>, [sun,mon,tue,wed,thu,fri,sat]).
+
+<span class="cm">% 2) πριν/μετά το tue</span>
+?- append(<span class="fill">Before</span>, <span class="fill">[tue|After]</span>, [sun,mon,tue,wed,thu,fri,sat]).
+
+<span class="cm">% 3) ακριβώς γύρω από το fri (παράθυρο)</span>
+?- append(<span class="fill">_</span>, <span class="fill">[JustBeforeFriday, fri, JustAfterFriday|_]</span>, [sun,mon,tue,wed,thu,fri,sat]).</code></div>
+        <div class="note"><div class="hd">📖 Ανάλυση — η διαίσθηση του append</div>
+          <ul style="margin:6px 0;padding-left:20px;line-height:1.6">
+            <li><strong>(1)</strong> Το <code>[LastDay]</code> ως 2ο κομμάτι «κλειδώνει» το τελευταίο στοιχείο· το <code>[FirstDay|_]</code> ως 1ο κομμάτι διαβάζει το πρώτο.</li>
+            <li><strong>(2)</strong> Βάζοντας το <code>tue</code> στην <em>αρχή</em> του 2ου κομματιού, το <code>Before</code> μαζεύει ό,τι είναι πριν, και το <code>After</code> ό,τι μετά.</li>
+            <li><strong>(3)</strong> Πρόθεμα <code>_</code> (αδιάφορο) + μοτίβο <code>[X, fri, Y|_]</code> «σαρώνει» ώσπου να βρει το <code>fri</code>, δίνοντας το πριν (<code>thu</code>) και το μετά (<code>sat</code>).</li>
+          </ul>
+          <p style="margin:4px 0 0"><strong>Το μεγάλο μάθημα:</strong> το <code>append</code> με «ελεύθερα» ορίσματα είναι <em>μηχανή σπασίματος</em>. Ελέγχεις πού «κόβει» βάζοντας σχήματα (<code>[X]</code>, <code>[X|T]</code>, <code>_</code>).</p>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- DRILL 3: allsubsets -->
+  <div class="drill">
+    <div class="drill-hd"><span class="lvl m">MEDIUM</span> 3 · allsubsets/2 <span style="color:var(--muted);font-weight:400;font-size:0.85rem">— findall + «κράτα/πέτα»</span></div>
+    <div class="drill-body">
+      <p>Όρισε <code>allsubsets(Set, Subsets)</code> ώστε το <code>Subsets</code> να είναι η <strong>λίστα όλων των υποσυνόλων</strong> του <code>Set</code>. Σκελετός:</p>
+      <div class="cb"><code>allsubsets(Set, Subsets) :- findall(......, subs(.........), ......).
+subs(..............).
+subs(..............) :- ............................
+subs(..............) :- ............................</code></div>
+      <p style="font-size:0.9rem"><code>?- allsubsets([a,b,c], S).</code> → <code>S = [[a,b,c],[a,b],[a,c],[a],[b,c],[b],[c],[]]</code></p>
+      <div class="try"><div class="hd">✍️ Δοκίμασε πρώτα</div>Το <code>subs</code> πρέπει να παράγει <em>ένα</em> υποσύνολο τη φορά (με backtracking όλα). Για κάθε στοιχείο: το <strong>κρατάς</strong> ή το <strong>πετάς</strong> — δύο αναδρομικές προτάσεις. Το <code>findall</code> τα μαζεύει.</div>
+      <details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+        <p>Βάση: το υποσύνολο του <code>[]</code> είναι <code>[]</code>. Πρόταση «κράτα»: <code>subs([X|Xs],[X|S]):-subs(Xs,S)</code>. Πρόταση «πέτα»: <code>subs([_|Xs],S):-subs(Xs,S)</code>. Το <code>findall(Sub, subs(Set,Sub), Subsets)</code> τα μαζεύει όλα.</p>
+      </div></details>
+      <details class="reveal"><summary>✅ Λύση + ανάλυση</summary><div class="reveal-body">
+        <div class="cb"><code>allsubsets(Set, Subsets) :- findall(<span class="fill">Sub</span>, subs(<span class="fill">Set, Sub</span>), <span class="fill">Subsets</span>).
+subs(<span class="fill">[], []</span>).
+subs(<span class="fill">[X|Xs], [X|Sub]</span>) :- <span class="fill">subs(Xs, Sub)</span>.   <span class="cm">% ΚΡΑΤΑ το X</span>
+subs(<span class="fill">[_|Xs], Sub</span>) :- <span class="fill">subs(Xs, Sub)</span>.       <span class="cm">% ΠΕΤΑ το X</span></code></div>
+        <div class="note"><div class="hd">📖 Ανάλυση</div>
+          <ul style="margin:6px 0;padding-left:20px;line-height:1.6">
+            <li><strong><code>findall(Sub, subs(Set,Sub), Subsets)</code>:</strong> «τρέξε το <code>subs(Set,Sub)</code> με ΟΛΟΥΣ τους τρόπους, και μάζεψε κάθε <code>Sub</code> στη λίστα <code>Subsets</code>». Αυτό μετατρέπει «πολλές λύσεις» σε «μία λίστα».</li>
+            <li><strong>Βάση:</strong> υποσύνολο του κενού = κενό.</li>
+            <li><strong>«Κράτα»:</strong> κρατάω το <code>X</code> στο αποτέλεσμα (<code>[X|Sub]</code>) και συνεχίζω στην ουρά.</li>
+            <li><strong>«Πέτα»:</strong> αγνοώ το <code>X</code> (<code>_</code>) και συνεχίζω. Οι δύο προτάσεις μαζί = «όλοι οι συνδυασμοί».</li>
+          </ul>
+          <p style="margin:4px 0 0"><strong>Θυμήσου το:</strong> αυτό το «κράτα/πέτα» + <code>\+</code> είναι ΑΚΡΙΒΩΣ ο σκελετός του <code>knapsack</code>, <code>subseq</code>, <code>max_clique</code>. Ένα μοτίβο, πολλές ασκήσεις.</p>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <!-- DRILL 4: max_clique -->
+  <div class="drill">
+    <div class="drill-hd"><span class="lvl h">HARD</span> 4 · max_clique/4 <span style="color:var(--muted);font-weight:400;font-size:0.85rem">— όλο το μοτίβο μαζί: generate + έλεγχος + \+ βέλτιστο</span></div>
+    <div class="drill-body">
+      <p>Μέγιστη κλίκα σε γράφο: υποσύνολο κόμβων όπου <strong>όλα τα ζεύγη συνδέονται</strong> με ακμή, με <strong>μέγιστο μέγεθος</strong>. Ακμές ως <code>A-B</code> (με <code>A&lt;B</code>). Σκελετός:</p>
+      <div class="cb"><code>max_clique(N, Edges, MaxCl, MaxSize) :-
+    clique(N, Edges, MaxCl, MaxSize),
+    \+ ( ................................. ).
+
+clique(N, Edges, Clique, Size) :-
+    findall(K, between(1,N,K), Nodes),
+    is_subset(Nodes, Clique),
+    \+ ( ................................. ),
+    length(Clique, Size).
+
+.................................   <span class="cm">% ορισμός is_subset/2</span></code></div>
+      <div class="try"><div class="hd">✍️ Δοκίμασε πρώτα</div>Δύο <code>\+</code>: το <strong>εσωτερικό</strong> λέει «η <code>Clique</code> είναι όντως κλίκα» (κανένα ζεύγος χωρίς ακμή). Το <strong>εξωτερικό</strong> λέει «δεν υπάρχει μεγαλύτερη κλίκα». Το <code>is_subset</code> = το γνωστό «κράτα/πέτα».</div>
+      <details class="reveal"><summary>💡 Υπόδειξη</summary><div class="reveal-body">
+        <ul style="margin:6px 0;padding-left:20px">
+          <li><strong>Εσωτερικό <code>\+</code>:</strong> «ΔΕΝ υπάρχουν δύο κόμβοι <code>A&lt;B</code> στην κλίκα που να ΜΗΝ έχουν ακμή»: <code>\+ ( member(A,Clique), member(B,Clique), A&lt;B, \+ member(A-B, Edges) )</code>.</li>
+          <li><strong>Εξωτερικό <code>\+</code>:</strong> «ΔΕΝ υπάρχει άλλη κλίκα μεγαλύτερη»: <code>\+ ( clique(N,Edges,_,S2), S2 &gt; MaxSize )</code>.</li>
+          <li><strong><code>is_subset</code>:</strong> ίδιο με το <code>subs</code> της άσκησης 3.</li>
+        </ul>
+      </div></details>
+      <details class="reveal"><summary>✅ Λύση + ανάλυση</summary><div class="reveal-body">
+        <div class="cb"><code>max_clique(N, Edges, MaxCl, MaxSize) :-
+    clique(N, Edges, MaxCl, MaxSize),
+    \+ ( <span class="fill">clique(N, Edges, _, S2), S2 > MaxSize</span> ).
+
+clique(N, Edges, Clique, Size) :-
+    findall(K, between(1,N,K), Nodes),
+    is_subset(Nodes, Clique),
+    \+ ( <span class="fill">member(A,Clique), member(B,Clique), A < B, \+ member(A-B, Edges)</span> ),
+    length(Clique, Size).
+
+<span class="fill">is_subset([], []).
+is_subset([X|Xs], [X|Sub]) :- is_subset(Xs, Sub).
+is_subset([_|Xs], Sub) :- is_subset(Xs, Sub).</span></code></div>
+        <div class="note"><div class="hd">📖 Ανάλυση — πώς «κουμπώνει» καθένα</div>
+          <ul style="margin:6px 0;padding-left:20px;line-height:1.6">
+            <li><strong>generate:</strong> <code>findall(K,between(1,N,K),Nodes)</code> φτιάχνει τη λίστα κόμβων <code>[1..N]</code>· <code>is_subset(Nodes,Clique)</code> παράγει υποψήφιες κλίκες («κράτα/πέτα»).</li>
+            <li><strong>test (εσωτερικό <code>\+</code>):</strong> «καμία μη-ακμή ανάμεσα σε δύο μέλη» → η <code>Clique</code> είναι έγκυρη κλίκα. Το <code>A&lt;B</code> αποφεύγει διπλοελέγχους &amp; ταιριάζει με το <code>A-B</code> των ακμών.</li>
+            <li><strong>optimal (εξωτερικό <code>\+</code>):</strong> επιβιώνει μόνο η κλίκα που καμία άλλη δεν την ξεπερνά σε μέγεθος → <strong>μέγιστη</strong>.</li>
+            <li><strong>Το μοτίβο Π-Α-Μ-Ε:</strong> <strong>Π</strong>αρήγαγε (is_subset) · <strong>Α</strong>πέρριψε-καλύτερη (εξωτ. <code>\+</code>) · <strong>Μ</strong>έτρησε (length) · <strong>Ε</strong>λεγξε ιδιότητα (εσωτ. <code>\+</code>).</li>
+          </ul>
+        </div>
+      </div></details>
+    </div>
+  </div>
+
+  <div class="exam" style="margin-top:24px"><div class="hd">🎯 Μετά από κάθε άσκηση, ρώτα τον εαυτό σου</div>
+    <ol style="margin:6px 0;padding-left:20px;line-height:1.7">
+      <li>Ποιο ήταν το <strong>μοτίβο</strong>; (\+ βέλτιστο / κράτα-πέτα / append-σπάσιμο / accumulator / findall)</li>
+      <li>Τι <strong>κρατούσε κάθε όρισμα</strong>, και πού ήταν η <strong>βάση</strong>;</li>
+      <li>Θα μπορούσα να το ξαναγράψω <strong>χωρίς να δω τη λύση</strong>; Αν όχι, ποιο κομμάτι με μπέρδεψε;</li>
+    </ol>
+    <p style="margin:6px 0 0">Η διαίσθηση έρχεται όταν αναγνωρίζεις το <strong>μοτίβο</strong> μέσα σε 10 δευτερόλεπτα. 4-5 ασκήσεις ανά μοτίβο και θα το «βλέπεις».</p>
+  </div>
+
+  <p style="text-align:center;margin-top:18px"><a class="chip" href="exam_theme1_prolog.html" style="text-decoration:none">← Πίσω στη θεωρία Θέματος 1</a></p>
+</section>
+
+</div>
+<div class="footer">Λογικός Προγραμματισμός · Θέμα 1 · Προπόνηση &amp; Διαίσθηση</div>
+</body>
+</html>
